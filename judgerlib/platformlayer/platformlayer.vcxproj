@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F94C8924-3135-4433-BD24-BD0780BF8337}</ProjectGuid>
+    <ProjectGuid>{A97F3711-1FF2-412A-9F0B-D40AFC79E583}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>platformlayer</RootNamespace>
   </PropertyGroup>
