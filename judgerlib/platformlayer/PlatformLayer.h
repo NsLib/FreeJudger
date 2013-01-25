@@ -21,18 +21,17 @@ typedef             wchar_t                         OJChar_t;
 #define OJStr(str)          L##str
 #define GetOJString(str)    ::IMUST::OJString(OJStr(str)) 
 
-
-#define OJCout       std::wcout
-#define OJCerr       std::wcerr
+#define OJCout      std::wcout
+#define OJCerr      std::wcerr
 
 typedef             short                           OJInt16_t;
 typedef             int                             OJInt32_t;
 typedef             long long                       OJInt64_t;
 typedef             float                           OJFloat16_t;
 typedef             double                          OJFloat32_t;
-
-
-
+typedef             unsigned short                  OJUInt16_t;
+typedef             unsigned int                    OJUInt32_t;
+typedef             unsigned long long              OJUInt64_t;
 
 
 
