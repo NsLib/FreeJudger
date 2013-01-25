@@ -1,0 +1,24 @@
+﻿
+-【命名】
+--【变量】
+◆ 禁用匈牙利命名法。
+◆ 变量名采用小写驼峰法。eg：varNamingExample
+◆ 静态变量采用s_开头。eg：s_varNamingExample
+◆ 指针变量采用p开头。eg：pPointerVa6
+◆ 局部变量采用小写驼峰法。eg：varNamingExample
+◆ 成员变量private和protected权限采用小写驼峰法并在最后加_。eg：varNamingExample_
+◆ 成员变量public权限只能是const成员，并以大写驼峰法命名。eg：VarNamingExample
+◆ 以常量替代宏，并且采用大写驼峰法命名（const 放在类型前）。eg：const int MyMagicNumber = 10
+◆ 只有两个字母的缩写保持不变，三个及以上字母的缩写除第一个字母大写外均小写。eg：DB -> DB，XML -> Xml
+
+--【函数】
+◆ 全局函数采用大写驼峰法命名。eg：FunctionName()
+◆ 成员函数采用小写驼峰法命名。eg:functionName()
+◆ 函数参数采用小写驼峰法命名。eg：varNamingExample
+◆ 不需要修改的变量采用const修饰（const 放在类型前）。eg：const int varNamingExample
+
+--【命名空间】
+◆ 一级命名空间IMUST
+
+-【错误处理】
+◆ 对于第三方库的错误，使用其自带的错误报告方式（同时提供异常和错误代码的，优先使用异常）。
