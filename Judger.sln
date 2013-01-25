@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{C8625AC2-3EAA-4A71-A0B0-C9FEC97B7223}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F94C8924-3135-4433-BD24-BD0780BF8337} = {F94C8924-3135-4433-BD24-BD0780BF8337}
+		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logger", "judgerlib\logger\logger.vcxproj", "{3408ED8D-0190-4247-A811-1BC6A4490461}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "platformlayer", "judgerlib\platformlayer\platformlayer.vcxproj", "{F94C8924-3135-4433-BD24-BD0780BF8337}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xml", "judgerlib\xml\xml.vcxproj", "{4ACCA560-35FF-4D5C-A116-A22B163C21E5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		Template|Win32 = Template|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C8625AC2-3EAA-4A71-A0B0-C9FEC97B7223}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C8625AC2-3EAA-4A71-A0B0-C9FEC97B7223}.Debug|Win32.Build.0 = Debug|Win32
+		{C8625AC2-3EAA-4A71-A0B0-C9FEC97B7223}.Release|Win32.ActiveCfg = Release|Win32
+		{C8625AC2-3EAA-4A71-A0B0-C9FEC97B7223}.Release|Win32.Build.0 = Release|Win32
+		{C8625AC2-3EAA-4A71-A0B0-C9FEC97B7223}.Template|Win32.ActiveCfg = Release|Win32
+		{C8625AC2-3EAA-4A71-A0B0-C9FEC97B7223}.Template|Win32.Build.0 = Release|Win32
+		{3408ED8D-0190-4247-A811-1BC6A4490461}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3408ED8D-0190-4247-A811-1BC6A4490461}.Debug|Win32.Build.0 = Debug|Win32
+		{3408ED8D-0190-4247-A811-1BC6A4490461}.Release|Win32.ActiveCfg = Release|Win32
+		{3408ED8D-0190-4247-A811-1BC6A4490461}.Release|Win32.Build.0 = Release|Win32
+		{3408ED8D-0190-4247-A811-1BC6A4490461}.Template|Win32.ActiveCfg = Release|Win32
+		{3408ED8D-0190-4247-A811-1BC6A4490461}.Template|Win32.Build.0 = Release|Win32
+		{F94C8924-3135-4433-BD24-BD0780BF8337}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F94C8924-3135-4433-BD24-BD0780BF8337}.Debug|Win32.Build.0 = Debug|Win32
+		{F94C8924-3135-4433-BD24-BD0780BF8337}.Release|Win32.ActiveCfg = Release|Win32
+		{F94C8924-3135-4433-BD24-BD0780BF8337}.Release|Win32.Build.0 = Release|Win32
+		{F94C8924-3135-4433-BD24-BD0780BF8337}.Template|Win32.ActiveCfg = Release|Win32
+		{F94C8924-3135-4433-BD24-BD0780BF8337}.Template|Win32.Build.0 = Release|Win32
+		{4ACCA560-35FF-4D5C-A116-A22B163C21E5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4ACCA560-35FF-4D5C-A116-A22B163C21E5}.Debug|Win32.Build.0 = Debug|Win32
+		{4ACCA560-35FF-4D5C-A116-A22B163C21E5}.Release|Win32.ActiveCfg = Release|Win32
+		{4ACCA560-35FF-4D5C-A116-A22B163C21E5}.Release|Win32.Build.0 = Release|Win32
+		{4ACCA560-35FF-4D5C-A116-A22B163C21E5}.Template|Win32.ActiveCfg = Release|Win32
+		{4ACCA560-35FF-4D5C-A116-A22B163C21E5}.Template|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
