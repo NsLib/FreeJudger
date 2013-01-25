@@ -43,23 +43,6 @@ const LogLevelType Trace = 60;
 const LogLevelType All   = 70;
 }   // namespace LogLevel
 
-class JUDGER_API Logger
-{
-public:
-    explicit Logger(ILogger *logger);
-    ~Logger();
-
-    Logger &get() { return *this; }
-    void logFatal(const OJString &msg);
-    void logError(const OJString &msg);
-    void logWarn(const OJString &msg);
-    void logInfo(const OJString &msg);
-    void logDebug(const OJString &msg);
-    void logTrace(const OJString &msg);
-
-private:
-    ILogger *logger_;
-};
 
 class LoggerFactory
 {
@@ -75,12 +58,12 @@ class LoggerFactory
         }
     };
 public:
-    typedef std::map<OJInt32_t, Logger *>               LoggerList;
+    typedef std::map<OJInt32_t, ILogger*>               LoggerList;
     typedef std::shared_ptr<LoggerList>                 SharedLoggerList;
 
 public:
-    static Logger &getLogger(const OJInt32_t loggerId) throw ();
-    static bool registerLogger(Logger *logger, const OJInt32_t loggerId) throw ();
+    static ILogger* getLogger(const OJInt32_t loggerId) throw ();
+    static bool registerLogger(ILogger *logger, const OJInt32_t loggerId) throw ();
 
 private:
     LoggerFactory();

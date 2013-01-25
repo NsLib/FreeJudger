@@ -11,21 +11,21 @@ using namespace std;
 int main()
 {
     vector<IMUST::ILogger *> iloggers;
-    vector<IMUST::Logger *> loggers;
+    vector<IMUST::ILogger *> loggers;
 
     iloggers.push_back(new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1")));
     iloggers.push_back(new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger2")));
     iloggers.push_back(new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger3")));
 
     for (int i = 0; i < 3; ++i)
-        IMUST::LoggerFactory::registerLogger(new IMUST::Logger(iloggers[i]), i);
+        IMUST::LoggerFactory::registerLogger(iloggers[i], i);
 
     for (int i = 0; i < 3; ++i)
-        loggers.push_back(&IMUST::LoggerFactory::getLogger(i));
+        loggers.push_back(IMUST::LoggerFactory::getLogger(i));
 
     for (int i = 0; i < 3; ++i)
     {
-        loggers[i]->logFatal(GetOJString("Msg"));
+        loggers[i]->logFatal(GetOJString("Msg4cxx"));
         loggers[i]->logError(GetOJString("Msg"));
         loggers[i]->logWarn(GetOJString("Msg"));
         loggers[i]->logInfo(GetOJString("Msg"));
