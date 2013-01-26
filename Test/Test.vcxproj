@@ -39,7 +39,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Code\Judger\thirdpartylib\log4cxx\src\main\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\thirdpartylib;$(IncludePath)</IncludePath>
+    <LibraryPath>..\thirdpartylib\bin\Debug\win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

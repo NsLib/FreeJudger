@@ -6,10 +6,21 @@
 
 #include <vector>
 
+#include "../thirdpartylib/boost/thread.hpp"
+
 using namespace std;
+
+void ThreadFun()
+{
+    IMUST::ILogger *logger = new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1"));
+
+    // FIXED ME:logger中文乱码
+    logger->logDebug(GetOJString("thread log"));
+}
 
 int main()
 {
+#if 0
     vector<IMUST::ILogger *> iloggers;
     vector<IMUST::ILogger *> loggers;
 
@@ -32,6 +43,13 @@ int main()
         loggers[i]->logDebug(GetOJString("Msg"));
         loggers[i]->logTrace(GetOJString("Msg"));
     }
+#endif
+
+    ::boost::thread t(&ThreadFun);
+    t.join();
+
+
+
 
     return 0;
 }
