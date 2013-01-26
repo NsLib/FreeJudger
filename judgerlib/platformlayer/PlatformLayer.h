@@ -9,6 +9,8 @@
 #include <iostream>
 #include <cassert>
 
+#include "../../thirdpartylib/boost/thread.hpp"
+
 #include "../util/Utility.h"
 
 namespace IMUST
@@ -32,6 +34,12 @@ typedef             double                          OJFloat32_t;
 typedef             unsigned short                  OJUInt16_t;
 typedef             unsigned int                    OJUInt32_t;
 typedef             unsigned long long              OJUInt64_t;
+
+// 线程库采用Boost.Thread，如果需要自行设计，接口要与Boost兼容
+typedef             ::boost::thread                 Thread;
+typedef             ::boost::mutex                  Mutex;
+
+
 
 
 

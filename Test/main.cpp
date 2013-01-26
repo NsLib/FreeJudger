@@ -6,8 +6,6 @@
 
 #include <vector>
 
-#include "../thirdpartylib/boost/thread.hpp"
-
 using namespace std;
 
 void ThreadFun()
@@ -45,7 +43,7 @@ int main()
     }
 #endif
 
-    ::boost::thread t(&ThreadFun);
+    IMUST::Thread t(&ThreadFun);
     t.join();
 
 
