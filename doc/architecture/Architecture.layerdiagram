@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<layerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="7198095c-cfd0-4e97-8159-e50956dbe777" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/LayerDesigner">
+  <layers>
+    <layer Id="d14c9bf8-e64e-4bb2-a782-99928d39ac69" name="FreeJudger">
+      <childLayers>
+        <layer Id="8f3e41b5-4aeb-42e6-b2f9-52107b7b99dc" name="PlatformLayer">
+          <childLayers>
+            <layer Id="23be4618-46cd-4105-afb4-dcad4a434769" name="logger" />
+            <layer Id="4280966c-bf05-416d-a7a5-48057825c7c0" name="xml" />
+            <layer Id="dfed7199-09dc-4b0c-b338-d37b23aec167" name="thread" />
+          </childLayers>
+        </layer>
+        <layer Id="275f853a-70ba-496e-aa6c-0fafb8472004" name="操作系统">
+          <childLayers>
+            <layer Id="ca292555-6361-4b07-8788-0981f6d698db" name="Windows" />
+            <layer Id="6975606c-878d-432a-92fd-c2798876db89" name="Linux" />
+            <layer Id="711b4998-e58d-4b1b-8769-1b8ee718844f" name="其他" />
+          </childLayers>
+        </layer>
+        <layer Id="14af90f2-56f0-4218-9255-8303ee3e4869" name="系统软件支持">
+          <childLayers>
+            <layer Id="6669e5f4-c4d7-4190-b3c4-ca0f04a621d2" name="数据库" />
+            <layer Id="1ad1dfb5-3ecf-4abf-ac76-203a551b273a" name="编译器" />
+            <layer Id="c8cc3467-9b96-4b13-878c-84e8cec41235" name="其他" />
+          </childLayers>
+        </layer>
+        <layer Id="5dbb35dd-54f6-4328-b0c2-4f4eb1569a65" name="可执行程序">
+          <childLayers>
+            <layer Id="9acaa532-5d7a-4d48-b6e1-ddfe23a59b27" name="守护程序" />
+            <layer Id="9e62c59f-abfb-4fee-af3f-44f3f3a133be" name="监控程序" />
+          </childLayers>
+        </layer>
+      </childLayers>
+    </layer>
+  </layers>
+</layerModel>
