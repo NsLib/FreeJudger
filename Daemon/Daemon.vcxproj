@@ -39,6 +39,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>..\thirdpartylib;$(IncludePath)</IncludePath>
+    <LibraryPath>..\thirdpartylib\bin\Debug\win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -91,6 +93,11 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Daemon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\judgerlib\logger\logger.vcxproj">
+      <Project>{3408ed8d-0190-4247-a811-1bc6a4490461}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
