@@ -9,6 +9,8 @@
 #include <iostream>
 #include <cassert>
 
+#include <Windows.h>
+
 #include "../util/Utility.h"
 
 namespace IMUST

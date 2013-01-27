@@ -7,6 +7,8 @@
 #include "../judgerlib/thread/Thread.h"
 #include "../judgerlib/xml/Xml.h"
 
+#include "../judgerlib/process/Process.h"
+
 #include <vector>
 
 using namespace std;
@@ -50,6 +52,8 @@ int main()
     IMUST::Thread t(&ThreadFun);
     t.join();
 #endif
+
+#if 0
 
     IMUST::XmlPtr xmlRoot = IMUST::allocateRapidXml();
     if(!xmlRoot->load(GetOJString("config.xml")))
@@ -95,6 +99,14 @@ int main()
 
     //test save
     xmlRoot->save(GetOJString("testConfig.xml"));
+#endif
+
+    IMUST::WindowsProcess wp;
+    wp.create(GetOJString("calc.exe"));
+
+
+
+
        
     system("pause");
     return 0;
