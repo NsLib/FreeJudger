@@ -1,5 +1,6 @@
-#include "stdafx.h"
 #include "Daemon.h"
+
+
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
