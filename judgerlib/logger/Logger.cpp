@@ -7,7 +7,7 @@ namespace IMUST
 {
 
 LoggerFactory::SharedLoggerList LoggerFactory::loggers_(
-    new LoggerFactory::LoggerList);
+    new LoggerFactory::LoggerList, LoggerFactory::deleter());
 
 ILogger* LoggerFactory::getLogger(const OJInt32_t loggerId)
 {

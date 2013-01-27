@@ -51,20 +51,8 @@ const LogLevelType Trace = 60;
 const LogLevelType All   = 70;
 }   // namespace LogLevel
 
-
 class LoggerFactory
 {
-    struct deleter
-    {
-        void operator()(LoggerFactory *pLoggerFactory)
-        {
-            for (LoggerList::iterator iter = LoggerFactory::loggers_->begin();
-                LoggerFactory::loggers_->end() != iter; ++iter)
-            {
-                JUDGER_SAFE_DELETE_OBJ((*iter).second);
-            }
-        }
-    };
 public:
     typedef std::map<OJInt32_t, ILogger*>               LoggerList;
     typedef std::shared_ptr<LoggerList>                 SharedLoggerList;
@@ -79,6 +67,19 @@ private:
 
 private:
     static SharedLoggerList loggers_;
+
+private:
+    struct deleter
+    {
+        void operator()(LoggerFactory::LoggerList *pLoggerFactory)
+        {
+            for (LoggerFactory::LoggerList::iterator iter = LoggerFactory::loggers_->begin();
+                LoggerFactory::loggers_->end() != iter; ++iter)
+            {
+                JUDGER_SAFE_DELETE_OBJ((*iter).second);
+            }
+        }
+    };
 };
 
 }   // namespace IMUST
