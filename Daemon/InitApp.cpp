@@ -17,12 +17,16 @@ bool InitApp()
         return false;
     }
 
+    ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    logger->logTrace(GetOJString("[Daemon] - IMUST::InitApp"));
 
     if (!details::InitAppConfig())
     {
         MessageBoxW(NULL, L"初始化程序配置集失败，详情见日志", L"错误", MB_OK);
         return false;
     }
+
+    logger->logInfo(GetOJString("[Daemon] - IMUST::InitApp - Initialize application succeed"));
 
     return true;
 }
@@ -48,6 +52,8 @@ bool InitLogger()
 
 bool InitAppConfig()
 {
+    ::IMUST::LoggerFactory::getLogger(LoggerId::AppInitLoggerId)->logTrace(
+        GetOJString("[Daemon] - IMUST::details::InitAppConfig"));
     return ::IMUST::AppConfig::InitAppConfig();
 }
 

@@ -59,8 +59,8 @@ namespace Path
 bool InitAppConfig()
 {
     // TODO: ÒÀÀµxmlÏîÄ¿
-    LoggerFactory::getLogger(LoggerId::AppInitLoggerId)->logInfo(
-        GetOJString("config.IMUST::AppConfig::InitAppConfig"));
+    LoggerFactory::getLogger(LoggerId::AppInitLoggerId)->logTrace(
+        GetOJString("[config] - IMUST::AppConfig::InitAppConfig"));
 
 
 
