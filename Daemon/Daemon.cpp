@@ -1,6 +1,6 @@
 #include "Daemon.h"
 
-
+#include "InitApp.h"
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -10,6 +10,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
+    IMUST::InitApp();
 
 
 

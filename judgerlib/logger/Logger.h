@@ -29,6 +29,14 @@ public:
     virtual void logTrace(const OJString &msg) = 0;
 };
 
+namespace LoggerId
+{
+const OJInt32_t AppInitLoggerId             = 0; 
+
+
+}
+
+
 namespace LogLevel
 {
 typedef OJInt32_t LogLevelType;

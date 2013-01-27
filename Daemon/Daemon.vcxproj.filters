@@ -27,9 +27,15 @@
     <ClInclude Include="Daemon.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="InitApp.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Daemon.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="InitApp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
