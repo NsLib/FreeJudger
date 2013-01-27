@@ -17,6 +17,15 @@
             <layerShape Id="1b65e8d1-a255-4d9f-af4c-dee7f6ea352a" absoluteBounds="4, 2.375, 1.25, 0.375" customColor="161, 199, 231">
               <layerMoniker Id="dfed7199-09dc-4b0c-b338-d37b23aec167" />
             </layerShape>
+            <layerShape Id="6f6f72e7-7357-416c-8cb9-4add7a697d59" absoluteBounds="4, 2.875, 1.25, 0.375" customColor="161, 199, 231">
+              <layerMoniker Id="c7351313-0fea-41f6-97e2-6c7c441838cd" />
+            </layerShape>
+            <layerShape Id="dcec8952-d406-43bd-a3ee-3b55fae57038" absoluteBounds="2.5, 2.875, 1.25, 0.375" customColor="161, 199, 231">
+              <layerMoniker Id="9a18c176-38f9-4c71-a1aa-ec59b091a050" />
+            </layerShape>
+            <layerShape Id="f76e56ca-e8fd-4ed8-9efd-613e7eeb60ed" absoluteBounds="1, 2.875, 1.25, 0.375" customColor="161, 199, 231">
+              <layerMoniker Id="552a327b-f694-42af-9b51-48941fae5e71" />
+            </layerShape>
           </nestedChildShapes>
         </layerShape>
         <layerShape Id="77fae54b-3b3a-4479-99fd-09da71641d05" absoluteBounds="0.875, 4.75, 4.5, 0.875" customColor="192, 192, 255">
