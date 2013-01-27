@@ -74,10 +74,14 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Xml.h" />
     <ClInclude Include="XmlParser.h" />
+    <ClInclude Include="Xml_rapidxml.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Xml.cpp" />
     <ClCompile Include="XmlParser.cpp" />
+    <ClCompile Include="Xml_rapidxml.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -18,6 +18,9 @@ namespace IMUST
 typedef             std::wstring                    OJString;
 typedef             wchar_t                         OJChar_t;
 
+typedef             std::wofstream                  OJOfstream;
+
+#define OJCh(ch)            L##ch
 #define OJStr(str)          L##str
 #define GetOJString(str)    ::IMUST::OJString(OJStr(str)) 
 
@@ -33,7 +36,8 @@ typedef             unsigned short                  OJUInt16_t;
 typedef             unsigned int                    OJUInt32_t;
 typedef             unsigned long long              OJUInt64_t;
 
-
+#define OJSprintf   swprintf
+#define OJSscanf    swscanf
 
 
 

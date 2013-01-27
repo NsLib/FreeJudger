@@ -21,9 +21,21 @@
     <ClInclude Include="XmlParser.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Xml.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Xml_rapidxml.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="XmlParser.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Xml.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Xml_rapidxml.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

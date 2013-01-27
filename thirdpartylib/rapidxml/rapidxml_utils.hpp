@@ -25,19 +25,19 @@ namespace rapidxml
         
         //! Loads file into the memory. Data will be automatically destroyed by the destructor.
         //! \param filename Filename to load.
-        file(const char *filename)
+        file(const Ch *filename)
         {
             using namespace std;
 
             // Open stream
             basic_ifstream<Ch> stream(filename, ios::binary);
             if (!stream)
-                throw runtime_error(string("cannot open file ") + filename);
+                throw runtime_error("cannot open file ");
             stream.unsetf(ios::skipws);
             
             // Determine stream size
             stream.seekg(0, ios::end);
-            size_t size = stream.tellg();
+            size_t size = (size_t)stream.tellg();
             stream.seekg(0);   
             
             // Load data and add terminating 0

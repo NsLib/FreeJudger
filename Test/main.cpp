@@ -5,6 +5,7 @@
 #include "../judgerlib/logger/Logger_log4cxx.h"
 
 #include "../judgerlib/thread/Thread.h"
+#include "../judgerlib/xml/Xml.h"
 
 #include <vector>
 
@@ -45,11 +46,56 @@ int main()
     }
 #endif
 
+#if 0
     IMUST::Thread t(&ThreadFun);
     t.join();
+#endif
 
+    IMUST::XmlPtr xmlRoot = IMUST::allocateRapidXml();
+    if(!xmlRoot->load(GetOJString("config.xml")))
+    {
+        OJCout<<GetOJString("read config fail!")<<std::endl;
+        return 0;
+    }
+   
+    OJCout<<GetOJString("read config.xml")<<std::endl;
 
+    //test read node
+    IMUST::XmlPtr ptr = xmlRoot->read(GetOJString("AppConfig/MySql/Ip"));
+    while(ptr)
+    {
+        OJCout<<ptr->tag()<<GetOJString(" = ")<<ptr->value()<<std::endl;
+        ptr = ptr->getNextSibling();
+    }
+    
+    //test read many
+    IMUST::XmlPtrVector vector;
+    if(xmlRoot->reads(GetOJString("AppConfig/JudgeCode/Pending"), vector))
+    {
+        for(IMUST::XmlPtrVector::iterator it=vector.begin(); it != vector.end(); ++it)
+        {
+            OJCout<<(*it)->tag()<<GetOJString(" = ")<<(*it)->value()<<std::endl;
+        }
+    }
 
+    //test read data
+    IMUST::OJInt32_t t = 0;
+    IMUST::OJString tag = GetOJString("AppConfig/MySql/Port");
+    if(xmlRoot->readInt32(tag, t))
+    {
+        OJCout<<tag<<GetOJString(" = ")<<t<<std::endl;
+    }
 
+    //test write
+    xmlRoot = IMUST::allocateRapidXml();
+
+    xmlRoot->writeInt32(GetOJString("config/size/x"), t+5);
+    xmlRoot->writeFloat16(GetOJString("testTag/a"), 7.1f);
+    xmlRoot->writeFloat32(GetOJString("testTag/b"), 8.777);
+
+    //test save
+    xmlRoot->save(GetOJString("testConfig.xml"));
+       
+    system("pause");
     return 0;
 }
