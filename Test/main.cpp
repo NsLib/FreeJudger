@@ -4,6 +4,8 @@
 #include "../judgerlib/logger/Logger.h"
 #include "../judgerlib/logger/Logger_log4cxx.h"
 
+#include "../judgerlib/thread/Thread.h"
+
 #include <vector>
 
 using namespace std;
