@@ -9,6 +9,8 @@
 
 #include "../judgerlib/process/Process.h"
 
+#include "../judgerlib/filetool/FileTool.h"
+
 #include <vector>
 
 using namespace std;
@@ -101,13 +103,28 @@ int main()
     xmlRoot->save(GetOJString("testConfig.xml"));
 #endif
 
+#if 0
     IMUST::WindowsProcess wp;
     wp.create(GetOJString("calc.exe"));
+#endif
 
+    IMUST::ILogger *logger = new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1"));
+    IMUST::OJString path(OJStr("D:\\a.txt"));
+    bool res = IMUST::FileTool::IsFileExist(path);
+    if (res)
+    {
+        logger->logDebug(GetOJString("file exist"));
+        IMUST::FileTool::RemoveFile(path);
+    }
+    else
+        logger->logDebug(GetOJString("file not exist"));
 
+    IMUST::FileTool::MakeDir(GetOJString("D:\\dir"));
+    logger->logDebug(IMUST::FileTool::GetFullFileName(path));
+    logger->logDebug(IMUST::FileTool::GetFilePath(path));
+    logger->logDebug(IMUST::FileTool::GetFileExt(GetOJString("D:\\a.ext1.ext2.txt")));
+    logger->logDebug(IMUST::FileTool::GetFileName(GetOJString("D:\\a.ext1.ext2.txt")));
 
-
-       
-    system("pause");
+    //system("pause");
     return 0;
 }
