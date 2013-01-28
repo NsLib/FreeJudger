@@ -4,8 +4,12 @@
 #pragma warning(push)
 #pragma warning(disable:4996)   // Conditional expression is constant
 
+
 namespace IMUST
 {
+
+const OJString stringTrue(OJStr("true"));
+const OJString stringFalse(OJStr("false"));
 
 IXml::IXml()
 {
@@ -18,6 +22,11 @@ IXml::~IXml()
 void IXml::getInt32(OJInt32_t &d) const
 {
     OJSscanf(cvalue(), OJStr("%d"), &d);
+}
+
+void IXml::getBool(bool &d) const
+{
+    d = (stringTrue == cvalue());
 }
 
 void IXml::getFloat16(OJFloat16_t &d) const
@@ -35,6 +44,11 @@ void IXml::setInt32(OJInt32_t d)
     OJString buffer(16, OJCh('\0'));
     OJSprintf(&buffer[0], OJStr("%d"), d);
     setValue(buffer);
+}
+
+void IXml::setBool(bool d)
+{
+    setValue(d ? stringTrue : stringFalse);
 }
 
 void IXml::setFloat16(OJFloat16_t d)
@@ -57,6 +71,17 @@ bool IXml::readInt32(const OJString &tag, OJInt32_t & d) const
     if(node)
     {
         node->getInt32(d);
+        return true;
+    }
+    return false;
+}
+
+bool IXml::readBool(const OJString &tag, bool &d) const
+{
+    XmlPtr node = read(tag);
+    if(node)
+    {
+        node->getBool(d);
         return true;
     }
     return false;
@@ -97,6 +122,11 @@ bool IXml::readString(const OJString &tag, OJString &d) const
 void IXml::writeInt32(const OJString &tag, OJInt32_t d)
 {
     write(tag)->setInt32(d);
+}
+
+void IXml::wirteBool(const OJString &tag, bool d)
+{
+    write(tag)->setBool(d);
 }
 
 void IXml::writeFloat16(const OJString &tag, OJFloat16_t d)
