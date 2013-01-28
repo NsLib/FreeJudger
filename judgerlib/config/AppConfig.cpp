@@ -57,15 +57,15 @@ namespace Path
     OJString    TestDataPath(GetOJString("D:\\testdata"));
 }
 
+bool InitAppConfig()
+{
 #define READ_APP_CONFIG(fun, tag, value)     \
-if(!root->fun(OJStr(tag), value))            \
-{   \
+    if(!root->fun(OJStr(tag), value))            \
+    {   \
     logger->logError(OJStr("[config] - IMUST::AppConfig::InitAppConfig: read tag faild! ")##OJStr(tag));   \
     return false; \
 }
 
-bool InitAppConfig()
-{
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
     logger->logTrace(GetOJString("[config] - IMUST::AppConfig::InitAppConfig"));
@@ -115,7 +115,8 @@ bool InitAppConfig()
     READ_APP_CONFIG(readInt32, "JudgeCode/UnknownError", JudgeCode::UnknownError);
 
     READ_APP_CONFIG(readString, "Path/TestDataPath", Path::TestDataPath);
-    
+   
+#undef READ_APP_CONFIG
 
     return true;
 }
