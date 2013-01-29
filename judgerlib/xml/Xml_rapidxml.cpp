@@ -4,7 +4,7 @@
 namespace IMUST
 {
 
-XmlPtr allocateRapidXml()
+JUDGER_API XmlPtr allocateRapidXml()
 {
     return XmlPtr(new RapidXmlImpl());
 }

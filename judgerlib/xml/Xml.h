@@ -67,7 +67,7 @@ public:
 
 };
 
-XmlPtr JUDGER_API allocateRapidXml();
+JUDGER_API XmlPtr allocateRapidXml();
 
 }   // namespace IMUST
 
