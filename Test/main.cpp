@@ -110,51 +110,7 @@ int main()
     wp.create(GetOJString("calc.exe"));
 #endif
 
-#if 1
-
-    IMUST::SqlDriverPtr mysql = IMUST::SqlFactory::createDriver(IMUST::SqlType::MySql);
-    if(!mysql->loadService())
-    {
-        OJCout<<GetOJString("loadService faild!")<<mysql->getErrorString()<<std::endl;
-        return 0;
-    }
-
-    if(!mysql->connect(GetOJString("127.0.0.1"), 3306, GetOJString("root"),
-        GetOJString(""), GetOJString("jol")))
-    {
-        OJCout<<GetOJString("connect faild!")<<mysql->getErrorString()<<std::endl;
-        return 0;
-    }
-
-    if(mysql->query(GetOJString("select solution_id, problem_id, user_id, time, memory from solution")))
-    {
-        IMUST::SqlResultPtr result = mysql->storeResult();
-        if(result)
-        {
-            IMUST::OJUInt32_t cols = result->getNbCols();
-            for(IMUST::OJUInt32_t i=0; i<cols; ++i)
-            {
-                OJCout<<result->getFieldName(i)<<GetOJString("\t");
-            }
-            OJCout<<endl;
-            IMUST::SqlRowPtr row(NULL);
-            while(row = result->fetchRow())
-            {
-                for(IMUST::OJUInt32_t i=0; i<cols; ++i)
-                {
-                    OJCout<<(*row)[i].getString()<<GetOJString("\t");
-                }
-                OJCout<<endl;
-            }
-        }
-    }
-
-    mysql->disconect();
-
-    mysql->unloadService();
-
-#endif
-       
+#if 0
     IMUST::ILogger *logger = new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1"));
     IMUST::OJString path(OJStr("D:\\a.txt"));
     bool res = IMUST::FileTool::IsFileExist(path);
@@ -214,6 +170,54 @@ int main()
     {
         logger->logDebug(GetOJString("Can't read file"));
     }
+#endif
+
+    
+#if 1
+
+    IMUST::SqlDriverPtr mysql = IMUST::SqlFactory::createDriver(IMUST::SqlType::MySql);
+    if(!mysql->loadService())
+    {
+        OJCout<<GetOJString("loadService faild!")<<mysql->getErrorString()<<std::endl;
+        return 0;
+    }
+
+    if(!mysql->connect(GetOJString("127.0.0.1"), 3306, GetOJString("root"),
+        GetOJString(""), GetOJString("jol")))
+    {
+        OJCout<<GetOJString("connect faild!")<<mysql->getErrorString()<<std::endl;
+        return 0;
+    }
+
+    if(mysql->query(GetOJString("select solution_id, problem_id, user_id, time, memory from solution")))
+    {
+        IMUST::SqlResultPtr result = mysql->storeResult();
+        if(result)
+        {
+            IMUST::OJUInt32_t cols = result->getNbCols();
+            for(IMUST::OJUInt32_t i=0; i<cols; ++i)
+            {
+                OJCout<<result->getFieldName(i)<<GetOJString("\t");
+            }
+            OJCout<<endl;
+            IMUST::SqlRowPtr row(NULL);
+            while(row = result->fetchRow())
+            {
+                for(IMUST::OJUInt32_t i=0; i<cols; ++i)
+                {
+                    OJCout<<(*row)[i].getString()<<GetOJString("\t");
+                }
+                OJCout<<endl;
+            }
+        }
+    }
+
+    mysql->disconect();
+
+    mysql->unloadService();
+
+#endif
+       
 
     system("pause");
     return 0;
