@@ -24,10 +24,10 @@ OJString GetFileExt(const OJString &path);
 bool GetSpecificExtFiles(FileNameList &files,
     const OJString &path,
     const OJString &ext,
-    const bool isRecursion);
-bool ReadFile(OJString &buffer,
+    const bool withPath);
+bool ReadFile(std::vector<OJChar_t> &buffer,
     const OJString &filename,
-    const bool isBinary);
+    const bool isBinary = false);
 
 
 }   // namespace IMUST

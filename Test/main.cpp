@@ -125,6 +125,49 @@ int main()
     logger->logDebug(IMUST::FileTool::GetFileExt(GetOJString("D:\\a.ext1.ext2.txt")));
     logger->logDebug(IMUST::FileTool::GetFileName(GetOJString("D:\\a.ext1.ext2.txt")));
 
+    IMUST::FileTool::FileNameList files;
+    if (IMUST::FileTool::GetSpecificExtFiles(files, GetOJString("D:\\Code\\SmartCar"), GetOJString(".cs"), true))
+    {
+        for (IMUST::FileTool::FileNameList::iterator iter = files.begin();
+            files.end() != iter; ++iter)
+        {
+            logger->logDebug(*iter);
+        }
+    } 
+    else
+    {
+        logger->logDebug(GetOJString("No files"));
+    }
+
+    if (IMUST::FileTool::GetSpecificExtFiles(files, GetOJString("D:\\Code\\SmartCar"), GetOJString(".cs"), false))
+    {
+        for (IMUST::FileTool::FileNameList::iterator iter = files.begin();
+            files.end() != iter; ++iter)
+        {
+            logger->logDebug(*iter);
+        }
+    } 
+    else
+    {
+        logger->logDebug(GetOJString("No files"));
+    }
+
+    vector<IMUST::OJChar_t> buf;
+    if (IMUST::FileTool::ReadFile(buf, GetOJString("D:\\Code\\a.txt")))
+    {
+        for (vector<IMUST::OJChar_t>::iterator iter = buf.begin();
+            buf.end() != iter; ++iter)
+        {
+            IMUST::OJString str;
+            str += *iter;
+            logger->logDebug(str);
+        }
+    } 
+    else
+    {
+        logger->logDebug(GetOJString("Can't read file"));
+    }
+
     //system("pause");
     return 0;
 }
