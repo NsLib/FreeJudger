@@ -6,6 +6,7 @@
 
 #include "../util/Utility.h"
 #include "../platformlayer/PlatformLayer.h"
+#include "../thread/Thread.h"
 
 namespace IMUST
 {
@@ -14,7 +15,7 @@ class JUDGER_API ITask
 {
 public:
     ITask();
-    virtual ~ITask() = 0;
+    virtual ~ITask();
 
     virtual bool run() = 0;
 };
@@ -25,14 +26,18 @@ public:
     TaskManager();
     ~TaskManager();
 
+    void lock();
+    void unlock();
+
     bool hasTask();
     void addTask(ITask *task);
     ITask *popTask();
 
-
 private:
     typedef std::list<ITask *> TaskListType;
     TaskListType taskList_;
+
+    Mutex   mutex_;
 };
 
 

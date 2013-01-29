@@ -8,6 +8,11 @@ ITask::ITask()
 
 }
 
+ITask::~ITask()
+{
+
+}
+
 TaskManager::TaskManager()
 {
 
@@ -16,6 +21,16 @@ TaskManager::TaskManager()
 TaskManager::~TaskManager()
 {
 
+}
+
+void TaskManager::lock()
+{
+    mutex_.lock();
+}
+
+void TaskManager::unlock()
+{
+    mutex_.unlock();
 }
 
 void TaskManager::addTask(ITask *task)
@@ -32,7 +47,8 @@ bool TaskManager::hasTask()
 ITask * TaskManager::popTask()
 {
     assert(!taskList_.empty() && "tasklist is empty");
-    static ITask *res = taskList_.front();
+    static ITask *res;
+    res = taskList_.front();
     taskList_.pop_front();
     return res;
 }

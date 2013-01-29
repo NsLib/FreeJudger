@@ -13,6 +13,8 @@
 
 #include "../judgerlib/filetool/FileTool.h"
 
+#include "../judgerlib/taskmanager/TaskManager.h"
+
 #include <vector>
 
 using namespace std;
@@ -24,6 +26,77 @@ void ThreadFun()
     // FIXED ME:logger中文乱码
     logger->logDebug(GetOJString("thread log"));
 }
+
+IMUST::ILogger *g_logger = new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1"));
+
+#include <cstdio>
+namespace IMUST
+{
+class MockTask : public ITask
+{
+public:
+    MockTask(int id) : id_(id) {}
+
+    virtual bool run()
+    {
+        OJChar_t buf[20];
+        wsprintf(buf, OJStr("task %d"), id_);
+        OJString str(buf);
+        g_logger->logInfo(str);
+        return true;
+    }
+
+private:
+    int id_;
+};
+}   // namespace IMUST
+
+IMUST::TaskManager g_taskManager;
+
+struct TaskThread
+{
+    TaskThread(int id) : id_(id) {}
+    void operator()()
+    {
+        static int i = 10;
+        static int j = 20;
+
+        while (true)
+        {
+            g_taskManager.lock();
+            IMUST::OJString str(OJStr("thread "));
+            str += (id_ + '0');
+
+            g_logger->logInfo(str);
+
+            if (g_taskManager.hasTask())
+            {
+                g_taskManager.popTask()->run();
+                g_taskManager.unlock();
+                Sleep(50);
+            } 
+            else
+            {
+                if (i >= 100)
+                {
+                    g_taskManager.unlock();
+                    break;
+                }
+                g_logger->logInfo(GetOJString("add task"));
+                for (; i < j; ++i)
+                    g_taskManager.addTask(new IMUST::MockTask(i));
+                j += 10;
+                g_taskManager.unlock();
+                Sleep(50);
+            }
+        }
+
+    }
+
+    int id_;
+};
+
+
 
 int main()
 {
@@ -171,9 +244,8 @@ int main()
         logger->logDebug(GetOJString("Can't read file"));
     }
 #endif
-
     
-#if 1
+#if 0
 
     IMUST::SqlDriverPtr mysql = IMUST::SqlFactory::createDriver(IMUST::SqlType::MySql);
     if(!mysql->loadService())
@@ -216,6 +288,21 @@ int main()
 
     mysql->unloadService();
 
+#endif
+
+#if 1   
+    // 运行5秒后终止调试
+    g_taskManager.lock();
+    for (int i = 0; i < 10; ++i)
+        g_taskManager.addTask(new IMUST::MockTask(i));
+    g_taskManager.unlock();
+
+    IMUST::Thread thread1(TaskThread(1));
+    IMUST::Thread thread2(TaskThread(2));
+    IMUST::Thread thread3(TaskThread(3));
+    thread1.join();
+    thread2.join();
+    thread3.join();
 #endif
        
 
