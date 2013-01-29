@@ -10,7 +10,6 @@ namespace IMUST
 typedef             ::boost::thread                 Thread;
 typedef             ::boost::mutex                  Mutex;
 
-
 }
 
 #endif  // IMUST_OJ_THREAD_H
