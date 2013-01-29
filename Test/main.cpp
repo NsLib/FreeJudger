@@ -9,7 +9,11 @@
 
 #include "../judgerlib/process/Process.h"
 
+<<<<<<< HEAD
 #include "../judgerlib/sql/Sql.h"
+=======
+#include "../judgerlib/filetool/FileTool.h"
+>>>>>>> 2aec2cf48efc639afcc2e1e796b80b91824c334e
 
 #include <vector>
 
@@ -107,6 +111,7 @@ int main()
     IMUST::WindowsProcess wp;
     wp.create(GetOJString("calc.exe"));
 #endif
+<<<<<<< HEAD
 
 #if 1
 
@@ -154,5 +159,69 @@ int main()
 #endif
        
     system("pause");
+=======
+
+    IMUST::ILogger *logger = new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1"));
+    IMUST::OJString path(OJStr("D:\\a.txt"));
+    bool res = IMUST::FileTool::IsFileExist(path);
+    if (res)
+    {
+        logger->logDebug(GetOJString("file exist"));
+        IMUST::FileTool::RemoveFile(path);
+    }
+    else
+        logger->logDebug(GetOJString("file not exist"));
+
+    IMUST::FileTool::MakeDir(GetOJString("D:\\dir"));
+    logger->logDebug(IMUST::FileTool::GetFullFileName(path));
+    logger->logDebug(IMUST::FileTool::GetFilePath(path));
+    logger->logDebug(IMUST::FileTool::GetFileExt(GetOJString("D:\\a.ext1.ext2.txt")));
+    logger->logDebug(IMUST::FileTool::GetFileName(GetOJString("D:\\a.ext1.ext2.txt")));
+
+    IMUST::FileTool::FileNameList files;
+    if (IMUST::FileTool::GetSpecificExtFiles(files, GetOJString("D:\\Code\\SmartCar"), GetOJString(".cs"), true))
+    {
+        for (IMUST::FileTool::FileNameList::iterator iter = files.begin();
+            files.end() != iter; ++iter)
+        {
+            logger->logDebug(*iter);
+        }
+    } 
+    else
+    {
+        logger->logDebug(GetOJString("No files"));
+    }
+
+    if (IMUST::FileTool::GetSpecificExtFiles(files, GetOJString("D:\\Code\\SmartCar"), GetOJString(".cs"), false))
+    {
+        for (IMUST::FileTool::FileNameList::iterator iter = files.begin();
+            files.end() != iter; ++iter)
+        {
+            logger->logDebug(*iter);
+        }
+    } 
+    else
+    {
+        logger->logDebug(GetOJString("No files"));
+    }
+
+    vector<IMUST::OJChar_t> buf;
+    if (IMUST::FileTool::ReadFile(buf, GetOJString("D:\\Code\\a.txt")))
+    {
+        for (vector<IMUST::OJChar_t>::iterator iter = buf.begin();
+            buf.end() != iter; ++iter)
+        {
+            IMUST::OJString str;
+            str += *iter;
+            logger->logDebug(str);
+        }
+    } 
+    else
+    {
+        logger->logDebug(GetOJString("Can't read file"));
+    }
+
+    //system("pause");
+>>>>>>> 2aec2cf48efc639afcc2e1e796b80b91824c334e
     return 0;
 }

@@ -20,6 +20,7 @@ namespace IMUST
 typedef             std::wstring                    OJString;
 typedef             wchar_t                         OJChar_t;
 
+typedef             std::wifstream                  OJIfstream;
 typedef             std::wofstream                  OJOfstream;
 
 #define OJCh(ch)            L##ch
