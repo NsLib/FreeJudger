@@ -5,7 +5,7 @@
 namespace IMUST
 {
 
-class IProcess
+class JUDGER_API IProcess
 {
     MAKE_CLASS_UNCOPYABLE(IProcess);
 
@@ -21,7 +21,7 @@ public:
     virtual void kill() = 0;
 };
 
-class WindowsProcess : public IProcess
+class JUDGER_API WindowsProcess : public IProcess
 {
 public:
     WindowsProcess();
