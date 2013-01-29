@@ -9,11 +9,9 @@
 
 #include "../judgerlib/process/Process.h"
 
-<<<<<<< HEAD
 #include "../judgerlib/sql/Sql.h"
-=======
+
 #include "../judgerlib/filetool/FileTool.h"
->>>>>>> 2aec2cf48efc639afcc2e1e796b80b91824c334e
 
 #include <vector>
 
@@ -111,7 +109,6 @@ int main()
     IMUST::WindowsProcess wp;
     wp.create(GetOJString("calc.exe"));
 #endif
-<<<<<<< HEAD
 
 #if 1
 
@@ -158,9 +155,6 @@ int main()
 
 #endif
        
-    system("pause");
-=======
-
     IMUST::ILogger *logger = new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1"));
     IMUST::OJString path(OJStr("D:\\a.txt"));
     bool res = IMUST::FileTool::IsFileExist(path);
@@ -221,7 +215,6 @@ int main()
         logger->logDebug(GetOJString("Can't read file"));
     }
 
-    //system("pause");
->>>>>>> 2aec2cf48efc639afcc2e1e796b80b91824c334e
+    system("pause");
     return 0;
 }

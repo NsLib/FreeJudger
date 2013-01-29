@@ -56,11 +56,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-<<<<<<< HEAD
-      <AdditionalDependencies>logger.lib;xml.lib;process.lib;sql.lib;%(AdditionalDependencies)</AdditionalDependencies>
-=======
-      <AdditionalDependencies>logger.lib;xml.lib;process.lib;filetool.lib;%(AdditionalDependencies)</AdditionalDependencies>
->>>>>>> 2aec2cf48efc639afcc2e1e796b80b91824c334e
+      <AdditionalDependencies>logger.lib;xml.lib;process.lib;sql.lib;filetool.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
