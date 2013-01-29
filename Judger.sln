@@ -55,10 +55,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "process", "judgerlib\proces
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sql", "judgerlib\sql\sql.vcxproj", "{EA669E91-E3FE-48F9-A158-22FB5E7AD28E}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "filetool", "judgerlib\filetool\filetool.vcxproj", "{274EAEB5-8A9C-45FD-9C90-215961DB3AFF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "taskmanager", "judgerlib\taskmanager\taskmanager.vcxproj", "{3183776B-F929-4018-8EF3-649775A53273}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -238,6 +241,21 @@ Global
 		{274EAEB5-8A9C-45FD-9C90-215961DB3AFF}.Template|Mixed Platforms.Build.0 = Release|Win32
 		{274EAEB5-8A9C-45FD-9C90-215961DB3AFF}.Template|Win32.ActiveCfg = Release|Win32
 		{274EAEB5-8A9C-45FD-9C90-215961DB3AFF}.Template|Win32.Build.0 = Release|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Debug|Win32.Build.0 = Debug|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Release|Any CPU.ActiveCfg = Release|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Release|Win32.ActiveCfg = Release|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Release|Win32.Build.0 = Release|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Template|Any CPU.ActiveCfg = Release|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Template|Mixed Platforms.ActiveCfg = Release|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Template|Mixed Platforms.Build.0 = Release|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Template|Win32.ActiveCfg = Release|Win32
+		{3183776B-F929-4018-8EF3-649775A53273}.Template|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
