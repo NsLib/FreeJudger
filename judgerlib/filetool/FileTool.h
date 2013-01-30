@@ -28,6 +28,9 @@ bool GetSpecificExtFiles(FileNameList &files,
 bool ReadFile(std::vector<OJChar_t> &buffer,
     const OJString &filename,
     const bool isBinary = false);
+bool WriteFile(std::vector<OJChar_t> &buffer,
+    const OJString &filename,
+    const bool isBinary = false);
 
 
 }   // namespace IMUST

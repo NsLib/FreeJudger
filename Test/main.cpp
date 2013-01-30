@@ -189,7 +189,7 @@ int main()
 #endif
 
 // 测试文件操作
-#if 0
+#if 1
     IMUST::ILogger *logger = new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1"));
     IMUST::OJString path(OJStr("D:\\a.txt"));
     bool res = IMUST::FileTool::IsFileExist(path);
@@ -240,9 +240,20 @@ int main()
         for (vector<IMUST::OJChar_t>::iterator iter = buf.begin();
             buf.end() != iter; ++iter)
         {
+            OJCerr << *iter;
             IMUST::OJString str;
             str += *iter;
             logger->logDebug(str);
+        }
+
+        OJCerr << std::endl;
+        if (IMUST::FileTool::WriteFile(buf, GetOJString("D:\\Code\\b.cpp")))
+        {
+            logger->logDebug(GetOJString("write file OK"));
+        } 
+        else
+        {
+            logger->logDebug(GetOJString("Can't write file"));
         }
     } 
     else
