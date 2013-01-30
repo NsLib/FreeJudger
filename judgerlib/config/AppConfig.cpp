@@ -60,17 +60,16 @@ namespace Path
 bool InitAppConfig()
 {
 #define READ_APP_CONFIG(fun, tag, value)     \
-    if(!root->fun(OJStr(tag), value))            \
+    if(!root->fun(OJStr(tag), value))        \
     {   \
-    logger->logError(OJStr("[config] - IMUST::AppConfig::InitAppConfig: read tag faild! ")##OJStr(tag));   \
-    return false; \
-}
+        logger->logError(OJStr("[config] - IMUST::AppConfig::InitAppConfig: read tag faild! ")##OJStr(tag));   \
+        return false; \
+    }
 
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
-
     logger->logTrace(GetOJString("[config] - IMUST::AppConfig::InitAppConfig"));
 
-    XmlPtr root = allocateRapidXml();
+    XmlPtr root = XmlFactory::getXml(GetOJString("RapidXml"));
     if(!root->load(OJStr("config.xml")))
     {
         logger->logError(OJStr("[config] - load config file faild! "));

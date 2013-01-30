@@ -18,24 +18,18 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="XmlParser.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Xml.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Xml_rapidxml.h">
+    <ClInclude Include="Xml_RapidXml.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="XmlParser.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Xml.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Xml_rapidxml.cpp">
+    <ClCompile Include="Xml_RapidXml.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

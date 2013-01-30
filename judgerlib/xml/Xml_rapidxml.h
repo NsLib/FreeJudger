@@ -26,51 +26,33 @@ public:
 
 public:
     RapidXmlImpl();
-
     RapidXmlImpl(XmlNodeType* node, FileTypePtr file, XmlDocumentTypePtr doc);
-
     ~RapidXmlImpl();
 
     virtual bool valid() const { return file_ && doc_ && pNode_; }
-
-     virtual const OJChar_t* ctag() const;
-
+    virtual const OJChar_t* ctag() const;
     virtual const OJChar_t * cvalue() const;
-
     virtual OJString tag() const { return ctag(); }
-
     virtual OJString value() const {  return cvalue(); }
-
     virtual void setTag(const OJString &tag);
-
     virtual void setValue(const OJString &value);
 
 public:
     virtual XmlPtr read(const OJString &tag) const ;
-
     virtual XmlPtr write(const OJString &tag);
-
     virtual XmlPtr getNextSibling() const;
-
     virtual bool load(const OJString & fileName);
-
     virtual bool save(const OJString & fileName) const;
 
 private:
-        
     XmlPtr makeNode(XmlNodeType* pNode) const;
-
     XmlNodeType * findFirstNode(XmlNodeType * pParent, const OJString & tag) const;
-
     //递归查找第一个结点
     XmlNodeType * findFirstNodeRecursive(XmlNodeType * pParent, const OJString & tag) const;
-
     XmlNodeType * addFirstNode(XmlNodeType * pParent, const OJString & tag);
-
     XmlNodeType * addFirstNodeRecursive(XmlNodeType * pParent, const OJString & tag);
 
 private:
-
     FileTypePtr         file_;
     XmlDocumentTypePtr  doc_;
     XmlNodeType*        pNode_;

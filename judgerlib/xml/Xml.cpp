@@ -1,5 +1,6 @@
 
 #include "Xml.h"
+#include "Xml_RapidXml.h"
 
 #pragma warning(push)
 #pragma warning(disable:4996)   // Conditional expression is constant
@@ -154,6 +155,15 @@ bool IXml::reads(const OJString & tag, XmlPtrVector & vector)
         ptr = ptr->getNextSibling();
     }
     return !vector.empty();
+}
+
+XmlPtr XmlFactory::getXml(const OJString &xmlType)
+{
+    if (xmlType == GetOJString("RapidXml"))
+        return XmlPtr(new RapidXmlImpl());
+  
+    assert(false && "invalid xml type");
+    return XmlPtr(0);
 }
 
 }// namespace IMUST

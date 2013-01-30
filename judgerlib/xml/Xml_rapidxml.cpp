@@ -1,13 +1,8 @@
 
-#include "Xml_rapidxml.h"
+#include "Xml_RapidXml.h"
 
 namespace IMUST
 {
-
-JUDGER_API XmlPtr allocateRapidXml()
-{
-    return XmlPtr(new RapidXmlImpl());
-}
 
 RapidXmlImpl::RapidXmlImpl()
     : doc_(new XmlDocumentType())
@@ -84,7 +79,6 @@ bool RapidXmlImpl::load(const OJString & fileName)
     }
     catch(std::runtime_error e)
     {
-        //e.what();
         return false;
     }
 
@@ -101,9 +95,7 @@ bool RapidXmlImpl::save(const OJString & fileName) const
 
     OJOfstream fout(fileName.c_str());
     if(!fout.good())
-    {
         return false;
-    }
 
     rapidxml::print(std::ostream_iterator<OJChar_t, OJChar_t>(fout), *pNode_);
 
@@ -115,9 +107,8 @@ bool RapidXmlImpl::save(const OJString & fileName) const
 XmlPtr RapidXmlImpl::makeNode(XmlNodeType* pNode) const
 {
     if(NULL != pNode)
-    {
-        return XmlPtr( new RapidXmlImpl(pNode, file_, doc_) );
-    }
+        return XmlPtr(new RapidXmlImpl(pNode, file_, doc_));
+
     return NULL;
 }
 

@@ -52,22 +52,23 @@ public:
 
 public:
     virtual XmlPtr read(const OJString &tag) const = 0;
-
     virtual XmlPtr write(const OJString &tag) = 0;
-
     virtual XmlPtr getNextSibling() const = 0;
-
     bool reads(const OJString & tag, XmlPtrVector & vector);
-
-public:
-
     virtual bool load(const OJString & fileName) = 0;
-
     virtual bool save(const OJString & fileName) const = 0;
-
 };
 
-JUDGER_API XmlPtr allocateRapidXml();
+class JUDGER_API XmlFactory
+{
+public:
+    static XmlPtr getXml(const OJString &xmlType);
+
+private:
+    XmlFactory();
+    ~XmlFactory();
+
+};
 
 }   // namespace IMUST
 
