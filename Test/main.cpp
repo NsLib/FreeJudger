@@ -15,7 +15,7 @@
 
 #include "../judgerlib/taskmanager/TaskManager.h"
 
-#include "../judgerlib/dbmanager/DBManager.h"
+#include "../judgerlib/sql/DBManager.h"
 
 #include <vector>
 

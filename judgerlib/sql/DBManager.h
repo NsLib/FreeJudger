@@ -3,7 +3,7 @@
 
 #include "../platformlayer/PlatformLayer.h"
 #include "../util/Utility.h"
-#include "../sql/Sql.h"
+#include "Sql.h"
 
 #include <memory>
 

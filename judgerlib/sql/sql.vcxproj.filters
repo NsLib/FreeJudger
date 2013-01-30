@@ -24,6 +24,9 @@
     <ClInclude Include="Sql_mysql.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DBManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sql.cpp">
@@ -33,6 +36,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SqlFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DBManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

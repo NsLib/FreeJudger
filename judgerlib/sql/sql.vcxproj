@@ -38,7 +38,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\..\thirdpartylib\mysql;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\thirdpartylib;..\..\thirdpartylib\mysql;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -80,10 +80,12 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DBManager.h" />
     <ClInclude Include="Sql.h" />
     <ClInclude Include="Sql_mysql.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DBManager.cpp" />
     <ClCompile Include="Sql.cpp" />
     <ClCompile Include="SqlFactory.cpp" />
     <ClCompile Include="Sql_mysql.cpp" />
