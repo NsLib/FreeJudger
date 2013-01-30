@@ -55,7 +55,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>logger.lib;config.lib;xml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>logger.lib;config.lib;xml.lib;taskmanager.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -82,10 +82,12 @@
   <ItemGroup>
     <ClInclude Include="Daemon.h" />
     <ClInclude Include="InitApp.h" />
+    <ClInclude Include="Task.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Daemon.cpp" />
     <ClCompile Include="InitApp.cpp" />
+    <ClCompile Include="Task.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Daemon.rc" />

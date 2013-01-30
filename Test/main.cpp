@@ -102,6 +102,7 @@ struct TaskThread
 
 int main()
 {
+// 测试日志
 #if 0
     vector<IMUST::ILogger *> iloggers;
     vector<IMUST::ILogger *> loggers;
@@ -127,13 +128,14 @@ int main()
     }
 #endif
 
+// 测试线程
 #if 0
     IMUST::Thread t(&ThreadFun);
     t.join();
 #endif
 
+// 测试XML
 #if 0
-
     IMUST::XmlPtr xmlRoot = IMUST::allocateRapidXml();
     if(!xmlRoot->load(GetOJString("config.xml")))
     {
@@ -180,11 +182,13 @@ int main()
     xmlRoot->save(GetOJString("testConfig.xml"));
 #endif
 
+// 测试进程
 #if 0
     IMUST::WindowsProcess wp;
     wp.create(GetOJString("calc.exe"));
 #endif
 
+// 测试文件操作
 #if 0
     IMUST::ILogger *logger = new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1"));
     IMUST::OJString path(OJStr("D:\\a.txt"));
@@ -247,8 +251,8 @@ int main()
     }
 #endif
     
+// 测试数据库
 #if 0
-
     IMUST::SqlDriverPtr mysql = IMUST::SqlFactory::createDriver(IMUST::SqlType::MySql);
     if(!mysql->loadService())
     {
@@ -263,9 +267,9 @@ int main()
         return 0;
     }
     mysql->setCharSet(GetOJString("utf-8"));
-
 #endif
 
+// 测试数据库管理器
 #if 0
     if(mysql->query(GetOJString("select solution_id, problem_id, user_id, time, memory from solution")))
     {
@@ -301,9 +305,9 @@ int main()
     mysql->disconect();
 
     mysql->unloadService();
-
 #endif
 
+// 测试任务管理器
 #if 1
     // 运行5秒后终止调试
     g_taskManager.lock();
