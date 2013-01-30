@@ -185,16 +185,16 @@ bool ReadFile(std::vector<OJChar_t> &buffer,
     else
     {
         file.imbue(utf8_locale);
-        
-        static OJChar_t buf[100 * 1024];
-        static OJString str;
 
-        while(file.getline(buf, 100 * 1024))
-        {
-            str = buf;
-            std::copy(str.begin(), str.end(), std::back_inserter(buffer));
-            buffer.push_back(OJCh('\n'));
-        }
+        file.seekg(0, OJIfstream::end);
+        OJIfstream::pos_type length = file.tellg();
+        file.seekg(0, OJIfstream::beg);
+
+        buffer.resize(length + OJIfstream::pos_type(1));
+        file.read(&buffer[0], length);
+
+        buffer[file.gcount()] = 0;
+        buffer.resize(file.gcount());
     }
 
     file.close();

@@ -189,7 +189,7 @@ int main()
 #endif
 
 // 测试文件操作
-#if 0
+#if 1
     IMUST::ILogger *logger = new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1"));
     IMUST::OJString path(OJStr("D:\\a.txt"));
     bool res = IMUST::FileTool::IsFileExist(path);
@@ -263,7 +263,7 @@ int main()
 #endif
     
 // 测试数据库
-#if 1
+#if 0
     IMUST::SqlDriverPtr mysql = IMUST::SqlFactory::createDriver(IMUST::SqlType::MySql);
     if(!mysql->loadService())
     {
