@@ -51,6 +51,7 @@ namespace JudgeCode
     extern OJInt32_t   RuntimeError;
     extern OJInt32_t   ComileTimeError;
     extern OJInt32_t   CompileOK;
+    extern OJInt32_t   CompileError;
     extern OJInt32_t   SystemError;
     extern OJInt32_t   UnknownError;
 }

@@ -48,6 +48,7 @@ namespace JudgeCode
     OJInt32_t   RuntimeError        =   10;
     OJInt32_t   ComileTimeError     =   11;
     OJInt32_t   CompileOK           =   12;
+    OJInt32_t   CompileError        =   14;
     OJInt32_t   SystemError         =   13;
     OJInt32_t   UnknownError        =   99;
 }

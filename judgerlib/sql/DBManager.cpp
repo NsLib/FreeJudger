@@ -98,6 +98,7 @@ bool DBManager::run()
 
     if(!writeFinishedTask())
     {
+        OJCout<<OJStr("write task faild!")<<sqlDriver_->getErrorString()<<std::endl;
         return false;
     }
 
@@ -199,6 +200,9 @@ bool DBManager::readTask()
         else if(r != 0) continue;
         userCode = (*tempRow)[0].getString();
 
+        //TODO: 生成Task，并加入到任务管理器。
+
+
         OJCout<<solutionID<<OJStr("\t")<<problemID<<OJStr("\t")<<userName<<OJStr("\t")
             <<language<<OJStr("\t")<<limitTime<<OJStr("\t")<<limitMemory<<OJStr("\t")
             <<std::endl;
@@ -222,10 +226,80 @@ bool DBManager::writeFinishedTask()
     {
         return true;
     }
+
+    OJChar_t buffer[MaxBufferSize];
+
     OJInt32_t solutionID, problemID, result, runTime, runMemory;
     OJFloat16_t passRate;//测试数据通过的比例
     OJString userName;
     OJString compileError, runTimeError;
+
+    //TODO: 将数据从Task中读取出来。
+
+
+    return true;
+
+    //更新结果
+    OJSprintf(buffer, Statement::UpdateSolutionResult.c_str(), result, runTime, runMemory,
+        passRate, solutionID);
+    if(!sqlDriver_->query(buffer))
+    {
+        return false;
+    }
+
+    OJSprintf(buffer, Statement::UpdateUserSubmit.c_str(), userName.c_str(), userName.c_str());
+    if(!sqlDriver_->query(buffer))
+    {
+        return false;
+    }
+    
+    //用户已解决的。不管答案是否正确都执行此操作，防止是重判，而导致信息不及时刷新。
+    OJSprintf(buffer, Statement::UpdateUserSolved.c_str(), userName.c_str(), userName.c_str());
+    if(!sqlDriver_->query(buffer))
+    {
+        return false;
+    }
+
+    OJSprintf(buffer, Statement::UpdateProblemSubmit.c_str(), problemID, problemID);
+    if(!sqlDriver_->query(buffer))
+    {
+        return false;
+    }
+
+    OJSprintf(buffer, Statement::UpdateProblemAccept.c_str(), problemID, problemID);
+    if(!sqlDriver_->query(buffer))
+    {
+        return false;
+    }
+
+    if(result == JudgeCode::CompileError)//如果编译错误
+    {
+        OJSprintf(buffer, Statement::DeleteCompile.c_str(), solutionID);
+        if(!sqlDriver_->query(buffer))
+        {
+            return false;
+        }
+
+        OJSprintf(buffer, Statement::InsertCompile.c_str(), compileError.c_str(), solutionID);
+        if(!sqlDriver_->query(buffer))
+        {
+            return false;
+        }
+    }
+    else if(result == JudgeCode::RuntimeError)//运行时错误
+    {
+        OJSprintf(buffer, Statement::DeleteRuntime.c_str(), solutionID);
+        if(!sqlDriver_->query(buffer))
+        {
+            return false;
+        }
+
+        OJSprintf(buffer, Statement::InsertRuntime.c_str(), runTimeError.c_str(), solutionID);
+        if(!sqlDriver_->query(buffer))
+        {
+            return false;
+        }
+    }
 
     return true;
 }
