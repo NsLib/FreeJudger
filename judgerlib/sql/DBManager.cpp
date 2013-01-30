@@ -210,14 +210,22 @@ bool DBManager::readTask()
 
 bool DBManager::writeFinishedTask()
 {
+    ITask* pTask = NULL;
     finishedTaskMgr_->lock();
     if(finishedTaskMgr_->hasTask())
     {
-        ITask* pTask = finishedTaskMgr_->popTask();
+        pTask = finishedTaskMgr_->popTask();
     }
     finishedTaskMgr_->unlock();
 
-    //TODO: write task
+    if(NULL == pTask)
+    {
+        return true;
+    }
+    OJInt32_t solutionID, problemID, result, runTime, runMemory;
+    OJFloat16_t passRate;//测试数据通过的比例
+    OJString userName;
+    OJString compileError, runTimeError;
 
     return true;
 }
