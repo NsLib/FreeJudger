@@ -252,7 +252,7 @@ int main()
 #endif
     
 // 测试数据库
-#if 0
+#if 1
     IMUST::SqlDriverPtr mysql = IMUST::SqlFactory::createDriver(IMUST::SqlType::MySql);
     if(!mysql->loadService())
     {
@@ -267,9 +267,8 @@ int main()
         return 0;
     }
     mysql->setCharSet(GetOJString("utf-8"));
-#endif
 
-// 测试数据库管理器
+//测试数据读取
 #if 0
     if(mysql->query(GetOJString("select solution_id, problem_id, user_id, time, memory from solution")))
     {
@@ -293,7 +292,9 @@ int main()
             }
         }
     }
+#endif
 
+    // 测试数据库管理器
 
     IMUST::TaskManagerPtr workingTaskMgr(new IMUST::TaskManager()); 
     IMUST::TaskManagerPtr finishedTaskMgr(new IMUST::TaskManager());
@@ -308,7 +309,7 @@ int main()
 #endif
 
 // 测试任务管理器
-#if 1
+#if 0
     // 运行5秒后终止调试
     g_taskManager.lock();
     for (int i = 0; i < 10; ++i)

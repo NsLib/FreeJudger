@@ -4,6 +4,9 @@
 
 #include "../config/AppConfig.h"
 
+#pragma warning(push)
+#pragma warning(disable:4996)
+
 namespace IMUST
 {
 namespace
@@ -24,7 +27,7 @@ const OJString SelectProblem = OJStr("SELECT time_limit, memory_limit ")
 
 const OJString SelectCode = OJStr("SELECT `source` FROM `source_code` WHERE `solution_id`=%d");
 
-const OJString SelectCustomInput = OJStr("SELECT `input_text` from custominput");
+const OJString SelectCustomInput = OJStr("SELECT `input_text` from custominput WHERE `solution_id`=%d");
 
 const OJString UpdateSolutionCompiling = OJStr("UPDATE `solution` SET `result`=%d, `judgetime`=NOW() ")
 	OJStr("WHERE `solution_id` = %d");
@@ -78,14 +81,21 @@ bool DBManager::run()
 {
     assert(sqlDriver_->valid() && "sql driver not valid!");
 
-    OJCout<<Statement::SelectProblem<<std::endl;
+    bool result;
 
-    if(!readTask())
+    workingTaskMgr_->lock();
+    if(!workingTaskMgr_->hasTask())
     {
-        OJCout<<OJStr("read task faild!")<<std::endl;
+        result = readTask();
+    }
+    workingTaskMgr_->unlock();
+
+    if(!result)
+    {
+        OJCout<<OJStr("read task faild!")<<sqlDriver_->getErrorString()<<std::endl;
         return false;
     }
-    
+
     if(!writeFinishedTask())
     {
         return false;
@@ -94,12 +104,35 @@ bool DBManager::run()
     return true;
 }
 
+OJInt32_t readOneRow(SqlRowPtr & row, SqlDriverPtr driver, const OJString & sql)
+{
+    //OJCout<<sql<<std::endl;
+
+    if(!driver->query(sql))
+    {
+        return -1;;
+    }
+    SqlResultPtr result = driver->storeResult();
+    if(!result)
+    {
+        return 1;
+    }
+    row = result->fetchRow();
+    if(!row)
+    {
+        return 2;
+    }
+    return 0;
+}
+
 
 bool DBManager::readTask()
 {
     OJChar_t buffer[MaxBufferSize];
+
+    //读取结果为待定和等待重判的提交
     OJSprintf(buffer, Statement::SelectSolution.c_str(), JudgeCode::Pending, JudgeCode::Rejudge);
-    OJCout<<buffer<<std::endl;
+
     if(!sqlDriver_->query(buffer))
     {
         return false;
@@ -109,32 +142,87 @@ bool DBManager::readTask()
     {
         return true;
     }
-    IMUST::OJUInt32_t cols = result->getNbCols();
-    for(IMUST::OJUInt32_t i=0; i<cols; ++i)
-    {
-        OJCout<<result->getFieldName(i)<<GetOJString("\t");
-    }
-    OJCout<<std::endl;
 
-    SqlRowPtr row(NULL);
+    OJInt32_t solutionID, problemID, language, limitTime, limitMemory;
+    OJString userName, userCode, userInput;
+
+    SqlRowPtr row(NULL), tempRow(NULL);
     while(row = result->fetchRow())
     {
-        for(OJUInt32_t i=0; i<row->getNbCols(); ++i)
+        solutionID = (*row)[0].getInt32();
+        problemID = (*row)[1].getInt32();
+        userName = (*row)[2].getString();
+        language = (*row)[3].getInt32();
+
+#if 0
+        //修改记录的状态为编译中，防止重复读取
+        OJSprintf(buffer, Statement::UpdateSolutionCompiling.c_str(), 
+            JudgeCode::Compiling, solutionID);
+        if(!sqlDriver_->query(buffer))
         {
-            OJCout<<row->getVar(i).getString()<<OJStr("\t");
+            return false;
         }
-        OJCout<<std::endl;
+#endif
+
+        //读取题目限制时间和内存
+        if(problemID == 0) //IDE测试功能
+        {
+            limitTime = 5; //s
+            limitMemory = 10;//m
+
+            //读取用户输入的测试数据
+            OJSprintf(buffer, Statement::SelectCustomInput.c_str(), solutionID);
+            OJInt32_t r = readOneRow(tempRow, sqlDriver_, buffer);
+            if(r < 0) return false;
+            else if(r != 0) continue;
+
+            userInput = tempRow->getVar(0).getString();
+
+            //TODO: 增加对IDE测试功能的支持
+            continue;
+        }
+        else
+        {
+            OJSprintf(buffer, Statement::SelectProblem.c_str(), problemID);
+            OJInt32_t r = readOneRow(tempRow, sqlDriver_, buffer);
+            if(r < 0) return false;
+            else if(r != 0) continue;
+
+            limitTime = (*tempRow)[0].getInt32();
+            limitMemory = (*tempRow)[1].getInt32();
+        }
+
+        //读取代码
+        OJSprintf(buffer, Statement::SelectCode.c_str(), solutionID);
+        OJInt32_t r = readOneRow(tempRow, sqlDriver_, buffer);
+        if(r < 0) return false;
+        else if(r != 0) continue;
+        userCode = (*tempRow)[0].getString();
+
+        OJCout<<solutionID<<OJStr("\t")<<problemID<<OJStr("\t")<<userName<<OJStr("\t")
+            <<language<<OJStr("\t")<<limitTime<<OJStr("\t")<<limitMemory<<OJStr("\t")
+            <<std::endl;
     }
 
-    //OJCout<<sqlDriver_->getErrorString();
 
     return true;
 }
 
 bool DBManager::writeFinishedTask()
 {
-    return false;
+    finishedTaskMgr_->lock();
+    if(finishedTaskMgr_->hasTask())
+    {
+        ITask* pTask = finishedTaskMgr_->popTask();
+    }
+    finishedTaskMgr_->unlock();
+
+    //TODO: write task
+
+    return true;
 }
 
 
 }//namespace IMUST
+
+#pragma warning(pop)
