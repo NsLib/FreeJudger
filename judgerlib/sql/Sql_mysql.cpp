@@ -228,7 +228,7 @@ OJUInt32_t MySqlRowImpl::getNbCols() const
     return rowData_.size();
 }
 
-const SqlVar & MySqlRowImpl::operator[](OJUInt32_t index) const
+const SqlVar & MySqlRowImpl::getVar(OJUInt32_t index) const
 {
     return rowData_[index];
 }

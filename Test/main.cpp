@@ -15,6 +15,8 @@
 
 #include "../judgerlib/taskmanager/TaskManager.h"
 
+#include "../judgerlib/dbmanager/DBManager.h"
+
 #include <vector>
 
 using namespace std;
@@ -245,7 +247,7 @@ int main()
     }
 #endif
     
-#if 0
+#if 1
 
     IMUST::SqlDriverPtr mysql = IMUST::SqlFactory::createDriver(IMUST::SqlType::MySql);
     if(!mysql->loadService())
@@ -255,12 +257,14 @@ int main()
     }
 
     if(!mysql->connect(GetOJString("127.0.0.1"), 3306, GetOJString("root"),
-        GetOJString(""), GetOJString("jol")))
+        GetOJString(""), GetOJString("acmicpc")))
     {
         OJCout<<GetOJString("connect faild!")<<mysql->getErrorString()<<std::endl;
         return 0;
     }
+    mysql->setCharSet(GetOJString("utf-8"));
 
+#if 0
     if(mysql->query(GetOJString("select solution_id, problem_id, user_id, time, memory from solution")))
     {
         IMUST::SqlResultPtr result = mysql->storeResult();
@@ -283,6 +287,14 @@ int main()
             }
         }
     }
+#endif
+
+    IMUST::TaskManagerPtr workingTaskMgr(new IMUST::TaskManager()); 
+    IMUST::TaskManagerPtr finishedTaskMgr(new IMUST::TaskManager());
+
+    IMUST::DBManager dbManager(mysql, workingTaskMgr, finishedTaskMgr);
+
+    dbManager.run();
 
     mysql->disconect();
 
@@ -290,7 +302,7 @@ int main()
 
 #endif
 
-#if 1   
+#if 0   
     // 运行5秒后终止调试
     g_taskManager.lock();
     for (int i = 0; i < 10; ++i)
@@ -304,7 +316,6 @@ int main()
     thread2.join();
     thread3.join();
 #endif
-       
 
     system("pause");
     return 0;

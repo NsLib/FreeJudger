@@ -111,7 +111,9 @@ public:
  
     virtual OJUInt32_t getNbCols() const = 0;
 
-    virtual const SqlVar & operator[](OJUInt32_t index) const = 0;
+    virtual const SqlVar & getVar(OJUInt32_t index) const = 0;
+
+    virtual const SqlVar & operator[](OJUInt32_t index) const;
 };
 
 namespace SqlType

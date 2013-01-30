@@ -109,6 +109,11 @@ OJFloat32_t SqlVar::getFloat32() const
 }
 
 
+const SqlVar & SqlRow::operator[](OJUInt32_t index) const
+{
+    return getVar(index);
+}
+
 } // namespace IMUST
 
 #pragma warning(pop)

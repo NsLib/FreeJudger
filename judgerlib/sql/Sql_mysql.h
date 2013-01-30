@@ -102,7 +102,7 @@ public:
  
     virtual OJUInt32_t getNbCols() const;
 
-    virtual const SqlVar & operator[](OJUInt32_t index) const;
+    virtual const SqlVar & getVar(OJUInt32_t index) const;
 
 private:
     VarVector   rowData_;
