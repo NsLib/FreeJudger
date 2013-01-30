@@ -10,8 +10,10 @@
             <layer Id="dfed7199-09dc-4b0c-b338-d37b23aec167" name="thread" />
             <layer Id="c7351313-0fea-41f6-97e2-6c7c441838cd" name="process" />
             <layer Id="9a18c176-38f9-4c71-a1aa-ec59b091a050" name="net" />
-            <layer Id="552a327b-f694-42af-9b51-48941fae5e71" name="mysql" />
+            <layer Id="552a327b-f694-42af-9b51-48941fae5e71" name="sql" />
             <layer Id="263cc9bc-e3cc-4a8b-b219-b122f1320403" name="filetool" />
+            <layer Id="30e700ab-8f26-4ce1-8ee0-b73027f8ee6b" name="taskmanager" />
+            <layer Id="55e6ee96-3c10-4e31-89a1-d2701d92d741" name="dbmanager" />
           </childLayers>
         </layer>
         <layer Id="275f853a-70ba-496e-aa6c-0fafb8472004" name="操作系统">

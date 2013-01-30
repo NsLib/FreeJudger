@@ -70,6 +70,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "taskmanager", "judgerlib\ta
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dbmanager", "judgerlib\dbmanager\dbmanager.vcxproj", "{CC15B827-BBEB-404B-9753-3538421CC91A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
