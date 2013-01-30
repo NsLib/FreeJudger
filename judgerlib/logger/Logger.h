@@ -21,12 +21,12 @@ public:
     ILogger();
     virtual ~ILogger();
 
-    virtual void logFatal(const OJString &msg) = 0;
-    virtual void logError(const OJString &msg) = 0;
-    virtual void logWarn(const OJString &msg) = 0;
-    virtual void logInfo(const OJString &msg) = 0;
-    virtual void logDebug(const OJString &msg) = 0;
-    virtual void logTrace(const OJString &msg) = 0;
+    virtual void logFatal(const OJString &msg) const = 0;
+    virtual void logError(const OJString &msg) const = 0;
+    virtual void logWarn(const OJString &msg) const = 0;
+    virtual void logInfo(const OJString &msg) const = 0;
+    virtual void logDebug(const OJString &msg) const = 0;
+    virtual void logTrace(const OJString &msg) const = 0;
 };
 
 namespace LoggerId
@@ -51,15 +51,15 @@ const LogLevelType Trace = 60;
 const LogLevelType All   = 70;
 }   // namespace LogLevel
 
-class LoggerFactory
+class JUDGER_API LoggerFactory
 {
 public:
     typedef std::map<OJInt32_t, ILogger*>               LoggerList;
     typedef std::shared_ptr<LoggerList>                 SharedLoggerList;
 
 public:
-    static ILogger* getLogger(const OJInt32_t loggerId) throw ();
-    static bool registerLogger(ILogger *logger, const OJInt32_t loggerId) throw ();
+    static ILogger* getLogger(const OJInt32_t loggerId);
+    static bool registerLogger(ILogger *logger, const OJInt32_t loggerId);
 
 private:
     LoggerFactory();

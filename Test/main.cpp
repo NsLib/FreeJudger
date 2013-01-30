@@ -247,7 +247,7 @@ int main()
     }
 #endif
     
-#if 1
+#if 0
 
     IMUST::SqlDriverPtr mysql = IMUST::SqlFactory::createDriver(IMUST::SqlType::MySql);
     if(!mysql->loadService())
@@ -263,6 +263,8 @@ int main()
         return 0;
     }
     mysql->setCharSet(GetOJString("utf-8"));
+
+#endif
 
 #if 0
     if(mysql->query(GetOJString("select solution_id, problem_id, user_id, time, memory from solution")))
@@ -287,7 +289,7 @@ int main()
             }
         }
     }
-#endif
+
 
     IMUST::TaskManagerPtr workingTaskMgr(new IMUST::TaskManager()); 
     IMUST::TaskManagerPtr finishedTaskMgr(new IMUST::TaskManager());
@@ -302,7 +304,7 @@ int main()
 
 #endif
 
-#if 0   
+#if 1
     // 运行5秒后终止调试
     g_taskManager.lock();
     for (int i = 0; i < 10; ++i)

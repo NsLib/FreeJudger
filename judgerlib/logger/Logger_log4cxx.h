@@ -16,12 +16,12 @@ public:
         const OJString &logTag);
     virtual ~Log4CxxLoggerImpl();
 
-    virtual void logFatal(const OJString &msg);
-    virtual void logError(const OJString &msg);
-    virtual void logWarn(const OJString &msg);
-    virtual void logInfo(const OJString &msg);
-    virtual void logDebug(const OJString &msg);
-    virtual void logTrace(const OJString &msg);
+    virtual void logFatal(const OJString &msg) const;
+    virtual void logError(const OJString &msg) const;
+    virtual void logWarn(const OJString &msg) const;
+    virtual void logInfo(const OJString &msg) const;
+    virtual void logDebug(const OJString &msg) const;
+    virtual void logTrace(const OJString &msg) const;
 
 private:
     LoggerPtrWrapper            *logger_;
