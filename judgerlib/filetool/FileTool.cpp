@@ -168,12 +168,13 @@ bool ReadFile(std::vector<OJChar_t> &buffer,
 
     static std::locale old_locale;
     static std::locale utf8_locale(old_locale, new utf8_codecvt_facet);
-    std::wifstream file;
+    OJIfstream file;
 
     if (isBinary)
         file.open(filename.c_str(), OJIfstream::binary);
     else
         file.open(filename.c_str());
+
     if (!file.good())
         return false;
 
@@ -184,12 +185,34 @@ bool ReadFile(std::vector<OJChar_t> &buffer,
     else
     {
         file.imbue(utf8_locale);
-        OJChar_t item = 0;
+        
+        static OJChar_t buf[100 * 1024];
+        static OJString str;
 
-        while (file >> item) 
-            buffer.push_back(item);
+        while(file.getline(buf, 100 * 1024))
+        {
+            str = buf;
+            std::copy(str.begin(), str.end(), std::back_inserter(buffer));
+            buffer.push_back(OJCh('\n'));
+        }
     }
 
+    file.close();
+
+    return true;
+}
+
+bool WriteFile(std::vector<OJChar_t> &buffer,
+    const OJString &filename,
+    const bool isBinary)
+{
+    static std::locale old_locale;
+    static std::locale utf8_locale(old_locale, new utf8_codecvt_facet);
+    // 二进制写入待完成
+    OJOfstream file(filename);
+
+    file.imbue(utf8_locale);
+    std::copy(buffer.begin(), buffer.end(), std::ostream_iterator<OJChar_t, OJChar_t>(file));
     file.close();
 
     return true;
