@@ -377,7 +377,7 @@ int main()
 #endif
     
 // 测试数据库
-#if 1
+#if 0
     IMUST::SqlDriverPtr mysql = IMUST::SqlFactory::createDriver(IMUST::SqlType::MySql);
     if(!mysql->loadService())
     {
