@@ -47,10 +47,39 @@ public:
         g_logger->logInfo(str);
         return true;
     }
+    virtual const TaskOutputData & output() const
+    {
+        return output_;
+    }
+
+    virtual const TaskInputData & input() const
+    {
+        return input_;
+    }
 
 private:
     int id_;
+    TaskInputData input_;
+    TaskOutputData output_;
 };
+
+class MockTaskFactory : public TaskFactory
+{
+public:
+    MockTaskFactory(){}
+    virtual ~MockTaskFactory(){}
+
+    virtual ITask* create(const TaskInputData & input)
+    {
+        return new MockTask(input.SolutionID);
+    }
+
+    virtual void destroy(ITask* pTask)
+    {
+        delete pTask;
+    }
+};
+
 }   // namespace IMUST
 
 IMUST::TaskManager g_taskManager;
@@ -189,7 +218,7 @@ int main()
 #endif
 
 // 测试文件操作
-#if 1
+#if 0
     IMUST::ILogger *logger = new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1"));
     IMUST::OJString path(OJStr("D:\\a.txt"));
     bool res = IMUST::FileTool::IsFileExist(path);
@@ -263,7 +292,7 @@ int main()
 #endif
     
 // 测试数据库
-#if 0
+#if 1
     IMUST::SqlDriverPtr mysql = IMUST::SqlFactory::createDriver(IMUST::SqlType::MySql);
     if(!mysql->loadService())
     {
@@ -309,8 +338,9 @@ int main()
 
     IMUST::TaskManagerPtr workingTaskMgr(new IMUST::TaskManager()); 
     IMUST::TaskManagerPtr finishedTaskMgr(new IMUST::TaskManager());
+    IMUST::TaskFactoryPtr taskFactory(new IMUST::MockTaskFactory());
 
-    IMUST::DBManager dbManager(mysql, workingTaskMgr, finishedTaskMgr);
+    IMUST::DBManager dbManager(mysql, workingTaskMgr, finishedTaskMgr, taskFactory);
 
     dbManager.run();
 
@@ -323,7 +353,7 @@ int main()
 #if 0
     // 运行5秒后终止调试
     g_taskManager.lock();
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 5; ++i)
         g_taskManager.addTask(new IMUST::MockTask(i));
     g_taskManager.unlock();
 

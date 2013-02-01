@@ -23,8 +23,20 @@ public:
         return true;
     }
 
+    virtual const TaskOutputData & output() const
+    {
+        return output_;
+    }
+
+    virtual const TaskInputData & input() const
+    {
+        return input_;
+    }
+
 private:
     int id_;
+    TaskInputData input_;
+    TaskOutputData output_;
 };
 
 class JudgeThread
