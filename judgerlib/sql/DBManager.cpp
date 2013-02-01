@@ -19,44 +19,44 @@ const OJInt32_t MaxBufferSize = 1024;
 namespace Statement
 {
 
-const OJString SelectSolution = OJStr("SELECT solution_id, problem_id, user_id, language ")
-    OJStr("FROM `solution` WHERE result=%d or result=%d limit 20");
+const OJString SelectSolution2 = OJStr("SELECT solution_id, problem_id, user_id, language ")
+    OJStr("FROM `solution` WHERE result=%d or result=%d limit 5");
 
-const OJString SelectProblem = OJStr("SELECT time_limit, memory_limit ")
+const OJString SelectProblem1 = OJStr("SELECT time_limit, memory_limit ")
     OJStr("FROM problem WHERE problem_id =%d");
 
-const OJString SelectCode = OJStr("SELECT `source` FROM `source_code` WHERE `solution_id`=%d");
+const OJString SelectCode1 = OJStr("SELECT `source` FROM `source_code` WHERE `solution_id`=%d");
 
-const OJString SelectCustomInput = OJStr("SELECT `input_text` from custominput WHERE `solution_id`=%d");
+const OJString SelectCustomInput1 = OJStr("SELECT `input_text` from custominput WHERE `solution_id`=%d");
 
-const OJString UpdateSolutionCompiling = OJStr("UPDATE `solution` SET `result`=%d, `judgetime`=NOW() ")
+const OJString UpdateSolutionCompiling2 = OJStr("UPDATE `solution` SET `result`=%d, `judgetime`=NOW() ")
 	OJStr("WHERE `solution_id` = %d");
 
-const OJString UpdateSolutionResult = OJStr("UPDATE `solution` SET `result`=%d, ")
+const OJString UpdateSolutionResult5 = OJStr("UPDATE `solution` SET `result`=%d, ")
     OJStr("`time`=%d, `memory`=%d, `judgetime`=NOW(), `pass_rate`=%f ")
     OJStr("WHERE `solution_id` = %d");
 
-const OJString DeleteCompile = OJStr("DELETE FROM `compileinfo` WHERE `solution_id`=%d");
-const OJString InsertCompile = OJStr("INSERT INTO `compileinfo`(solution_id, error)VALUES(%d, \"%s\")");
+const OJString DeleteCompile1 = OJStr("DELETE FROM `compileinfo` WHERE `solution_id`=%d");
+const OJString InsertCompile2 = OJStr("INSERT INTO `compileinfo`(solution_id, error)VALUES(%d, \"%s\")");
 
-const OJString DeleteRuntime = OJStr("DELETE FROM `runtimeinfo` WHERE `solution_id`=%d");
-const OJString InsertRuntime = OJStr("INSERT INTO `runtimeinfo`(solution_id, error)VALUES(%d, \"%s\")");
+const OJString DeleteRuntime1 = OJStr("DELETE FROM `runtimeinfo` WHERE `solution_id`=%d");
+const OJString InsertRuntime2 = OJStr("INSERT INTO `runtimeinfo`(solution_id, error)VALUES(%d, \"%s\")");
 
 
-const OJString UpdateUserSolved = OJStr("UPDATE `users` SET `solved`=")
+const OJString UpdateUserSolved3 = OJStr("UPDATE `users` SET `solved`=")
     OJStr("(SELECT count(DISTINCT `problem_id`) FROM `solution` ")
     OJStr("WHERE `user_id`=\'%s\' AND `result`=%d) ")
     OJStr("WHERE `user_id`=\'%s\'");
 
-const OJString UpdateUserSubmit = OJStr("UPDATE `users` SET `submit`=")
+const OJString UpdateUserSubmit2 = OJStr("UPDATE `users` SET `submit`=")
     OJStr("(SELECT count(*) FROM `solution` WHERE `user_id`=\'%s\') ")
     OJStr("WHERE `user_id`=\'%s\'");
 
-const OJString UpdateProblemAccept = OJStr("UPDATE `problem` SET `accepted`=")
+const OJString UpdateProblemAccept3 = OJStr("UPDATE `problem` SET `accepted`=")
     OJStr("(SELECT count(*) FROM `solution` WHERE `problem_id`=\'%d\' AND `result`=\'%d\') ")
     OJStr("WHERE `problem_id`=\'%d\'");
 
-const OJString UpdateProblemSubmit = OJStr("UPDATE `problem` SET `submit`=")
+const OJString UpdateProblemSubmit2 = OJStr("UPDATE `problem` SET `submit`=")
     OJStr("(SELECT count(*) FROM `solution` WHERE `problem_id`=\'%d\')")
     OJStr("WHERE `problem_id`=\'%d\'");
 
@@ -123,7 +123,7 @@ OJInt32_t readOneRow(SqlRowPtr & row, SqlDriverPtr driver, const OJString & sql)
 
 bool DBManager::readTasks()
 {
-    bool result;
+    bool result = true;;
 
     workingTaskMgr_->lock();
     if(!workingTaskMgr_->hasTask())
@@ -141,7 +141,7 @@ bool DBManager::readDB()
     OJChar_t buffer[MaxBufferSize];
 
     //读取结果为待定和等待重判的提交
-    OJSprintf(buffer, Statement::SelectSolution.c_str(), JudgeCode::Pending, JudgeCode::Rejudge);
+    OJSprintf(buffer, Statement::SelectSolution2.c_str(), JudgeCode::Pending, JudgeCode::Rejudge);
 
     if(!sqlDriver_->query(buffer))
     {
@@ -186,9 +186,9 @@ OJInt32_t DBManager::readTaskData(TaskInputData & taskData)
     OJChar_t buffer[MaxBufferSize];
     SqlRowPtr tempRow(NULL);
 
-#if 0
+#if 1
     //修改记录的状态为编译中，防止重复读取
-    OJSprintf(buffer, Statement::UpdateSolutionCompiling.c_str(), 
+    OJSprintf(buffer, Statement::UpdateSolutionCompiling2.c_str(), 
         JudgeCode::Compiling, taskData.SolutionID);
     if(!sqlDriver_->query(buffer))
     {
@@ -203,7 +203,7 @@ OJInt32_t DBManager::readTaskData(TaskInputData & taskData)
         taskData.LimitMemory = 10;//m
 
         //读取用户输入的测试数据
-        OJSprintf(buffer, Statement::SelectCustomInput.c_str(), taskData.SolutionID);
+        OJSprintf(buffer, Statement::SelectCustomInput1.c_str(), taskData.SolutionID);
         OJInt32_t r = readOneRow(tempRow, sqlDriver_, buffer);
         if(r != 0)
         {
@@ -218,7 +218,7 @@ OJInt32_t DBManager::readTaskData(TaskInputData & taskData)
     }
     else
     {
-        OJSprintf(buffer, Statement::SelectProblem.c_str(), taskData.ProblemID);
+        OJSprintf(buffer, Statement::SelectProblem1.c_str(), taskData.ProblemID);
         OJInt32_t r = readOneRow(tempRow, sqlDriver_, buffer);
         if(r != 0)
         {
@@ -230,7 +230,7 @@ OJInt32_t DBManager::readTaskData(TaskInputData & taskData)
     }
 
     //读取代码
-    OJSprintf(buffer, Statement::SelectCode.c_str(), taskData.SolutionID);
+    OJSprintf(buffer, Statement::SelectCode1.c_str(), taskData.SolutionID);
     OJInt32_t r = readOneRow(tempRow, sqlDriver_, buffer);
     if(r != 0)
     {
@@ -262,6 +262,7 @@ bool DBManager::writeFinishedTask()
         return false;
     }
 
+    OJCout<<GetOJString("write finished:")<<pTask->input().SolutionID<<std::endl;
     taskFactory_->destroy(pTask);
     return true;
 }
@@ -277,7 +278,7 @@ bool DBManager::writeToDB(const ITask* pTask)
 
 
     //更新结果
-    OJSprintf(buffer, Statement::UpdateSolutionResult.c_str(), output.Result, output.RunTime, 
+    OJSprintf(buffer, Statement::UpdateSolutionResult5.c_str(), output.Result, output.RunTime, 
         output.RunMemory, output.PassRate, input.SolutionID);
     if(!sqlDriver_->query(buffer))
     {
@@ -285,7 +286,7 @@ bool DBManager::writeToDB(const ITask* pTask)
     }
 
     //更新用户提交数量
-    OJSprintf(buffer, Statement::UpdateUserSubmit.c_str(), 
+    OJSprintf(buffer, Statement::UpdateUserSubmit2.c_str(), 
         input.UserName.c_str(), input.UserName.c_str());
     if(!sqlDriver_->query(buffer))
     {
@@ -293,22 +294,23 @@ bool DBManager::writeToDB(const ITask* pTask)
     }
     
     //用户已解决的。不管答案是否正确都执行此操作，防止是重判，而导致信息不及时刷新。
-    OJSprintf(buffer, Statement::UpdateUserSolved.c_str(), 
-        input.UserName.c_str(), input.UserName.c_str());
+    OJSprintf(buffer, Statement::UpdateUserSolved3.c_str(), 
+        input.UserName.c_str(), JudgeCode::Accept, input.UserName.c_str());
     if(!sqlDriver_->query(buffer))
     {
         return false;
     }
 
     //题目提交数量
-    OJSprintf(buffer, Statement::UpdateProblemSubmit.c_str(), input.ProblemID, input.ProblemID);
+    OJSprintf(buffer, Statement::UpdateProblemSubmit2.c_str(), input.ProblemID, input.ProblemID);
     if(!sqlDriver_->query(buffer))
     {
         return false;
     }
 
     //题目通过的数量
-    OJSprintf(buffer, Statement::UpdateProblemAccept.c_str(), input.ProblemID, input.ProblemID);
+    OJSprintf(buffer, Statement::UpdateProblemAccept3.c_str(), 
+        input.ProblemID, JudgeCode::Accept, input.ProblemID);
     if(!sqlDriver_->query(buffer))
     {
         return false;
@@ -318,13 +320,13 @@ bool DBManager::writeToDB(const ITask* pTask)
 
     if(output.Result == JudgeCode::CompileError)//如果编译错误
     {
-        OJSprintf(buffer, Statement::DeleteCompile.c_str(), input.SolutionID);
+        OJSprintf(buffer, Statement::DeleteCompile1.c_str(), input.SolutionID);
         if(!sqlDriver_->query(buffer))
         {
             return false;
         }
 
-        OJSprintf(buffer, Statement::InsertCompile.c_str(), 
+        OJSprintf(buffer, Statement::InsertCompile2.c_str(), 
             output.CompileError.c_str(), input.SolutionID);
         if(!sqlDriver_->query(buffer))
         {
@@ -333,13 +335,13 @@ bool DBManager::writeToDB(const ITask* pTask)
     }
     else if(output.Result == JudgeCode::RuntimeError)//运行时错误
     {
-        OJSprintf(buffer, Statement::DeleteRuntime.c_str(), input.SolutionID);
+        OJSprintf(buffer, Statement::DeleteRuntime1.c_str(), input.SolutionID);
         if(!sqlDriver_->query(buffer))
         {
             return false;
         }
 
-        OJSprintf(buffer, Statement::InsertRuntime.c_str(), 
+        OJSprintf(buffer, Statement::InsertRuntime2.c_str(), 
             output.RunTimeError.c_str(), input.SolutionID);
         if(!sqlDriver_->query(buffer))
         {

@@ -17,9 +17,12 @@
 
 #include "../judgerlib/sql/DBManager.h"
 
+#include "../judgerlib/config/AppConfig.h"
+
 #include <vector>
 
 using namespace std;
+bool g_judgerStop = false;
 
 void ThreadFun()
 {
@@ -39,12 +42,26 @@ class MockTask : public ITask
 public:
     MockTask(int id) : id_(id) {}
 
+    MockTask(const TaskInputData & input) 
+        : input_(input) 
+        , id_(input.SolutionID)
+    {}
+
     virtual bool run()
     {
-        OJChar_t buf[20];
+        OJChar_t buf[64];
         wsprintf(buf, OJStr("task %d"), id_);
         OJString str(buf);
-        g_logger->logInfo(str);
+        //g_logger->logInfo(str);
+        OJCout<<str<<std::endl;
+
+        output_.Result = AppConfig::JudgeCode::Accept;
+        output_.PassRate = 1.0f;
+        output_.RunTime = 10;
+        output_.RunMemory = 216;
+        output_.CompileError = OJStr("test compile error.");
+        output_.RunTimeError = OJStr("test runtime error");
+
         return true;
     }
     virtual const TaskOutputData & output() const
@@ -71,7 +88,7 @@ public:
 
     virtual ITask* create(const TaskInputData & input)
     {
-        return new MockTask(input.SolutionID);
+        return new MockTask(input);
     }
 
     virtual void destroy(ITask* pTask)
@@ -127,6 +144,73 @@ struct TaskThread
     int id_;
 };
 
+struct Task2Thread
+{
+    Task2Thread(int id, IMUST::TaskManagerPtr working, IMUST::TaskManagerPtr finish)
+        : id_(id)
+        , workingTaskMgr_(working)
+        , finisheTaskMgr_(finish)
+    {}
+
+    void operator()()
+    {
+        OJCout<<GetOJString("thread:")<< id_ <<GetOJString("start.")<<endl;
+
+        while(!g_judgerStop)
+        {
+            IMUST::ITask* pTask = NULL;
+            workingTaskMgr_->lock();
+            if(workingTaskMgr_->hasTask())
+            {
+                pTask = workingTaskMgr_->popTask();
+            }
+            workingTaskMgr_->unlock();
+
+            if(!pTask)
+            {
+                Sleep(1000);
+                continue;
+            }
+
+            pTask->run();
+            
+            finisheTaskMgr_->lock();
+            finisheTaskMgr_->addTask(pTask);
+            finisheTaskMgr_->unlock();
+
+            Sleep(100);
+        }
+
+        OJCout<<GetOJString("thread:")<< id_ <<GetOJString("exit.")<<endl;
+    }
+
+    int id_;
+    IMUST::TaskManagerPtr workingTaskMgr_;
+    IMUST::TaskManagerPtr finisheTaskMgr_;
+};
+
+struct DB2Thread
+{
+    DB2Thread(IMUST::DBManagerPtr dbm)
+        : dbm_(dbm)
+    {
+    }
+
+    void operator()()
+    {
+        while(!g_judgerStop)
+        {
+            if(!dbm_->run())
+            {
+                OJCout<<GetOJString("db thread dead!")<<std::endl;
+                break;
+            }
+            Sleep(1000);
+        }
+    }
+
+    IMUST::DBManagerPtr dbm_;
+};
 
 
 int main()
@@ -340,9 +424,29 @@ int main()
     IMUST::TaskManagerPtr finishedTaskMgr(new IMUST::TaskManager());
     IMUST::TaskFactoryPtr taskFactory(new IMUST::MockTaskFactory());
 
-    IMUST::DBManager dbManager(mysql, workingTaskMgr, finishedTaskMgr, taskFactory);
+    IMUST::DBManagerPtr dbManager(new IMUST::DBManager(mysql, 
+        workingTaskMgr, finishedTaskMgr, taskFactory));
 
-    dbManager.run();
+#ifdef TEST_OLY_RUN
+    dbManager->run();
+#else
+
+    IMUST::Thread thread1(Task2Thread(0, workingTaskMgr, finishedTaskMgr));
+    IMUST::Thread thread2(Task2Thread(1, workingTaskMgr, finishedTaskMgr));
+    IMUST::Thread thread3(Task2Thread(2, workingTaskMgr, finishedTaskMgr));
+
+    DB2Thread dbThreadObj(dbManager);
+    IMUST::Thread thread4(dbThreadObj);
+
+    system("pause");
+    g_judgerStop = true;
+
+    thread4.join();
+    thread1.join();
+    thread2.join();
+    thread3.join();
+
+#endif
 
     mysql->disconect();
 

@@ -44,6 +44,6 @@ private:
     TaskFactoryPtr  taskFactory_;
 };
 
-
+typedef std::shared_ptr<DBManager> DBManagerPtr;
 
 }//namespace IMUST
