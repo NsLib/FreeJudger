@@ -31,9 +31,10 @@
         <MemoryLimitExceed>8</MemoryLimitExceed>
         <OutputLimited>9</OutputLimited>
         <RuntimeError>10</RuntimeError>
-        <ComileTimeError>11</ComileTimeError>
+        <ComileError>11</ComileError>
         <CompileOK>12</CompileOK>
         <SystemError>13</SystemError>
+		<CompileTimeError>14</CompileTimeError>
         <UnknownError>99</UnknownError>
     </JudgeCode>
     <Path>

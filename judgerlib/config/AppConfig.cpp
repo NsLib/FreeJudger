@@ -46,9 +46,9 @@ namespace JudgeCode
     OJInt32_t   MemoryLimitExceed   =   8;
     OJInt32_t   OutputLimited       =   9;
     OJInt32_t   RuntimeError        =   10;
-    OJInt32_t   ComileTimeError     =   11;
+    OJInt32_t   CompileError        =   11;
     OJInt32_t   CompileOK           =   12;
-    OJInt32_t   CompileError        =   14;
+    OJInt32_t   CompileTimeError     =   14;
     OJInt32_t   SystemError         =   13;
     OJInt32_t   UnknownError        =   99;
 }
@@ -109,7 +109,8 @@ bool InitAppConfig()
     READ_APP_CONFIG(readInt32, "JudgeCode/MemoryLimitExceed", JudgeCode::MemoryLimitExceed);
     READ_APP_CONFIG(readInt32, "JudgeCode/OutputLimited", JudgeCode::OutputLimited);
     READ_APP_CONFIG(readInt32, "JudgeCode/RuntimeError", JudgeCode::RuntimeError);
-    READ_APP_CONFIG(readInt32, "JudgeCode/ComileTimeError", JudgeCode::ComileTimeError);
+    READ_APP_CONFIG(readInt32, "JudgeCode/ComileError", JudgeCode::CompileError);
+    READ_APP_CONFIG(readInt32, "JudgeCode/ComileTimeError", JudgeCode::CompileTimeError);
     READ_APP_CONFIG(readInt32, "JudgeCode/CompileOK", JudgeCode::CompileOK);
     READ_APP_CONFIG(readInt32, "JudgeCode/SystemError", JudgeCode::SystemError);
     READ_APP_CONFIG(readInt32, "JudgeCode/UnknownError", JudgeCode::UnknownError);

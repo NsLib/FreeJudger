@@ -49,7 +49,7 @@ namespace JudgeCode
     extern OJInt32_t   MemoryLimitExceed;
     extern OJInt32_t   OutputLimited;
     extern OJInt32_t   RuntimeError;
-    extern OJInt32_t   ComileTimeError;
+    extern OJInt32_t   CompileTimeError;
     extern OJInt32_t   CompileOK;
     extern OJInt32_t   CompileError;
     extern OJInt32_t   SystemError;

@@ -55,7 +55,9 @@ public:
         //g_logger->logInfo(str);
         OJCout<<str<<std::endl;
 
-        output_.Result = AppConfig::JudgeCode::Accept;
+        //output_.Result = AppConfig::JudgeCode::Accept;
+        output_.Result = AppConfig::JudgeCode::CompileError;
+        //output_.Result = AppConfig::JudgeCode::RuntimeError;
         output_.PassRate = 1.0f;
         output_.RunTime = 10;
         output_.RunMemory = 216;

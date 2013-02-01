@@ -214,7 +214,7 @@ OJInt32_t DBManager::readTaskData(TaskInputData & taskData)
 
         //TODO: 增加对IDE测试功能的支持
         
-        return 1;
+        //return 1;
     }
     else
     {
@@ -253,6 +253,12 @@ bool DBManager::writeFinishedTask()
 
     if(NULL == pTask)
     {
+        return true;
+    }
+
+    if(pTask->input().ProblemID == 0)//IDE测试功能，不写数据库
+    {
+        taskFactory_->destroy(pTask);
         return true;
     }
     
@@ -327,7 +333,7 @@ bool DBManager::writeToDB(const ITask* pTask)
         }
 
         OJSprintf(buffer, Statement::InsertCompile2.c_str(), 
-            output.CompileError.c_str(), input.SolutionID);
+            input.SolutionID, output.CompileError.c_str());
         if(!sqlDriver_->query(buffer))
         {
             return false;
@@ -342,7 +348,7 @@ bool DBManager::writeToDB(const ITask* pTask)
         }
 
         OJSprintf(buffer, Statement::InsertRuntime2.c_str(), 
-            output.RunTimeError.c_str(), input.SolutionID);
+            input.SolutionID, output.RunTimeError.c_str());
         if(!sqlDriver_->query(buffer))
         {
             return false;
