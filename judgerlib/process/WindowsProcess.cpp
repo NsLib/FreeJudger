@@ -8,6 +8,66 @@ namespace IMUST
 namespace
 {
 
+typedef int (__stdcall *pOldMessageBox)(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption,UINT uType);
+pOldMessageBox g_pMessageBox = NULL;
+
+HANDLE pBegin = GetModuleHandle(NULL);
+PBYTE  pBegin2 = (PBYTE)pBegin;
+
+PIMAGE_DOS_HEADER DOS = PIMAGE_DOS_HEADER(pBegin2);
+PIMAGE_NT_HEADERS NT = PIMAGE_NT_HEADERS(pBegin2+DOS->e_lfanew);
+PIMAGE_OPTIONAL_HEADER OPTION = &(NT->OptionalHeader);
+PIMAGE_IMPORT_DESCRIPTOR IMPORT = PIMAGE_IMPORT_DESCRIPTOR(OPTION->DataDirectory[1].VirtualAddress + pBegin2);
+
+int __stdcall HookMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption,UINT uType)
+{
+    OJCerr << GetOJString("HOOK OK") << std::endl;
+    return 0;
+}
+
+
+int HookApi(const char *DllName, const char *FunName)
+{
+    while (IMPORT->Name)
+    {
+        char* OurDllName = (char*)(IMPORT->Name + pBegin2);
+        if (0 == strcmpi(DllName , OurDllName))
+            break;
+        IMPORT++;
+    }
+
+    PIMAGE_IMPORT_BY_NAME  pImportByName = NULL;
+    PIMAGE_THUNK_DATA   pOriginalThunk = NULL;
+    PIMAGE_THUNK_DATA   pFirstThunk = NULL;
+
+    pOriginalThunk = (PIMAGE_THUNK_DATA)(IMPORT->OriginalFirstThunk + pBegin2);
+    pFirstThunk = (PIMAGE_THUNK_DATA)(IMPORT->FirstThunk + pBegin2);
+
+    while (pOriginalThunk->u1.Function)
+    {
+        DWORD u1 = pOriginalThunk->u1.Ordinal;
+        if ((u1 & IMAGE_ORDINAL_FLAG) != IMAGE_ORDINAL_FLAG)
+        {
+            pImportByName = (PIMAGE_IMPORT_BY_NAME)((DWORD)pOriginalThunk->u1.AddressOfData + pBegin2);
+            char* OurFunName = (char*)(pImportByName->Name);
+            if (0 == strcmpi(FunName,OurFunName))
+            {
+                MEMORY_BASIC_INFORMATION mbi_thunk;
+                VirtualQuery(pFirstThunk, &mbi_thunk, sizeof(MEMORY_BASIC_INFORMATION));
+                DWORD dwOLD;
+                VirtualProtect(pFirstThunk,sizeof(DWORD),PAGE_READWRITE,&dwOLD);
+                g_pMessageBox =(pOldMessageBox)(pFirstThunk->u1.Function);
+                pFirstThunk->u1.Function = (DWORD)HookMessageBox;        
+                VirtualProtect(pFirstThunk,sizeof(DWORD),dwOLD,0);
+                break;
+            }
+        }
+        pOriginalThunk++;
+        pFirstThunk++;
+    }
+    return 0;
+}
+
 WindowsProcessInOut::WindowsProcessInOut(const OJString &inputFileName,
 										const OJString &outputFileName) :
 	inputFileHandle_(NULL),
@@ -15,7 +75,8 @@ WindowsProcessInOut::WindowsProcessInOut(const OJString &inputFileName,
 	inputFileName_(inputFileName),
 	outputFileName_(outputFileName)
 {
-
+    HookApi("User32.dll","MessageBoxW");
+    MessageBox(NULL,L"没有HOOK到",L"HOOK",MB_OK);
 }
 
 WindowsProcessInOut::~WindowsProcessInOut()
@@ -171,6 +232,7 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
 	JOBOBJECT_EXTENDED_LIMIT_INFORMATION subProcessLimitRes;
 	ZeroMemory(&subProcessLimitRes, sizeof(subProcessLimitRes));
 
+
 	JOBOBJECT_BASIC_LIMIT_INFORMATION & basicInfo = subProcessLimitRes.BasicLimitInformation;
 	basicInfo.LimitFlags = JOB_OBJECT_LIMIT_PROCESS_TIME| \
 		JOB_OBJECT_LIMIT_PRIORITY_CLASS| \
@@ -195,22 +257,22 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
 		sizeof(JOBOBJECT_END_OF_JOB_TIME_INFORMATION));
 
 
-	////UI限制
-	//JOBOBJECT_BASIC_UI_RESTRICTIONS subProcessLimitUi;
-	//ZeroMemory(&subProcessLimitUi, sizeof(subProcessLimitUi));
-	//subProcessLimitUi.UIRestrictionsClass = JOB_OBJECT_UILIMIT_NONE| \
-	//	JOB_OBJECT_UILIMIT_DESKTOP| \
-	//	JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS| \
-	//	JOB_OBJECT_UILIMIT_DISPLAYSETTINGS| \
-	//	JOB_OBJECT_UILIMIT_EXITWINDOWS| \
-	//	JOB_OBJECT_UILIMIT_GLOBALATOMS| \
-	//	JOB_OBJECT_UILIMIT_HANDLES| \
-	//	JOB_OBJECT_UILIMIT_READCLIPBOARD;
+	//UI限制
+	JOBOBJECT_BASIC_UI_RESTRICTIONS subProcessLimitUi;
+	ZeroMemory(&subProcessLimitUi, sizeof(subProcessLimitUi));
+	subProcessLimitUi.UIRestrictionsClass = JOB_OBJECT_UILIMIT_NONE| \
+		JOB_OBJECT_UILIMIT_DESKTOP| \
+		JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS| \
+		JOB_OBJECT_UILIMIT_DISPLAYSETTINGS| \
+		JOB_OBJECT_UILIMIT_EXITWINDOWS| \
+		JOB_OBJECT_UILIMIT_GLOBALATOMS| \
+		JOB_OBJECT_UILIMIT_HANDLES| \
+		JOB_OBJECT_UILIMIT_READCLIPBOARD;
 
-	//jobHandle_.setInformation(
-	//	JobObjectBasicUIRestrictions,
-	//	&subProcessLimitUi,
-	//	sizeof(subProcessLimitUi));
+	jobHandle_.setInformation(
+		JobObjectBasicUIRestrictions,
+		&subProcessLimitUi,
+		sizeof(subProcessLimitUi));
 
 	//将作业关联到完成端口，以确定其运行情况，及退出的原因
 	s_mutex_.lock();
@@ -248,8 +310,7 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
 		NULL,    //   Process handle not inheritable.   
 		NULL,    //   Thread handle not inheritable.   
 		TRUE,    //   Set handle inheritance to ...
-		//CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB, //   No creation  flags.  
-		CREATE_SUSPENDED |DEBUG_ONLY_THIS_PROCESS,
+		CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB, //   No creation  flags.  
 		NULL,    //   Use parent 's environment block.   
 		NULL,    //   Use parent 's starting  directory.   
 		&si,     //   Pointer to STARTUPINFO structure. 
@@ -260,97 +321,6 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
 
 	processHandle_ = pi.hProcess;
 	threadHandle_ = pi.hThread;
-
-	ResumeThread(threadHandle_);
-
-	DEBUG_EVENT de;
-	ZeroMemory(&de, sizeof(de));
-	DWORD dwContinueStatus = DBG_CONTINUE;
-
-	while (WaitForDebugEvent(&de, INFINITE)) 
-	{
-		if (de.dwDebugEventCode == CREATE_PROCESS_DEBUG_EVENT)
-		{
-			//强制关闭exe文件
-			//SAFE_CLOSE_HANDLE(de.u.CreateProcessInfo.hFile);
-			;
-		}
-		else if (de.dwDebugEventCode == EXCEPTION_DEBUG_EVENT) 
-		{
-			if (de.u.Exception.ExceptionRecord.ExceptionCode == EXCEPTION_BREAKPOINT)
-			{
-			}
-			else
-			{
-				switch(de.u.Exception.ExceptionRecord.ExceptionCode) 
-				{ 
-				case EXCEPTION_INT_DIVIDE_BY_ZERO: //整数除法的除数是0时引发该异常。
-					MessageBoxW(NULL, L"整数除法的除数是0时引发该异常", L"", MB_OK); 
-					//OutputMsgA("INT_DIVIDE_BY_ZERO");
-					break;
-
-				case EXCEPTION_INT_OVERFLOW://整数操作的结果溢出时引发该异常。
-					MessageBoxW(NULL, L"整数操作的结果溢出时引发该异常", L"", MB_OK); 
-					//OutputMsgA("INT_OVERFLOW");
-					break;
-
-				case EXCEPTION_ACCESS_VIOLATION: //程序企图读写一个不可访问的地址时引发的异常。例如企图读取0地址处的内存。
-					MessageBoxW(NULL, L"程序企图读写一个不可访问的地址时引发的异常。例如企图读取0地址处的内存", L"", MB_OK); 
-					//OutputMsgA("ACCESS_VIOLATION");
-					break;
-
-				case EXCEPTION_DATATYPE_MISALIGNMENT://程序读取一个未经对齐的数据时引发的异常。
-					MessageBoxW(NULL, L"程序读取一个未经对齐的数据时引发的异常", L"", MB_OK); 
-					//OutputMsgA("DATATYPE_MISALIGNMENT");
-					break;
-
-				case EXCEPTION_FLT_STACK_CHECK: //进行浮点数运算时栈发生溢出或下溢时引发该异常。
-					MessageBoxW(NULL, L"进行浮点数运算时栈发生溢出或下溢时引发该异常", L"", MB_OK); 
-					//OutputMsgA("FLT_STACK_CHECK");
-					break;
-
-				case EXCEPTION_INVALID_DISPOSITION: //异常处理器返回一个无效的处理的时引发该异常。
-					MessageBoxW(NULL, L"异常处理器返回一个无效的处理的时引发该异常", L"", MB_OK); 
-					//OutputMsgA("INVALID_DISPOSITION");
-					break;
-
-				case EXCEPTION_STACK_OVERFLOW: //栈溢出时引发该异常。
-					MessageBoxW(NULL, L"栈溢出时引发该异常", L"", MB_OK); 
-					//OutputMsgA("STACK_OVERFLOW");
-					break;
-
-				default:
-					//OutputMsgA("UNKNOW_EXCEPTION");
-					MessageBoxW(NULL, L"UNKNOW_EXCEPTION", L"", MB_OK); 
-					break;
-				} 
-
-				if (de.u.Exception.dwFirstChance)
-				{
-					//OutputMsgA("exception at 0x%08x, exception-code: 0x%08x",
-					//	de.u.Exception.ExceptionRecord.ExceptionAddress,
-					//	de.u.Exception.ExceptionRecord.ExceptionCode);
-				}
-				dwContinueStatus = DBG_EXCEPTION_NOT_HANDLED;
-			}
-		}
-		else if(de.dwDebugEventCode == EXIT_PROCESS_DEBUG_EVENT) 
-		{
-			//OutputMsgA("progress exit with code:%u，%u", de.u.ExitProcess.dwExitCode, GetLastError());
-
-			DebugSetProcessKillOnExit(TRUE);
-			DebugActiveProcessStop(de.dwProcessId);
-
-
-			if (de.u.ExitProcess.dwExitCode != 0)
-			{
-				return false;
-			}
-			break;
-		}
-
-		ContinueDebugEvent(de.dwProcessId, de.dwThreadId, dwContinueStatus); 
-	}
 
 	if(startImmediately)
 		start();
@@ -364,9 +334,6 @@ OJInt32_t WindowsProcess::start()
 		return -1;
 
     ResumeThread(threadHandle_);
-
-	jobHandle_.wait();
-#if 1
 
 	DWORD ExecuteResult = -1;  
 	ULONG completeKey;  
@@ -383,61 +350,62 @@ OJInt32_t WindowsProcess::start()
 		switch (ExecuteResult)   
 		{  
 		case JOB_OBJECT_MSG_NEW_PROCESS:    
-			MessageBoxW(NULL, L"JOB_OBJECT_MSG_NEW_PROCESS", L"", MB_OK);
+			//MessageBoxW(NULL, L"JOB_OBJECT_MSG_NEW_PROCESS", L"", MB_OK);
 			break;  
 
 		case JOB_OBJECT_MSG_END_OF_JOB_TIME:  
-			MessageBoxW(NULL, L"Job time limit reached", L"", MB_OK); 
+			//MessageBoxW(NULL, L"Job time limit reached", L"", MB_OK); 
 			exitCode_ = 1;  
 			done = true;  
 			break;  
 
 		case JOB_OBJECT_MSG_END_OF_PROCESS_TIME:   
-			MessageBoxW(NULL, L"Job process time limit reached", L"", MB_OK); 
+			//MessageBoxW(NULL, L"Job process time limit reached", L"", MB_OK); 
 			exitCode_ = 1;  
 			done = true;  
 			break;  
 
 		case JOB_OBJECT_MSG_PROCESS_MEMORY_LIMIT:   
-			MessageBoxW(NULL, L"Process exceeded memory limit", L"", MB_OK);  
+			//MessageBoxW(NULL, L"Process exceeded memory limit", L"", MB_OK);  
+			OJCerr <<GetOJString("Process exceeded memory limit") <<std::endl;
 			exitCode_ = 2;  
 			done = true;  
 			break;  
 
 		case JOB_OBJECT_MSG_JOB_MEMORY_LIMIT:   
-			MessageBoxW(NULL, L"Process exceeded job memory limit", L"", MB_OK);
+			//MessageBoxW(NULL, L"Process exceeded job memory limit", L"", MB_OK);
 			exitCode_ = 2;  
 			done = true;  
 			break;  
 
 		case JOB_OBJECT_MSG_ACTIVE_PROCESS_LIMIT:  
-			MessageBoxW(NULL, L"Too many active processes in job", L"", MB_OK);
+			//MessageBoxW(NULL, L"Too many active processes in job", L"", MB_OK);
 			break;  
 
 		case JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO:  
-			MessageBoxW(NULL, L"Job contains no active processes", L"", MB_OK);  
+			//MessageBoxW(NULL, L"Job contains no active processes", L"", MB_OK);  
 			done = true;  
 			break;  
 
 		case JOB_OBJECT_MSG_EXIT_PROCESS:   
-			MessageBoxW(NULL, L"Process terminated", L"", MB_OK);
+			//MessageBoxW(NULL, L"Process terminated", L"", MB_OK);
 			done = true;  
 			break;  
 
 		case JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS:   
-			MessageBoxW(NULL, L"Process terminated abnormally", L"", MB_OK); 
+			//MessageBoxW(NULL, L"Process terminated abnormally", L"", MB_OK); 
 			exitCode_ = 3;  
 			done = true;  
 			break;  
 
 		default:  
-			MessageBoxW(NULL, L"Unknown notification:", L"", MB_OK);
+			//MessageBoxW(NULL, L"Unknown notification:", L"", MB_OK);
 			exitCode_ = 99;  
 			break;  
 		}  
 	}  
-#endif
 
+    jobHandle_.terminate();
 	/*
 	JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION jobai;  
 	ZeroMemory(&jobai, sizeof(jobai));  
