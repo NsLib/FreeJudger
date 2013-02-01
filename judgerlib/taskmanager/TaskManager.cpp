@@ -55,6 +55,13 @@ ITask * TaskManager::popTask()
 
 
 
+TaskFactory::TaskFactory()
+{
+}
+
+TaskFactory::~TaskFactory()
+{
+}
 
 
 }   // namespace IMUST
