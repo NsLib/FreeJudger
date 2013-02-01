@@ -183,13 +183,14 @@ int main()
 #endif
 
 // 测试进程
-#if 0
+#if 1
     IMUST::WindowsProcess wp;
-    wp.create(GetOJString("calc.exe"));
+    wp.create(GetOJString("calc.exe"), 10000, 10 * 1024);
+	wp.getExitCode();
 #endif
 
 // 测试文件操作
-#if 1
+#if 0
     IMUST::ILogger *logger = new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1"));
     IMUST::OJString path(OJStr("D:\\a.txt"));
     bool res = IMUST::FileTool::IsFileExist(path);
