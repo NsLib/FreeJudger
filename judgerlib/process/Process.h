@@ -1,6 +1,9 @@
 
 #include "../util/Utility.h"
 #include "../platformlayer/PlatformLayer.h"
+#include "../thread/Thread.h"
+
+#include <Windows.h>
 
 namespace IMUST
 {
@@ -13,7 +16,10 @@ public:
     IProcess();
     virtual ~IProcess();
 
-    virtual OJInt32_t create(const OJString &cmd, bool startImmediately = true) = 0;
+    virtual OJInt32_t create(const OJString &cmd,
+							const OJInt32_t timeLimit,
+							const OJInt32_t memoryLimit,
+							bool startImmediately = true) = 0;
     virtual OJInt32_t start() = 0;
     virtual bool isRunning() = 0;
     virtual OJInt32_t join(OJInt32_t time) = 0;
@@ -21,13 +27,58 @@ public:
     virtual void kill() = 0;
 };
 
-class JUDGER_API WindowsProcess : public IProcess
+namespace
+{
+
+class JUDGER_API WindowsProcessInOut : public IProcess
 {
 public:
-    WindowsProcess();
+	WindowsProcessInOut(const OJString &inputFileName,
+						const OJString &outputFileName);
+	virtual ~WindowsProcessInOut();
+
+protected:
+    virtual HANDLE createInputFile();
+    virtual HANDLE createOutputFile();
+
+protected:
+    HANDLE		inputFileHandle_;
+    HANDLE		outputFileHandle_;
+    OJString	inputFileName_;
+    OJString	outputFileName_;
+};
+
+class JUDGER_API WindowsJob
+{
+public:
+	WindowsJob();
+	~WindowsJob();
+
+	bool create(LPSECURITY_ATTRIBUTES lpJobAttributes = NULL);
+	DWORD wait(DWORD time = INFINITE);
+	bool terminate(DWORD exitCode = 4);
+	bool setInformation(JOBOBJECTINFOCLASS infoClass,
+						LPVOID lpInfo,
+						DWORD cbInfoLength);
+	bool assinProcess(HANDLE handel);
+
+private:
+	HANDLE jobHandle_;
+};
+
+}	// namespace
+
+class JUDGER_API WindowsProcess : public WindowsProcessInOut
+{
+public:
+	WindowsProcess(const OJString &inputFileName = GetOJString(""),
+					const OJString &outputFileName = GetOJString(""));
     virtual ~WindowsProcess();
 
-    virtual OJInt32_t create(const OJString &cmd, bool startImmediately = true);
+    virtual OJInt32_t create(const OJString &cmd,
+							const OJInt32_t timeLimit,
+							const OJInt32_t memoryLimit,
+							bool startImmediately = true);
     virtual OJInt32_t start();
     virtual bool isRunning();
     virtual OJInt32_t join(OJInt32_t time);
@@ -35,7 +86,16 @@ public:
     virtual void kill();
 
 private:
-    HANDLE  processHandle_;
+    HANDLE		processHandle_;
+	HANDLE		threadHandle_;
+	HANDLE		iocpHandle_;
+	WindowsJob	jobHandle_;
+	OJInt32_t	exitCode_;
+
+
+private:
+	static	Mutex		s_mutex_;
+	static	ULONG		s_id_;	
 };
 
 

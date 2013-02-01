@@ -298,9 +298,10 @@ int main()
 #endif
 
 // 测试进程
-#if 0
+#if 1
     IMUST::WindowsProcess wp;
-    wp.create(GetOJString("calc.exe"));
+    wp.create(GetOJString("calc.exe"), 10000, 10 * 1024);
+	wp.getExitCode();
 #endif
 
 // 测试文件操作
@@ -378,7 +379,7 @@ int main()
 #endif
     
 // 测试数据库
-#if 1
+#if 0
     IMUST::SqlDriverPtr mysql = IMUST::SqlFactory::createDriver(IMUST::SqlType::MySql);
     if(!mysql->loadService())
     {
