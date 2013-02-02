@@ -53,6 +53,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "process", "judgerlib\process\process.vcxproj", "{32F278DD-CCEB-432D-9DA2-CDF7F4BE9074}"
 	ProjectSection(ProjectDependencies) = postProject
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631} = {0E2F904B-F674-4D30-BEF7-4FDEC1395631}
 		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
 	EndProjectSection
 EndProject
@@ -67,6 +68,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "taskmanager", "judgerlib\ta
 	ProjectSection(ProjectDependencies) = postProject
 		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "windowsapihook", "judgerlib\windowsapihook\windowsapihook.vcxproj", "{0E2F904B-F674-4D30-BEF7-4FDEC1395631}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -261,6 +264,21 @@ Global
 		{3183776B-F929-4018-8EF3-649775A53273}.Template|Mixed Platforms.Build.0 = Release|Win32
 		{3183776B-F929-4018-8EF3-649775A53273}.Template|Win32.ActiveCfg = Release|Win32
 		{3183776B-F929-4018-8EF3-649775A53273}.Template|Win32.Build.0 = Release|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Debug|Win32.Build.0 = Debug|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Release|Any CPU.ActiveCfg = Release|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Release|Win32.ActiveCfg = Release|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Release|Win32.Build.0 = Release|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Template|Any CPU.ActiveCfg = Release|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Template|Mixed Platforms.ActiveCfg = Release|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Template|Mixed Platforms.Build.0 = Release|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Template|Win32.ActiveCfg = Release|Win32
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631}.Template|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

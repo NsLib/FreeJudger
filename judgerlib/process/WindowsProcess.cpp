@@ -2,71 +2,12 @@
 #include "Process.h"
 #include "../logger/Logger.h"
 
+
 namespace IMUST
 {
 
 namespace
 {
-
-typedef int (__stdcall *pOldMessageBox)(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption,UINT uType);
-pOldMessageBox g_pMessageBox = NULL;
-
-HANDLE pBegin = GetModuleHandle(NULL);
-PBYTE  pBegin2 = (PBYTE)pBegin;
-
-PIMAGE_DOS_HEADER DOS = PIMAGE_DOS_HEADER(pBegin2);
-PIMAGE_NT_HEADERS NT = PIMAGE_NT_HEADERS(pBegin2+DOS->e_lfanew);
-PIMAGE_OPTIONAL_HEADER OPTION = &(NT->OptionalHeader);
-PIMAGE_IMPORT_DESCRIPTOR IMPORT = PIMAGE_IMPORT_DESCRIPTOR(OPTION->DataDirectory[1].VirtualAddress + pBegin2);
-
-int __stdcall HookMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption,UINT uType)
-{
-    OJCerr << GetOJString("HOOK OK") << std::endl;
-    return 0;
-}
-
-
-int HookApi(const char *DllName, const char *FunName)
-{
-    while (IMPORT->Name)
-    {
-        char* OurDllName = (char*)(IMPORT->Name + pBegin2);
-        if (0 == strcmpi(DllName , OurDllName))
-            break;
-        IMPORT++;
-    }
-
-    PIMAGE_IMPORT_BY_NAME  pImportByName = NULL;
-    PIMAGE_THUNK_DATA   pOriginalThunk = NULL;
-    PIMAGE_THUNK_DATA   pFirstThunk = NULL;
-
-    pOriginalThunk = (PIMAGE_THUNK_DATA)(IMPORT->OriginalFirstThunk + pBegin2);
-    pFirstThunk = (PIMAGE_THUNK_DATA)(IMPORT->FirstThunk + pBegin2);
-
-    while (pOriginalThunk->u1.Function)
-    {
-        DWORD u1 = pOriginalThunk->u1.Ordinal;
-        if ((u1 & IMAGE_ORDINAL_FLAG) != IMAGE_ORDINAL_FLAG)
-        {
-            pImportByName = (PIMAGE_IMPORT_BY_NAME)((DWORD)pOriginalThunk->u1.AddressOfData + pBegin2);
-            char* OurFunName = (char*)(pImportByName->Name);
-            if (0 == strcmpi(FunName,OurFunName))
-            {
-                MEMORY_BASIC_INFORMATION mbi_thunk;
-                VirtualQuery(pFirstThunk, &mbi_thunk, sizeof(MEMORY_BASIC_INFORMATION));
-                DWORD dwOLD;
-                VirtualProtect(pFirstThunk,sizeof(DWORD),PAGE_READWRITE,&dwOLD);
-                g_pMessageBox =(pOldMessageBox)(pFirstThunk->u1.Function);
-                pFirstThunk->u1.Function = (DWORD)HookMessageBox;        
-                VirtualProtect(pFirstThunk,sizeof(DWORD),dwOLD,0);
-                break;
-            }
-        }
-        pOriginalThunk++;
-        pFirstThunk++;
-    }
-    return 0;
-}
 
 WindowsProcessInOut::WindowsProcessInOut(const OJString &inputFileName,
 										const OJString &outputFileName) :
@@ -75,8 +16,7 @@ WindowsProcessInOut::WindowsProcessInOut(const OJString &inputFileName,
 	inputFileName_(inputFileName),
 	outputFileName_(outputFileName)
 {
-    HookApi("User32.dll","MessageBoxW");
-    MessageBox(NULL,L"没有HOOK到",L"HOOK",MB_OK);
+    MessageBox(NULL,L"没有HOOK到",L"HOOK",MB_OK);;
 }
 
 WindowsProcessInOut::~WindowsProcessInOut()

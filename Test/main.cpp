@@ -299,6 +299,7 @@ int main()
 
 // 测试进程
 #if 1
+    LoadLibraryW(L"windowsapihook.dll");
     IMUST::WindowsProcess wp;
     wp.create(GetOJString("notepad.exe"), 100000, 10 * 100);
 	wp.getExitCode();
