@@ -300,8 +300,10 @@ int main()
 // 测试进程
 #if 1
     IMUST::WindowsProcess wp;
-    wp.create(GetOJString("calc.exe"), 10000, 10 * 1024);
+    wp.create(GetOJString("notepad.exe"), 100000, 10 * 100);
 	wp.getExitCode();
+
+	while(1);
 #endif
 
 // 测试文件操作
