@@ -26,6 +26,14 @@ public:
         return Input;
     }
 
+private:
+
+    bool compile();
+
+    bool excute();
+
+    bool match();
+
 public:
     const TaskInputData Input;
 

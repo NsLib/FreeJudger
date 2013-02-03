@@ -1,6 +1,7 @@
 #include "Task.h"
 
 #include "../judgerlib/taskmanager/TaskManager.h"
+#include "../judgerlib/config/AppConfig.h"
 
 extern bool g_sigExit;
 
@@ -20,19 +21,51 @@ bool JudgeTask::run()
     logger->logInfo(str);
 
 
-    //compile
-
-    while(0)
+    if(!compile())
     {
-        //run
-
-        //match
-
+        return false;
     }
+
+    OJInt32_t testCount = 1;
+    if(testCount <= 0)
+    {
+        output_.Result = AppConfig::JudgeCode::SystemError;
+        return false;
+    }
+
+    OJInt32_t accepted = 0;
+    for(OJInt32_t i=0; i<testCount; ++i)
+    {
+        if(excute())
+        {
+            continue;
+        }
+
+        if(match())
+        {
+            ++accepted;
+        }
+    }
+
+    output_.PassRate = float(accepted)/testCount;
 
     return true;
 }
 
+bool JudgeTask::compile()
+{
+    return false;
+}
+
+bool JudgeTask::excute()
+{
+    return false;
+}
+
+bool JudgeTask::match()
+{
+    return false;
+}
 
 
 
