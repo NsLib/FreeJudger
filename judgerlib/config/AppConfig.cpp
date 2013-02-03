@@ -109,8 +109,8 @@ bool InitAppConfig()
     READ_APP_CONFIG(readInt32, "JudgeCode/MemoryLimitExceed", JudgeCode::MemoryLimitExceed);
     READ_APP_CONFIG(readInt32, "JudgeCode/OutputLimited", JudgeCode::OutputLimited);
     READ_APP_CONFIG(readInt32, "JudgeCode/RuntimeError", JudgeCode::RuntimeError);
-    READ_APP_CONFIG(readInt32, "JudgeCode/ComileError", JudgeCode::CompileError);
-    READ_APP_CONFIG(readInt32, "JudgeCode/ComileTimeError", JudgeCode::CompileTimeError);
+    READ_APP_CONFIG(readInt32, "JudgeCode/CompileError", JudgeCode::CompileError);
+    READ_APP_CONFIG(readInt32, "JudgeCode/CompileTimeError", JudgeCode::CompileTimeError);
     READ_APP_CONFIG(readInt32, "JudgeCode/CompileOK", JudgeCode::CompileOK);
     READ_APP_CONFIG(readInt32, "JudgeCode/SystemError", JudgeCode::SystemError);
     READ_APP_CONFIG(readInt32, "JudgeCode/UnknownError", JudgeCode::UnknownError);

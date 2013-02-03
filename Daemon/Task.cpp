@@ -7,42 +7,109 @@ extern bool g_sigExit;
 namespace IMUST
 {
 
-JudgeThread::JudgeThread(TaskManager &taskManager, const int id) :
-    taskManager_(taskManager),
-    id_(id)
+JudgeTask::JudgeTask(const TaskInputData & inputData) 
+    : Input(inputData)
+{}
+
+bool JudgeTask::run()
+{
+    static ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    OJChar_t buf[20];
+    wsprintf(buf, OJStr("task %d"), Input.SolutionID);
+    OJString str(buf);
+    logger->logInfo(str);
+
+
+    //compile
+
+    while(0)
+    {
+        //run
+
+        //match
+
+    }
+
+    return true;
+}
+
+
+
+
+JudgeThread::JudgeThread(int id, IMUST::TaskManagerPtr working, IMUST::TaskManagerPtr finish)
+    : id_(id)
+    , workingTaskMgr_(working)
+    , finisheTaskMgr_(finish)
 {
 
 }
 
 void JudgeThread::operator()()
 {
-    static int i = 10;
-    static int j = 20;
-
     while (!g_sigExit)
     {
         static ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
-        taskManager_.lock();
-        IMUST::OJString str(OJStr("thread "));
-        str += (id_ + '0');
+        IMUST::ITask* pTask = NULL;
 
-        logger->logInfo(str);
-
-        if (taskManager_.hasTask())
+        //从任务队列取任务
+        workingTaskMgr_->lock();
+        if(workingTaskMgr_->hasTask())
         {
-            taskManager_.unlock();
-            taskManager_.popTask()->run();
-        } 
-        else
-        {
-            // 添加任务
-            logger->logInfo(GetOJString("add task"));
-            taskManager_.unlock();
+            pTask = workingTaskMgr_->popTask();
         }
+        workingTaskMgr_->unlock();
+
+        if(!pTask)//没有任务
+        {
+            Sleep(1000);
+            continue;
+        }
+
+        pTask->run();
+            
+        //添加到完成队列
+        finisheTaskMgr_->lock();
+        finisheTaskMgr_->addTask(pTask);
+        finisheTaskMgr_->unlock();
+
+        Sleep(10);//防止线程过度繁忙
     }
 
 }
 
+ITask* JudgeTaskFactory::create(const TaskInputData & input)
+{
+    return new JudgeTask(input);
+}
+
+void JudgeTaskFactory::destroy(ITask* pTask)
+{
+    delete pTask;
+}
+
+
+JudgeDBRunThread::JudgeDBRunThread(IMUST::DBManagerPtr dbm)
+    : dbm_(dbm)
+{
+}
+
+void JudgeDBRunThread::operator()()
+{
+    IMUST::ILogger *logger = IMUST::LoggerFactory::getLogger(IMUST::LoggerId::AppInitLoggerId);
+    logger->logTrace(GetOJString("db thread start..."));
+
+    while(!g_sigExit)
+    {
+        if(!dbm_->run())
+        {
+            logger->logError(GetOJString("db thread was dead!"));
+            break;
+        }
+        Sleep(100);
+    }
+
+    logger->logTrace(GetOJString("db thread end."));
+}
 
 }   // namespace IMUST

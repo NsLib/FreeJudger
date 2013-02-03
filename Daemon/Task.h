@@ -4,6 +4,7 @@
 
 #include "../judgerlib/logger/Logger.h"
 #include "../judgerlib/taskmanager/TaskManager.h"
+#include "../judgerlib/sql/DBManager.h"
 
 namespace IMUST
 {
@@ -11,17 +12,9 @@ namespace IMUST
 class JudgeTask : public ITask
 {
 public:
-    JudgeTask(int id) : id_(id) {}
+    JudgeTask(const TaskInputData & inputData);
 
-    virtual bool run()
-    {
-        static ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
-        OJChar_t buf[20];
-        wsprintf(buf, OJStr("task %d"), id_);
-        OJString str(buf);
-        logger->logInfo(str);
-        return true;
-    }
+    virtual bool run();
 
     virtual const TaskOutputData & output() const
     {
@@ -30,26 +23,52 @@ public:
 
     virtual const TaskInputData & input() const
     {
-        return input_;
+        return Input;
     }
 
+public:
+    const TaskInputData Input;
+
 private:
-    int id_;
-    TaskInputData input_;
     TaskOutputData output_;
 };
 
 class JudgeThread
 {
 public:
-    JudgeThread(TaskManager &taskManager, const int id);
+    JudgeThread(int id, IMUST::TaskManagerPtr working, IMUST::TaskManagerPtr finish);
     void operator()();
 
 private:
     int id_;
-    TaskManager &taskManager_;
+    IMUST::TaskManagerPtr workingTaskMgr_;
+    IMUST::TaskManagerPtr finisheTaskMgr_;
 };
 
+
+class JudgeTaskFactory : public TaskFactory
+{
+public:
+    JudgeTaskFactory(){}
+    virtual ~JudgeTaskFactory(){}
+
+    virtual ITask* create(const TaskInputData & input);
+
+    virtual void destroy(ITask* pTask);
+};
+
+
+class JudgeDBRunThread
+{
+public:
+
+    JudgeDBRunThread(IMUST::DBManagerPtr dbm);
+
+    void operator()();
+
+private:
+    IMUST::DBManagerPtr dbm_;
+};
 
 
 }   // namespace IMUST

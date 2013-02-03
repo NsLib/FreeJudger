@@ -31,7 +31,7 @@
         <MemoryLimitExceed>8</MemoryLimitExceed>
         <OutputLimited>9</OutputLimited>
         <RuntimeError>10</RuntimeError>
-        <ComileError>11</ComileError>
+        <CompileError>11</CompileError>
         <CompileOK>12</CompileOK>
         <SystemError>13</SystemError>
 		<CompileTimeError>14</CompileTimeError>
