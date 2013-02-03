@@ -43,7 +43,12 @@ typedef             unsigned long long              OJUInt64_t;
 #define OJSscanf    swscanf
 
 
-
+#define SAFE_CLOSE_HANDLE_AND_RESET(handle) \
+    if (handle)                             \
+    {                                       \
+        CloseHandle((handle));              \
+        (handle) = NULL;                    \
+    }
 
 
 

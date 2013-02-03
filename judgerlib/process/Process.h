@@ -50,6 +50,8 @@ protected:
 
 class JUDGER_API WindowsJob
 {
+    MAKE_CLASS_UNCOPYABLE(WindowsJob);
+
 public:
 	WindowsJob();
 	~WindowsJob();
@@ -57,13 +59,26 @@ public:
 	bool create(LPSECURITY_ATTRIBUTES lpJobAttributes = NULL);
 	DWORD wait(DWORD time = INFINITE);
 	bool terminate(DWORD exitCode = 4);
-	bool setInformation(JOBOBJECTINFOCLASS infoClass,
-						LPVOID lpInfo,
-						DWORD cbInfoLength);
 	bool assinProcess(HANDLE handel);
+    bool setLimit(const OJInt32_t timeLimit,
+                const OJInt32_t memoryLimit);
+    bool getState(DWORD &executeResult, 
+                ULONG &completionKey, 
+                LPOVERLAPPED &processInfo, 
+                const DWORD time = INFINITE);
 
 private:
-	HANDLE jobHandle_;
+    bool setInformation(JOBOBJECTINFOCLASS infoClass,
+        LPVOID lpInfo,
+        DWORD cbInfoLength);
+
+private:
+	HANDLE      jobHandle_;
+    HANDLE		iocpHandle_;
+
+private:
+    static	Mutex		s_mutex_;
+    static	ULONG		s_id_;	
 };
 
 }	// namespace
@@ -88,7 +103,6 @@ public:
 private:
     HANDLE		processHandle_;
 	HANDLE		threadHandle_;
-	HANDLE		iocpHandle_;
 	WindowsJob	jobHandle_;
 	OJInt32_t	exitCode_;
 
