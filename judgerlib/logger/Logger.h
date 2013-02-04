@@ -76,7 +76,7 @@ private:
             for (LoggerFactory::LoggerList::iterator iter = LoggerFactory::loggers_->begin();
                 LoggerFactory::loggers_->end() != iter; ++iter)
             {
-                JUDGER_SAFE_DELETE_OBJ((*iter).second);
+                JUDGER_SAFE_DELETE_OBJ_AND_RESET((*iter).second);
             }
         }
     };

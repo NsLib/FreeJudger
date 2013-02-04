@@ -7,11 +7,10 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <cassert>
 
 #include <Windows.h>
-
-#include "../util/Utility.h"
 
 namespace IMUST
 {
@@ -42,6 +41,12 @@ typedef             unsigned long long              OJUInt64_t;
 #define OJSprintf   swprintf
 #define OJSscanf    swscanf
 
+#define JUDGER_SAFE_DELETE_OBJ_AND_RESET(obj)       \
+    if ((obj))                                      \
+    {                                               \
+        delete (obj);                               \
+        (obj) = 0;                                  \
+    }
 
 #define SAFE_CLOSE_HANDLE_AND_RESET(handle) \
     if (handle)                             \
