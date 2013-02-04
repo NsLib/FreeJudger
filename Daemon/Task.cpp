@@ -53,7 +53,12 @@ OJString getLanguageExt(OJInt32_t language)
 JudgeTask::JudgeTask(const TaskInputData & inputData) 
     : Input(inputData)
     , judgeID_(0)
-{}
+{
+    output_.Result = AppConfig::JudgeCode::SystemError;
+    output_.PassRate = 0.0f;
+    output_.RunTime = 0;
+    output_.RunMemory = 0;
+}
 
 void JudgeTask::init(OJInt32_t judgeID)
 {
@@ -77,7 +82,7 @@ void JudgeTask::init(OJInt32_t judgeID)
 
 bool JudgeTask::run()
 {
-    //doRun();
+    doRun();
 
     if(!doClean())
     {
@@ -94,7 +99,6 @@ bool JudgeTask::doRun()
     OJSprintf(buf, OJStr("task %d"), Input.SolutionID);
     OJString str(buf);
     logger->logInfo(str);
-
 
     if(!compile())
     {
