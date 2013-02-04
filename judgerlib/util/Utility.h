@@ -9,6 +9,8 @@
 #ifndef IMUST_OJ_UTILITY_H
 #define IMUST_OJ_UTILITY_H
 
+#include "../platformlayer/PlatformLayer.h"
+
 namespace IMUST
 {
 
@@ -69,8 +71,13 @@ protected:
 
 typedef Uncopyable_::IUncopyable IUncopyable;
 
-#define JUDGER_SAFE_DELETE_OBJ(obj)    if ((obj))  delete (obj)
+OJString String2OJString(const char *str);
+OJString String2OJString(const std::string str);
 
-}   // IMUST_OJ_UTILITY_H
 
-#endif
+
+
+
+}   // namespace IMUST
+
+#endif  // IMUST_OJ_UTILITY_H
