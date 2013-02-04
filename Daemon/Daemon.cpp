@@ -1,5 +1,7 @@
 #include "Daemon.h"
 
+#include <cstdlib>
+
 #include "InitApp.h"
 #include "../judgerlib/logger/Logger.h"
 #include "../judgerlib/logger/Logger_log4cxx.h"
@@ -20,34 +22,34 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
-
-    IMUST::InitApp();
+    if (!IMUST::InitApp())
+        return EXIT_FAILURE;
 
     IMUST::ILogger *logger = IMUST::LoggerFactory::getLogger(IMUST::LoggerId::AppInitLoggerId);
 
     IMUST::SqlDriverPtr mysql = IMUST::SqlFactory::createDriver(IMUST::SqlType::MySql);
     if(!mysql->loadService())
     {
-        logger->logError(GetOJString("loadService faild!"));
-        logger->logError(mysql->getErrorString());
-        return 0;
+        IMUST::OJString msg(GetOJString("[Daemon] - WinMain - mysql->loadService failed - "));
+        msg += mysql->getErrorString();
+        logger->logError(msg);
+        return EXIT_FAILURE;
     }
 
     if(!mysql->connect(IMUST::AppConfig::MySql::Ip, 
-        IMUST::AppConfig::MySql::Port,
-        IMUST::AppConfig::MySql::User,
-        IMUST::AppConfig::MySql::Password,
-        IMUST::AppConfig::MySql::DBName))
+                    IMUST::AppConfig::MySql::Port,
+                    IMUST::AppConfig::MySql::User,
+                    IMUST::AppConfig::MySql::Password,
+                    IMUST::AppConfig::MySql::DBName))
     {
-        logger->logError(GetOJString("connect mysql faild!"));
-        logger->logError(mysql->getErrorString());
-        return 0;
+        IMUST::OJString msg(GetOJString("[Daemon] - WinMain - connect mysql faild - "));
+        msg += mysql->getErrorString();
+        logger->logError(msg);
+        return EXIT_FAILURE;
     }
     mysql->setCharSet(GetOJString("utf-8"));
 
-
     // 测试数据库管理器
-
     IMUST::TaskManagerPtr workingTaskMgr(new IMUST::TaskManager()); 
     IMUST::TaskManagerPtr finishedTaskMgr(new IMUST::TaskManager());
     IMUST::TaskFactoryPtr taskFactory(new IMUST::JudgeTaskFactory());
@@ -80,5 +82,5 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     mysql->disconect();
     mysql->unloadService();
 
-    return 0;
+    return EXIT_SUCCESS;
 }

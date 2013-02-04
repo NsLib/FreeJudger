@@ -8,7 +8,7 @@ bool InitApp();
 
 namespace details
 {
-static bool InitLogger();
+static bool InitAppInitLogger();
 static bool InitAppConfig();
 }   // namespace details
 

@@ -32,6 +32,16 @@ public:
 namespace LoggerId
 {
 const OJInt32_t AppInitLoggerId             = 0; 
+const OJInt32_t Thread1LoggerId             = 1;
+const OJInt32_t Thread2LoggerId             = 2;
+const OJInt32_t Thread3LoggerId             = 3;
+const OJInt32_t Thread4LoggerId             = 4;
+const OJInt32_t Thread5LoggerId             = 5;
+const OJInt32_t Thread6LoggerId             = 6;
+const OJInt32_t Thread7LoggerId             = 7;
+const OJInt32_t Thread8LoggerId             = 8;
+
+// 通用ID从100以后开始编号，1-100留给线程
 
 
 }
