@@ -1,11 +1,11 @@
 #include <windows.h>
 #include "detours.h"
 
-//int (WINAPI *OriFun)(HWND hWnd,LPCWSTR lpText,LPCWSTR lpCaption,UINT uType) = MessageBoxW;
-INT_PTR (WINAPI *OriFun)(HINSTANCE hInstance, LPCWSTR lpTemplateName, HWND hWndParent,DLGPROC lpDialogFunc, LPARAM dwInitParam) = DialogBoxParamW; 
-INT_PTR WINAPI ZwNHookFun(HINSTANCE hInstance, LPCWSTR lpTemplateName, HWND hWndParent,DLGPROC lpDialogFunc, LPARAM dwInitParam)  
+int (WINAPI *OriFun)(HWND hWnd,LPCSTR lpText,LPCSTR lpCaption,UINT uType) = MessageBoxA;
+
+int WINAPI ZwNHookFun(HWND hWnd,LPCSTR lpText,LPCSTR lpCaption,UINT uType)  
 {  
-    return NULL;  
+    return 0;  
 }  
 
 BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)

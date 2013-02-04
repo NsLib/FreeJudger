@@ -217,6 +217,10 @@ struct DB2Thread
 
 int main()
 {
+    IMUST::LoggerFactory::registerLogger(
+        new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1")), 
+        IMUST::LoggerId::AppInitLoggerId);
+
 // 测试日志
 #if 0
     vector<IMUST::ILogger *> iloggers;
@@ -299,12 +303,13 @@ int main()
 
 // 测试进程
 #if 1
-    LoadLibraryW(L"windowsapihook.dll");
-    IMUST::WindowsProcess wp;
-    wp.create(GetOJString("notepad.exe"), 100000, 10 * 100);
-	wp.getExitCode();
+    {
+        //LoadLibraryW(L"windowsapihook.dll");
+        IMUST::WindowsProcess wp(GetOJString("D:\\in.txt"), GetOJString("D:\\out.txt"));
+        wp.create(GetOJString("D:\\Code\\USACO\\Debug\\USACO.exe"), 1000, 100 * 1000);
+        wp.getExitCode();
+    }
 
-	while(1);
 #endif
 
 // 测试文件操作

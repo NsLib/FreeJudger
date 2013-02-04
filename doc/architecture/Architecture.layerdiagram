@@ -13,7 +13,7 @@
             <layer Id="552a327b-f694-42af-9b51-48941fae5e71" name="sql" />
             <layer Id="263cc9bc-e3cc-4a8b-b219-b122f1320403" name="filetool" />
             <layer Id="30e700ab-8f26-4ce1-8ee0-b73027f8ee6b" name="taskmanager" />
-            <layer Id="55e6ee96-3c10-4e31-89a1-d2701d92d741" name="dbmanager" />
+            <layer Id="55e6ee96-3c10-4e31-89a1-d2701d92d741" name="windowsapihook" />
           </childLayers>
         </layer>
         <layer Id="275f853a-70ba-496e-aa6c-0fafb8472004" name="操作系统">
@@ -27,7 +27,8 @@
           <childLayers>
             <layer Id="6669e5f4-c4d7-4190-b3c4-ca0f04a621d2" name="数据库" />
             <layer Id="1ad1dfb5-3ecf-4abf-ac76-203a551b273a" name="编译器" />
-            <layer Id="c8cc3467-9b96-4b13-878c-84e8cec41235" name="其他" />
+            <layer Id="c8cc3467-9b96-4b13-878c-84e8cec41235" name="hustoj" />
+            <layer Id="db3523b2-fef9-4ed0-a2ef-955b5a7eff5f" name="其他" />
           </childLayers>
         </layer>
         <layer Id="5dbb35dd-54f6-4328-b0c2-4f4eb1569a65" name="可执行程序">
