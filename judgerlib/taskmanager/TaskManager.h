@@ -39,6 +39,8 @@ public:
     ITask();
     virtual ~ITask();
 
+    virtual void init(OJInt32_t judgeID) {}
+
     virtual bool run() = 0;
 
     virtual const TaskOutputData & output() const = 0;

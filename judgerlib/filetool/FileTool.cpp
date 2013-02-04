@@ -210,14 +210,33 @@ bool WriteFile(std::vector<OJChar_t> &buffer,
     static std::locale utf8_locale(old_locale, new utf8_codecvt_facet);
     // 二进制写入待完成
     OJOfstream file(filename);
-
+    
     file.imbue(utf8_locale);
+
     std::copy(buffer.begin(), buffer.end(), std::ostream_iterator<OJChar_t, OJChar_t>(file));
+
     file.close();
 
     return true;
 }
+bool WriteFile(const OJString &buffer,
+    const OJString &filename)
+{
+    static std::locale old_locale;
+    static std::locale utf8_locale(old_locale, new utf8_codecvt_facet);
+    
+    OJOfstream file(filename);
+    if(!file.good())
+    {
+        return false;
+    }
 
+    file.imbue(utf8_locale);
+    file.write(buffer.c_str(), buffer.size());
+    file.close();
+
+    return true;
+}
 
 }   // namespace IMUST
 }   // namespace IMUST

@@ -9,6 +9,8 @@
 #include "../judgerlib/sql/DBManager.h"
 #include "Task.h"
 
+#include "../judgerlib/process/Process.h"
+
 bool g_sigExit = false;
 
 
@@ -59,14 +61,15 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     std::vector<ThreadPtr> judgeThreadPool;
     for(IMUST::OJInt32_t i=0; i<IMUST::AppConfig::CpuInfo::NumberOfCore; ++i)
     {
-        ThreadPtr ptr(new IMUST::Thread(IMUST::JudgeThread(0, workingTaskMgr, finishedTaskMgr)));
+        ThreadPtr ptr(new IMUST::Thread(IMUST::JudgeThread(i, workingTaskMgr, finishedTaskMgr)));
         judgeThreadPool.push_back(ptr);
     }
     
     IMUST::JudgeDBRunThread dbThreadObj(dbManager);
     IMUST::Thread dbThread(dbThreadObj);
 
-    system("pause");
+    MessageBoxW(NULL, L"stop", L"title", MB_OK);
+
     g_sigExit = true;
 
     dbThread.join();

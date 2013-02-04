@@ -31,7 +31,8 @@ bool ReadFile(std::vector<OJChar_t> &buffer,
 bool WriteFile(std::vector<OJChar_t> &buffer,
     const OJString &filename,
     const bool isBinary = false);
-
+bool WriteFile(const OJString &buffer,
+    const OJString &filename);
 
 }   // namespace IMUST
 }   // namespace IMUST

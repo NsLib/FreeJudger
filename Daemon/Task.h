@@ -13,6 +13,8 @@ class JudgeTask : public ITask
 {
 public:
     JudgeTask(const TaskInputData & inputData);
+    
+    virtual void init(OJInt32_t judgeID);
 
     virtual bool run();
 
@@ -28,6 +30,10 @@ public:
 
 private:
 
+    bool doRun();
+
+    bool doClean();
+
     bool compile();
 
     bool excute();
@@ -38,7 +44,11 @@ public:
     const TaskInputData Input;
 
 private:
-    TaskOutputData output_;
+    OJInt32_t       judgeID_;
+    TaskOutputData  output_;
+    OJString        codeFile_;
+    OJString        exeFile_;
+    OJString        compileFile_;
 };
 
 class JudgeThread

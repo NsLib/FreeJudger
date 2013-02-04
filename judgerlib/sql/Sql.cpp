@@ -17,8 +17,11 @@ bool narrowStringToWide(std::wstring & dest, const std::string & src, DWORD code
     dest.resize(lLen, 0);
     MultiByteToWideChar(code, 0, src.c_str(), -1, &dest[0], lLen);
     
-    //TODO: 需要将dest字符串尾部的\0字符去掉。
-
+    size_t pos = dest.find(L'\0');
+    if(pos != dest.npos)
+    {
+        dest.erase(pos);
+    }
 
     return false;
 }
@@ -30,8 +33,11 @@ bool wideStringToNarrow(std::string & dest, const std::wstring & src, DWORD code
     dest.resize(lLen, 0);
     WideCharToMultiByte(code, 0, src.c_str(), -1, &dest[0], lLen, NULL, NULL);
 
-    //TODO: 需要将dest字符串尾部的\0字符去掉。
-    
+    size_t pos = dest.find('\0');
+    if(pos != dest.npos)
+    {
+        dest.erase(pos);
+    }
 
     return false;
 }

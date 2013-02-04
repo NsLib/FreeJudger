@@ -76,7 +76,7 @@ HANDLE WindowsProcessInOut::createOutputFile()
 	if (INVALID_HANDLE_VALUE == handle)
 	{
         ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
-        OJString msg(GetOJString("[process] - IMUST::WindowsProcessInOut::createInputFile - can't create output file: "));
+        OJString msg(GetOJString("[process] - IMUST::WindowsProcessInOut::createOutputFile - can't create output file: "));
         msg += outputFileName_;
         logger->logError(msg);
         handle = NULL;
@@ -86,7 +86,7 @@ HANDLE WindowsProcessInOut::createOutputFile()
 }
 
 WindowsJob::WindowsJob() :
-	jobHandle_(NULL)
+	jobHandle_(NULL), iocpHandle_(NULL)
 {
 
 }
@@ -132,7 +132,7 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
     OJInt64_t   limitTime       = timeLimit * 10000;    // ms
     int         limitMemory     = memoryLimit * 1024;   //bytes
 
-    if (limitMemory < 0)	                //超出int范围了
+    if (limitMemory <= 0)	                //超出int范围了
         limitMemory = 128 * 1024 * 1024;    //默认128M
 
     //设置基本限制信息
@@ -274,12 +274,13 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
     ZeroMemory(&si, sizeof(si));
     ZeroMemory(&pi, sizeof(pi)); 
 	
-	si.wShowWindow = SW_SHOWNORMAL;
+	//si.wShowWindow = SW_SHOWNORMAL;
 	si.cb = sizeof(si); 
     si.hStdInput = createInputFile();
     si.hStdOutput = si.hStdError = createOutputFile();
     si.dwFlags = STARTF_USESTDHANDLES;
 
+#if 0
     if (NULL == si.hStdInput)
     {
         OJString msg(GetOJString("[process] - IMUST::WindowsProcess::create - can't open input file: "));
@@ -294,6 +295,7 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
         logger->logError(msg);
         return -1;
     }
+#endif
 	
 	bool res =  !!CreateProcess(NULL,    //   No module name (use command line).   
 		cmdline, //   Command line.   
@@ -305,6 +307,10 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
 		NULL,    //   Use parent 's starting  directory.   
 		&si,     //   Pointer to STARTUPINFO structure. 
 		&pi);    //   Pointer to PROCESS_INFORMAT\ION structure.
+
+    
+    SAFE_CLOSE_HANDLE_AND_RESET(inputFileHandle_)
+    SAFE_CLOSE_HANDLE_AND_RESET(outputFileHandle_)
 
 	if (!res)
     {
@@ -334,8 +340,6 @@ OJInt32_t WindowsProcess::start()
 
     ResumeThread(threadHandle_);
 
-    SAFE_CLOSE_HANDLE_AND_RESET(inputFileHandle_)
-    SAFE_CLOSE_HANDLE_AND_RESET(outputFileHandle_)
     SAFE_CLOSE_HANDLE_AND_RESET(threadHandle_)
 
 #define OutputMsg(format) printf(format "\n")
@@ -398,7 +402,7 @@ OJInt32_t WindowsProcess::start()
 
     jobHandle_.terminate();
 
-    SAFE_CLOSE_HANDLE_AND_RESET(processHandle_)
+    //SAFE_CLOSE_HANDLE_AND_RESET(processHandle_)
 	/*
 	JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION jobai;  
 	ZeroMemory(&jobai, sizeof(jobai));  
