@@ -15,8 +15,8 @@ JudgeTask::JudgeTask(const TaskInputData & inputData)
 bool JudgeTask::run()
 {
     static ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
-    OJChar_t buf[20];
-    wsprintf(buf, OJStr("task %d"), Input.SolutionID);
+    OJChar_t buf[256];
+    OJSprintf(buf, OJStr("task %d"), Input.SolutionID);
     OJString str(buf);
     logger->logInfo(str);
 
@@ -30,6 +30,10 @@ bool JudgeTask::run()
     if(testCount <= 0)
     {
         output_.Result = AppConfig::JudgeCode::SystemError;
+
+        OJSprintf(buf, OJStr("not found test data for solution %d problem %d."),
+            Input.SolutionID, Input.ProblemID);
+        logger->logError(buf);
         return false;
     }
 
