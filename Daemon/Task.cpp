@@ -204,7 +204,6 @@ void JudgeThread::operator()()
 {
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
-    FileTool::MakeDir(OJStr("work"));
     OJChar_t buffer[128];
     OJSprintf(buffer, OJStr("work/%d"), id_);
     FileTool::MakeDir(buffer);

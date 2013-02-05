@@ -9,6 +9,7 @@
 #include "../judgerlib/taskmanager/TaskManager.h"
 #include "../judgerlib/thread/Thread.h"
 #include "../judgerlib/sql/DBManager.h"
+#include "../judgerlib/filetool/FileTool.h"
 #include "Task.h"
 
 #include "../judgerlib/process/Process.h"
@@ -59,6 +60,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     IMUST::DBManagerPtr dbManager(new IMUST::DBManager(mysql, 
         workingTaskMgr, finishedTaskMgr, taskFactory));
 
+    
+    IMUST::FileTool::MakeDir(OJStr("work"));
+
     typedef std::shared_ptr<IMUST::Thread> ThreadPtr;
     std::vector<ThreadPtr> judgeThreadPool;
     for(IMUST::OJInt32_t i=0; i<IMUST::AppConfig::CpuInfo::NumberOfCore; ++i)
@@ -70,7 +74,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     IMUST::JudgeDBRunThread dbThreadObj(dbManager);
     IMUST::Thread dbThread(dbThreadObj);
 
-    MessageBoxW(NULL, L"stop", L"title", MB_OK);
+    system("pause");
 
     g_sigExit = true;
 
