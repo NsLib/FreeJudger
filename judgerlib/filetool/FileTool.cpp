@@ -10,10 +10,14 @@
 #include "../../thirdpartylib/boost/detail/utf8_codecvt_facet.hpp"
 #include "../../thirdpartylib/boost/detail/utf8_codecvt_facet.ipp"
 
+#include "../logger/Logger.h"
+#include "../util/Utility.h"
+
 namespace IMUST
 {
 
-namespace fs = ::boost::filesystem;
+namespace fs    = ::boost::filesystem;
+namespace sys   = ::boost::system;
 
 namespace FileTool
 {
@@ -28,9 +32,22 @@ const FileType  RegularFile     =       10;
 
 bool IsFileExistImpl(const OJString &path, const FileType &filetype)
 {
-    fs::path fullpath(path);
+    fs::path            fullpath(path);
+    sys::error_code     err;
 
-    if (fs::exists(fullpath))
+    bool res = fs::exists(fullpath, err);
+    if (!(sys::errc::success == err || sys::errc::no_such_file_or_directory == err))
+    {
+        ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+        OJString msg(GetOJString("[filetool] - IMUST::IsFileExistImpl - access failed: "));
+        msg += fullpath.c_str();
+        msg += GetOJString(" - ");
+        msg += String2OJString(err.message());
+        logger->logError(msg);
+        return false;
+    }
+    
+    if (res)
     {
         if (fs::is_regular_file(fullpath))
         {
@@ -60,8 +77,21 @@ bool GetSpecificExtFilesImpl(FileNameList &files,
                             const OJString &ext,
                             const bool withPath)
 {
-    fs::path fullpath(path);
-    if (!fs::exists(fullpath))
+    fs::path            fullpath(path);
+    sys::error_code     err;
+
+    bool res = fs::exists(fullpath, err);
+    if (!(sys::errc::success == err || sys::errc::no_such_file_or_directory == err))
+    {
+        ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+        OJString msg(GetOJString("[filetool] - IMUST::GetSpecificExtFilesImpl - access failed: "));
+        msg += fullpath.c_str();
+        msg += GetOJString(" - ");
+        msg += String2OJString(err.message());
+        logger->logError(msg);
+        return false;
+    }
+    if (!res)
         return false;
     
     fs::directory_iterator end_iter;
@@ -97,10 +127,23 @@ bool RemoveFile(const OJString &filename)
 {
     if (IsFileExist(filename))
     {
-        if (1 == fs::remove(filename))
-            return true;
-        else
+        fs::path            fullpath(filename);
+        sys::error_code     err;
+
+        bool res = fs::remove(fullpath, err);
+
+        if (!(sys::errc::success == err))
+        {
+            ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+            OJString msg(GetOJString("[filetool] - IMUST::RemoveFile - remove failed: "));
+            msg += filename;
+            msg += GetOJString(" - ");
+            msg += String2OJString(err.message());
+            logger->logError(msg);
             return false;
+        } 
+
+        return res;
     }
 
     return true;
@@ -114,7 +157,25 @@ bool IsDirExist(const OJString &path)
 bool MakeDir(const OJString &path)
 {
     if (!IsDirExist(path))
-        return fs::create_directory(path);
+    {
+        fs::path            fullpath(path);
+        sys::error_code     err;
+
+        bool res = fs::create_directory(fullpath, err);
+
+        if (!(sys::errc::success == err))
+        {
+            ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+            OJString msg(GetOJString("[filetool] - IMUST::MakeDir - make dir failed: "));
+            msg += path;
+            msg += GetOJString(" - ");
+            msg += String2OJString(err.message());
+            logger->logError(msg);
+            return false;
+        } 
+
+        return res;
+    }
 
     return true;
 }

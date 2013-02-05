@@ -21,6 +21,7 @@
 
 #include <vector>
 
+
 using namespace std;
 bool g_judgerStop = false;
 
@@ -302,7 +303,7 @@ int main()
 #endif
 
 // 测试进程
-#if 1
+#if 0
     {
         //LoadLibraryW(L"windowsapihook.dll");
         IMUST::WindowsProcess wp(GetOJString("D:\\in.txt"), GetOJString("D:\\out.txt"));
@@ -478,6 +479,21 @@ int main()
     thread1.join();
     thread2.join();
     thread3.join();
+#endif
+
+// 测试filetool异常情况
+#if 1
+    IMUST::FileTool::RemoveFile(GetOJString("C:\\aaa"));
+    //IMUST::FileTool::RemoveFile(GetOJString("D:\\aaaaaa"));
+
+#endif
+
+// 解决日志中文乱码
+#if 1
+    setlocale(LC_ALL, "");
+    IMUST::ILogger *l = IMUST::LoggerFactory::getLogger(IMUST::LoggerId::AppInitLoggerId);
+    IMUST::OJString msg(GetOJString("中文"));
+    l->logDebug(msg); 
 #endif
 
     system("pause");

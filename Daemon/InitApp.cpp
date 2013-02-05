@@ -5,13 +5,14 @@
 #include "../judgerlib/logger/Logger.h"
 #include "../judgerlib/logger/Logger_log4cxx.h"
 #include "../judgerlib/config/AppConfig.h"
+#include "../judgerlib/platformlayer/PlatformLayer.h"
 
 namespace IMUST
 {
 
 bool InitApp()
 {
-    if (!details::InitLogger())
+    if (!details::InitAppInitLogger())
     {
         MessageBoxW(NULL, L"初始化日志系统失败", L"错误", MB_OK);
         return false;
@@ -26,6 +27,19 @@ bool InitApp()
         return false;
     }
 
+#define REG_LOGGER  LoggerFactory::registerLogger(new Log4CxxLoggerImpl(GetOJString("log.cfg") 
+
+    REG_LOGGER ,GetOJString("logger1")), LoggerId::Thread1LoggerId);
+    REG_LOGGER ,GetOJString("logger2")), LoggerId::Thread2LoggerId);
+    REG_LOGGER ,GetOJString("logger3")), LoggerId::Thread3LoggerId);
+    REG_LOGGER ,GetOJString("logger4")), LoggerId::Thread4LoggerId);
+    REG_LOGGER ,GetOJString("logger5")), LoggerId::Thread5LoggerId);
+    REG_LOGGER ,GetOJString("logger6")), LoggerId::Thread6LoggerId);
+    REG_LOGGER ,GetOJString("logger7")), LoggerId::Thread7LoggerId);
+    REG_LOGGER ,GetOJString("logger8")), LoggerId::Thread8LoggerId);
+
+#undef REG_LOGGER
+
     logger->logInfo(GetOJString("[Daemon] - IMUST::InitApp - Initialize application succeed"));
 
     return true;
@@ -34,12 +48,12 @@ bool InitApp()
 namespace details
 {
 
-bool InitLogger()
+bool InitAppInitLogger()
 {
     try
     {
         IMUST::LoggerFactory::registerLogger(
-            new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger1")), 
+            new IMUST::Log4CxxLoggerImpl(GetOJString("log.cfg"), GetOJString("logger0")), 
             IMUST::LoggerId::AppInitLoggerId);
     }
     catch (...)
