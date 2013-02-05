@@ -16,18 +16,26 @@ namespace IMUST
 {
 bool safeRemoveFile(const OJString & file)
 {
+    OJChar_t buffer[128];
+
     for(OJInt32_t i=0; i<10; ++i)
     {
-        if(FileTool::RemoveFile(file))
+        try
         {
-            return true;
+            if(FileTool::RemoveFile(file))
+            {
+                return true;
+            }
+        }
+        catch(...)
+        {
         }
         Sleep(1000);
-    }
 
-    OJString info = OJStr("remove file faild!");
-    info += file;
-    LoggerFactory::getLogger(LoggerId::AppInitLoggerId)->logError(info);
+        OJSprintf(buffer, OJStr("safeRemoveFile '%s' faild with %d times. code:%d"), 
+            file.c_str(), i+1, GetLastError());
+        LoggerFactory::getLogger(LoggerId::AppInitLoggerId)->logError(buffer);
+    }
 
     return false;
 }
@@ -203,9 +211,12 @@ void JudgeThread::operator()()
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
     FileTool::MakeDir(OJStr("work"));
-    OJChar_t buffer[64];
+    OJChar_t buffer[128];
     OJSprintf(buffer, OJStr("work/%d"), id_);
     FileTool::MakeDir(buffer);
+
+    OJSprintf(buffer, OJStr("[JudgeThread][%d]start..."), id_);
+    logger->logTrace(buffer);
 
     while (!g_sigExit)
     {
@@ -229,7 +240,8 @@ void JudgeThread::operator()()
         pTask->init(id_);
         if(!pTask->run())
         {
-            logger->logError(OJStr("System Error!Judge thread will exit!"));
+            OJSprintf(buffer, OJStr("[JudgeThread][%d]System Error!Judge thread will exit!"), id_);
+            logger->logError(buffer);
             break;
         }
 
@@ -240,6 +252,9 @@ void JudgeThread::operator()()
 
         Sleep(10);//防止线程过度繁忙
     }
+
+    OJSprintf(buffer, OJStr("[JudgeThread][%d]end."), id_);
+    logger->logTrace(buffer);
 
 }
 

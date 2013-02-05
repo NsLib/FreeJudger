@@ -45,31 +45,43 @@ Log4CxxLoggerImpl::~Log4CxxLoggerImpl()
 void Log4CxxLoggerImpl::logFatal(const OJString &msg) const
 {
     (*logger_)->fatal(msg);
+
+    DEBUG_MSG(msg.c_str());
 }
 
 void Log4CxxLoggerImpl::logError(const OJString &msg) const
 {
     (*logger_)->error(msg);
+
+    DEBUG_MSG(msg.c_str());
 }
 
 void Log4CxxLoggerImpl::logWarn(const OJString &msg) const
 {
     (*logger_)->warn(msg);
+
+    DEBUG_MSG(msg.c_str());
 }
 
 void Log4CxxLoggerImpl::logInfo(const OJString &msg) const
 {
     (*logger_)->info(msg);
+
+    DEBUG_MSG(msg.c_str());
 }
 
 void Log4CxxLoggerImpl::logDebug(const OJString &msg) const
 {
     (*logger_)->debug(msg);
+
+    DEBUG_MSG(msg.c_str());
 }
 
 void Log4CxxLoggerImpl::logTrace(const OJString &msg) const
 {
     (*logger_)->trace(msg);
+
+    DEBUG_MSG(msg.c_str());
 }
 
 }

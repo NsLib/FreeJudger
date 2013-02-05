@@ -50,7 +50,7 @@ typedef             unsigned long long              OJUInt64_t;
         (handle) = NULL;                    \
     }
 
-
+#define DEBUG_MSG   OutputDebugString
 
 }
 
