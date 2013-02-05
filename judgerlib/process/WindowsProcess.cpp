@@ -25,17 +25,19 @@ WindowsProcessInOut::~WindowsProcessInOut()
     SAFE_CLOSE_HANDLE_AND_RESET(outputFileHandle_)
 }
 
-HANDLE WindowsProcessInOut::createInputFile()
+bool WindowsProcessInOut::createInputFile()
 {
-	if (inputFileName_.empty())
-		return NULL;
+    SAFE_CLOSE_HANDLE_AND_RESET(inputFileHandle_);
+
+	if (inputFileName_.empty())//如果文件名为空，表示不需要此句柄
+		return true;
 
 	SECURITY_ATTRIBUTES saAttr = {0};
 	saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
 	saAttr.bInheritHandle = TRUE; 
 	saAttr.lpSecurityDescriptor = NULL;
 
-    HANDLE handle = CreateFileW(inputFileName_.c_str(),
+    inputFileHandle_ = CreateFileW(inputFileName_.c_str(),
                                 GENERIC_READ,          	
                                 FILE_SHARE_READ,       	
                                 &saAttr,                  
@@ -43,29 +45,31 @@ HANDLE WindowsProcessInOut::createInputFile()
                                 FILE_ATTRIBUTE_NORMAL,
                                 NULL);
 
-	if (INVALID_HANDLE_VALUE == handle)
+	if (INVALID_HANDLE_VALUE == inputFileHandle_)
 	{
         ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
         OJString msg(GetOJString("[process] - IMUST::WindowsProcessInOut::createInputFile - can't open input file: "));
         msg += inputFileName_;
         logger->logError(msg);
-        handle = NULL;
+        inputFileHandle_ = NULL;
 	}
 
-	return handle;
+	return inputFileHandle_ != NULL;
 }
 
-HANDLE WindowsProcessInOut::createOutputFile()
+bool WindowsProcessInOut::createOutputFile()
 {
-    if (outputFileName_.empty())
-        return NULL;
+    SAFE_CLOSE_HANDLE_AND_RESET(outputFileHandle_);
+
+    if (outputFileName_.empty())//如果文件名为空，表示不需要此句柄
+        return true;
 
     SECURITY_ATTRIBUTES saAttr = {0};
     saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
     saAttr.bInheritHandle = TRUE; 
     saAttr.lpSecurityDescriptor = NULL;
 
-    HANDLE handle = CreateFileW(outputFileName_.c_str(),
+    outputFileHandle_ = CreateFileW(outputFileName_.c_str(),
                                 GENERIC_WRITE, 
                                 FILE_SHARE_READ,
                                 &saAttr,                   	
@@ -73,16 +77,16 @@ HANDLE WindowsProcessInOut::createOutputFile()
                                 FILE_ATTRIBUTE_NORMAL,
                                 NULL);
 
-	if (INVALID_HANDLE_VALUE == handle)
+	if (INVALID_HANDLE_VALUE == outputFileHandle_)
 	{
         ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
         OJString msg(GetOJString("[process] - IMUST::WindowsProcessInOut::createOutputFile - can't create output file: "));
         msg += outputFileName_;
         logger->logError(msg);
-        handle = NULL;
+        outputFileHandle_ = NULL;
 	}
 
-    return handle;
+    return outputFileHandle_ != NULL;
 }
 
 WindowsJob::WindowsJob() :
@@ -93,8 +97,8 @@ WindowsJob::WindowsJob() :
 
 WindowsJob::~WindowsJob()
 {
-    SAFE_CLOSE_HANDLE_AND_RESET(jobHandle_)
     SAFE_CLOSE_HANDLE_AND_RESET(iocpHandle_)
+    SAFE_CLOSE_HANDLE_AND_RESET(jobHandle_)
 }
 
 bool WindowsJob::create(LPSECURITY_ATTRIBUTES lpJobAttributes)
@@ -250,6 +254,11 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
 								const OJInt32_t memoryLimit,
 								bool startImmediately)
 {
+    if(!createInputFile() || !createOutputFile())
+    {
+        return -1;
+    }
+
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
     logger->logTrace(GetOJString("[process] - IMUST::WindowsProcess::create"));
 
@@ -274,28 +283,11 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
     ZeroMemory(&si, sizeof(si));
     ZeroMemory(&pi, sizeof(pi)); 
 	
-	//si.wShowWindow = SW_SHOWNORMAL;
 	si.cb = sizeof(si); 
-    si.hStdInput = createInputFile();
-    si.hStdOutput = si.hStdError = createOutputFile();
-    si.dwFlags = STARTF_USESTDHANDLES;
-
-#if 0
-    if (NULL == si.hStdInput)
-    {
-        OJString msg(GetOJString("[process] - IMUST::WindowsProcess::create - can't open input file: "));
-        msg += inputFileName_;
-        logger->logError(msg);
-        return -1;
-    }
-    if (NULL == si.hStdOutput)
-    {
-        OJString msg(GetOJString("[process] - IMUST::WindowsProcess::create - can't create output file: "));
-        msg += outputFileName_;
-        logger->logError(msg);
-        return -1;
-    }
-#endif
+	si.wShowWindow = SW_HIDE;
+    si.hStdInput = inputFileHandle_;
+    si.hStdOutput = si.hStdError = outputFileHandle_;
+    si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
 	
 	bool res =  !!CreateProcess(NULL,    //   No module name (use command line).   
 		cmdline, //   Command line.   
@@ -309,9 +301,6 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
 		&pi);    //   Pointer to PROCESS_INFORMAT\ION structure.
 
     
-    SAFE_CLOSE_HANDLE_AND_RESET(inputFileHandle_)
-    SAFE_CLOSE_HANDLE_AND_RESET(outputFileHandle_)
-
 	if (!res)
     {
         logger->logError(GetOJString("[process] - IMUST::WindowsProcess::create - can't creat process"));
@@ -339,7 +328,9 @@ OJInt32_t WindowsProcess::start()
     }
 
     ResumeThread(threadHandle_);
-
+    
+    SAFE_CLOSE_HANDLE_AND_RESET(inputFileHandle_)
+    SAFE_CLOSE_HANDLE_AND_RESET(outputFileHandle_)
     SAFE_CLOSE_HANDLE_AND_RESET(threadHandle_)
 
 

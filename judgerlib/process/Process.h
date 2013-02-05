@@ -38,8 +38,8 @@ public:
 	virtual ~WindowsProcessInOut();
 
 protected:
-    virtual HANDLE createInputFile();
-    virtual HANDLE createOutputFile();
+    virtual bool createInputFile();
+    virtual bool createOutputFile();
 
 protected:
     HANDLE		inputFileHandle_;
