@@ -20,15 +20,9 @@ bool safeRemoveFile(const OJString & file)
 
     for(OJInt32_t i=0; i<10; ++i)
     {
-        try
+        if(FileTool::RemoveFile(file))
         {
-            if(FileTool::RemoveFile(file))
-            {
-                return true;
-            }
-        }
-        catch(...)
-        {
+            return true;
         }
         Sleep(1000);
 

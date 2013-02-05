@@ -140,13 +140,13 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
     ZeroMemory(&subProcessLimitRes, sizeof(subProcessLimitRes));
 
     JOBOBJECT_BASIC_LIMIT_INFORMATION & basicInfo = subProcessLimitRes.BasicLimitInformation;
-    basicInfo.LimitFlags = JOB_OBJECT_LIMIT_PROCESS_TIME| \
+    basicInfo.LimitFlags = JOB_OBJECT_LIMIT_JOB_TIME| \
         JOB_OBJECT_LIMIT_PRIORITY_CLASS| \
-        JOB_OBJECT_LIMIT_PROCESS_MEMORY| \
+        JOB_OBJECT_LIMIT_JOB_MEMORY| \
         JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION;
     basicInfo.PriorityClass = NORMAL_PRIORITY_CLASS;      //优先级为默认
-    basicInfo.PerProcessUserTimeLimit.QuadPart = limitTime; //子进程执行时间ns(1s=10^9ns)
-    subProcessLimitRes.ProcessMemoryLimit = limitMemory;    //内存限制
+    basicInfo.PerJobUserTimeLimit.QuadPart = limitTime; //子进程执行时间ns(1s=10^9ns)
+    subProcessLimitRes.JobMemoryLimit = limitMemory;    //内存限制
 
     if (!setInformation(JobObjectExtendedLimitInformation, &subProcessLimitRes, sizeof(subProcessLimitRes)))
     {
@@ -342,8 +342,7 @@ OJInt32_t WindowsProcess::start()
 
     SAFE_CLOSE_HANDLE_AND_RESET(threadHandle_)
 
-#define OutputMsg(format) printf(format "\n")
-    
+
 	DWORD ExecuteResult = -1;  
 	ULONG completeKey;  
 	LPOVERLAPPED processInfo;  
@@ -355,52 +354,56 @@ OJInt32_t WindowsProcess::start()
 		switch (ExecuteResult)   
 		{  
 		case JOB_OBJECT_MSG_NEW_PROCESS:    
-            OutputMsg("JOB_OBJECT_MSG_NEW_PROCESS");
+            DEBUG_MSG(OJStr("JOB_OBJECT_MSG_NEW_PROCESS"));
 			break;
 		case JOB_OBJECT_MSG_END_OF_JOB_TIME:  
-            OutputMsg("Job time limit reached"); 
+            DEBUG_MSG(OJStr("Job time limit reached")); 
 			exitCode_ = 1;  
 			done = true;  
 			break;  
 		case JOB_OBJECT_MSG_END_OF_PROCESS_TIME:   
-			OutputMsg("Job process time limit reached");
+			DEBUG_MSG(OJStr("Job process time limit reached"));
 			exitCode_ = 1;  
 			done = true;  
 			break;  
 		case JOB_OBJECT_MSG_PROCESS_MEMORY_LIMIT:   
-            OutputMsg("Process exceeded memory limit");  
+            DEBUG_MSG(OJStr("Process exceeded memory limit"));  
 			exitCode_ = 2;  
 			done = true;  
 			break;  
 		case JOB_OBJECT_MSG_JOB_MEMORY_LIMIT:   
-            OutputMsg("Process exceeded job memory limit");
+            DEBUG_MSG(OJStr("Process exceeded job memory limit"));
 			exitCode_ = 2;  
 			done = true;  
 			break;  
 		case JOB_OBJECT_MSG_ACTIVE_PROCESS_LIMIT:  
-            OutputMsg("Too many active processes in job");
+            DEBUG_MSG(OJStr("Too many active processes in job"));
 			break;  
 		case JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO:  
-            OutputMsg("Job contains no active processes"); 
+            DEBUG_MSG(OJStr("Job contains no active processes")); 
 			done = true;  
 			break;
 		case JOB_OBJECT_MSG_EXIT_PROCESS:   
-            OutputMsg("Process terminated");
+            DEBUG_MSG(OJStr("Process terminated"));
 			done = true;  
 			break;  
 		case JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS:   
-            OutputMsg("Process terminated abnormally");
+            DEBUG_MSG(OJStr("Process terminated abnormally"));
 			exitCode_ = 3;  
 			done = true;  
 			break;  
 		default:  
-            OutputMsg("Unknown notification");
+            DEBUG_MSG(OJStr("Unknown notification"));
 			exitCode_ = 99;  
 			break;  
 		}  
 	}  
 
-    jobHandle_.terminate();
+    while(!jobHandle_.terminate())
+    {
+        DEBUG_MSG(OJStr("terminate job faild!"));
+        Sleep(1000);
+    }
 
     //SAFE_CLOSE_HANDLE_AND_RESET(processHandle_)
 	/*

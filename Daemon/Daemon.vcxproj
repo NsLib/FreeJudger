@@ -55,7 +55,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>logger.lib;config.lib;xml.lib;taskmanager.lib;sql.lib;filetool.lib;process.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>logger.lib;config.lib;xml.lib;taskmanager.lib;sql.lib;filetool.lib;process.lib;util.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
