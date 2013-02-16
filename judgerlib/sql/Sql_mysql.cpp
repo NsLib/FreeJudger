@@ -95,9 +95,20 @@ bool MySqlImpl::setCharSet(const OJString & charset)
     return setOption(MYSQL_SET_CHARSET_NAME, charset.c_str());
 }
 
-void MySqlImpl::escapeString(OJString & str)
+OJString MySqlImpl::escapeString(const OJString & str)
 {
-    assert(false && "MySqlImpl::escapeString not implement!");
+    if(str.empty())
+    {
+        return str;
+    }
+
+    std::string ansicStr = StringConvert::OJStringToNarrowString(str);
+    
+    std::string destStr(ansicStr.length()*2, '\0');
+    size_t pos = mysql_real_escape_string(&mysql_, &destStr[0], ansicStr.c_str(), ansicStr.length());
+    destStr.erase(pos);
+
+    return StringConvert::NarrowStringToOJString(destStr);
 }
 
 bool MySqlImpl::query(const OJString & sqlString)

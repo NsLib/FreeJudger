@@ -3,6 +3,7 @@
 #include "../taskmanager/TaskManager.h"
 
 #include "../config/AppConfig.h"
+#include "../logger/Logger.h"
 
 #pragma warning(push)
 #pragma warning(disable:4996)
@@ -83,17 +84,19 @@ DBManager::~DBManager(void)
 
 bool DBManager::run()
 {
-    assert(sqlDriver_->valid() && "sql driver not valid!");
+    assert(sqlDriver_->valid() && "[DBManager]sql driver not valid!");
+
+    ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
     if(!readTasks())
     {
-        OJCout<<OJStr("read task faild!")<<sqlDriver_->getErrorString()<<std::endl;
+        logger->logError(GetOJString("[DBManager]read task faild!") + sqlDriver_->getErrorString());
         return false;
     }
 
     if(!writeFinishedTask())
     {
-        OJCout<<OJStr("write task faild!")<<sqlDriver_->getErrorString()<<std::endl;
+        logger->logError(GetOJString("[DBManager]write task faild!") + sqlDriver_->getErrorString());
         return false;
     }
 
@@ -200,7 +203,7 @@ OJInt32_t DBManager::readTaskData(TaskInputData & taskData)
     if(taskData.ProblemID == 0) //IDE测试功能
     {
         taskData.LimitTime = 5; //s
-        taskData.LimitMemory = 10;//m
+        taskData.LimitMemory = 20;//m
 
         //读取用户输入的测试数据
         OJSprintf(buffer, Statement::SelectCustomInput1.c_str(), taskData.SolutionID);
@@ -227,6 +230,14 @@ OJInt32_t DBManager::readTaskData(TaskInputData & taskData)
 
         taskData.LimitTime = (*tempRow)[0].getInt32();
         taskData.LimitMemory = (*tempRow)[1].getInt32();
+        
+    }
+
+    taskData.LimitTime *= 1000;
+    taskData.LimitMemory *= 1024*1024;
+    if(taskData.LimitMemory <= 0)
+    {
+        taskData.LimitMemory = 128*1024*1024;
     }
 
     //读取代码
@@ -332,8 +343,10 @@ bool DBManager::writeToDB(const ITask* pTask)
             return false;
         }
 
+        OJString compileError = sqlDriver_->escapeString(output.CompileError);
+
         OJSprintf(buffer, Statement::InsertCompile2.c_str(), 
-            input.SolutionID, output.CompileError.c_str());
+            input.SolutionID, compileError.c_str());
         if(!sqlDriver_->query(buffer))
         {
             return false;
@@ -347,8 +360,10 @@ bool DBManager::writeToDB(const ITask* pTask)
             return false;
         }
 
+        OJString runtimeError = sqlDriver_->escapeString(output.RunTimeError);
+
         OJSprintf(buffer, Statement::InsertRuntime2.c_str(), 
-            input.SolutionID, output.RunTimeError.c_str());
+            input.SolutionID, runtimeError.c_str());
         if(!sqlDriver_->query(buffer))
         {
             return false;

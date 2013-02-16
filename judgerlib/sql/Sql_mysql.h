@@ -36,7 +36,7 @@ public:
 
     virtual bool setCharSet(const OJString & charset);
 
-    virtual void escapeString(OJString & str);
+    virtual OJString escapeString(const OJString & str);
 
     virtual bool query(const OJString & sqlString);
 
