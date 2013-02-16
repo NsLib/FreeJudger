@@ -10,18 +10,39 @@ namespace IMUST
 namespace CompileArg
 {
     const OJInt32_t limitTime = 20000;
-    const OJInt32_t limitMemory = 128*1024;
+    const OJInt32_t limitMemory = 32*1024*1024;
 
     const OJString gcc = OJStr("gcc %s -o %s");
     const OJString gPlus = OJStr("g++ %s -o %s");
     const OJString java = OJStr("javac %s");
 }
 
+ICompiler::ICompiler()
+    : result_(ProcessExitCode::SystemError)
+{
+}
+ICompiler::~ICompiler()
+{
+}
+
+bool ICompiler::isAccept()
+{
+    return result_ == ProcessExitCode::Success;
+}
+bool ICompiler::isSystemError()
+{
+    return result_ == ProcessExitCode::SystemError;
+}
+bool ICompiler::isCompileError()
+{
+    return result_ == ProcessExitCode::RuntimeError;
+}
+
 
 class CCompiler : public ICompiler
 {
 public:
-    virtual OJInt32_t run(
+    virtual bool run(
         const OJString & codeFile,
         const OJString & exeFile,
         const OJString & compileFile)
@@ -31,14 +52,16 @@ public:
 
         IMUST::WindowsProcess wp(OJStr(""), compileFile);
         wp.create(buffer, CompileArg::limitTime, CompileArg::limitMemory);
-        return wp.getExitCode();
+        result_ = wp.getExitCodeEx();
+
+        return isAccept();
     }
 };
 
 class CppCompiler : public ICompiler
 {
 public:
-    virtual OJInt32_t run(
+    virtual bool run(
         const OJString & codeFile,
         const OJString & exeFile,
         const OJString & compileFile)
@@ -48,14 +71,16 @@ public:
 
         IMUST::WindowsProcess wp(GetOJString(""), compileFile);
         wp.create(buffer, CompileArg::limitTime, CompileArg::limitMemory);
-        return wp.getExitCode();
+        result_ = wp.getExitCodeEx();
+
+        return isAccept();
     }
 };
 
 class JavaCompiler : public ICompiler
 {
 public:
-    virtual OJInt32_t run(
+    virtual bool run(
         const OJString & codeFile,
         const OJString & exeFile,
         const OJString & compileFile)
@@ -65,7 +90,9 @@ public:
 
         IMUST::WindowsProcess wp(GetOJString(""), compileFile);
         wp.create(buffer, CompileArg::limitTime, CompileArg::limitMemory);
-        return wp.getExitCode();
+        result_ = wp.getExitCodeEx();
+
+        return isAccept();
     }
 };
 

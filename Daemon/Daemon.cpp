@@ -61,6 +61,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
         workingTaskMgr, finishedTaskMgr, taskFactory));
 
     
+    if(false && NULL == LoadLibraryW(L"windowsapihook.dll"))
+    {
+        logger->logWarn(GetOJString("[Daemon] - WinMain - load hook dll faild! - "));
+    }
     IMUST::FileTool::MakeDir(OJStr("work"));
 
     typedef std::shared_ptr<IMUST::Thread> ThreadPtr;

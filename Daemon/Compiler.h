@@ -9,10 +9,19 @@ namespace IMUST
 class ICompiler
 {
 public:
-    virtual OJInt32_t run(
+    ICompiler();
+    virtual ~ICompiler();
+
+    virtual bool run(
         const OJString & codeFile,
         const OJString & exeFile,
         const OJString & compileFile) = 0;
+
+    bool isAccept();
+    bool isSystemError();
+    bool isCompileError();
+protected:
+    OJInt32_t result_;
 };
 
 typedef std::shared_ptr<ICompiler> CompilerPtr;

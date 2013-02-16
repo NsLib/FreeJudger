@@ -30,7 +30,7 @@ public:
 
 private:
 
-    bool doRun();
+    void doRun();
 
     bool doClean();
 
@@ -49,6 +49,9 @@ private:
     OJString        codeFile_;
     OJString        exeFile_;
     OJString        compileFile_;
+    OJString        userOutputFile_;
+    OJString        answerInputFile_;
+    OJString        answerOutputFile_;
 };
 
 class JudgeThread

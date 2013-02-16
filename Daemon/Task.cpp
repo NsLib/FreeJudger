@@ -6,6 +6,8 @@
 
 
 #include "Compiler.h"
+#include "Excuter.h"
+#include "Matcher.h"
 
 extern bool g_sigExit;
 
@@ -14,17 +16,20 @@ extern bool g_sigExit;
 
 namespace IMUST
 {
+/* 延迟删除文件。
+当某子进程尚未完全退出时，他占用的文件再次被打开或删除，都会失败。故作延迟，等待一段时间。
+如果文件始终无法删除，将表示该子进程无法退出，这将是一个致命错误，评判线程应当结束。 */
 bool safeRemoveFile(const OJString & file)
 {
     OJChar_t buffer[128];
 
-    for(OJInt32_t i=0; i<10; ++i)
+    for(OJInt32_t i=0; i<10; ++i)//尝试删除10次
     {
         if(FileTool::RemoveFile(file))
         {
             return true;
         }
-        Sleep(1000);
+        OJSleep(1000);
 
         OJSprintf(buffer, OJStr("safeRemoveFile '%s' faild with %d times. code:%d"), 
             file.c_str(), i+1, GetLastError());
@@ -34,6 +39,8 @@ bool safeRemoveFile(const OJString & file)
     return false;
 }
 
+//获得文件扩展名
+//TODO: 将语言用到的数字，用常量代替。
 OJString getLanguageExt(OJInt32_t language)
 {
     if(language == 0)
@@ -80,6 +87,9 @@ void JudgeTask::init(OJInt32_t judgeID)
 
     OJSprintf(buffer, OJStr("work\\%d\\compile.txt"), judgeID_);
     compileFile_ = buffer;
+
+    OJSprintf(buffer, OJStr("work\\%d\\output.txt"), judgeID_);
+    userOutputFile_ = buffer;
 }
 
 bool JudgeTask::run()
@@ -88,55 +98,81 @@ bool JudgeTask::run()
 
     if(!doClean())
     {
-        return false;
+        return false;//致命错误
     }
 
     return true;
 }
 
-bool JudgeTask::doRun()
+void JudgeTask::doRun()
 {
-    static ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
-    OJChar_t buf[256];
-    OJSprintf(buf, OJStr("task %d"), Input.SolutionID);
-    OJString str(buf);
-    logger->logInfo(str);
+    ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
+    OJChar_t buf[256];
+
+    OJSprintf(buf, OJStr("[JudgeTask] task %d"), Input.SolutionID);
+    logger->logInfo(buf);
+
+    //编译
     if(!compile())
     {
-        return false;
+        return;
     }
 
-    //TODO: 搜索测试数据
+    //搜索测试数据
+    //TODO: 根据是否specialJudge，决定搜索.out还是.in文件。
 
+    OJSprintf(buf, OJStr("/%d"), Input.ProblemID);
+    OJString path = AppConfig::Path::TestDataPath;
+    path += buf;
 
-    OJInt32_t testCount = 1;
+    logger->logTrace(OJString(OJStr("[JudgeTask] searche path: "))+path);
+
+    FileTool::FileNameList fileList;
+    FileTool::GetSpecificExtFiles(fileList, path, OJStr(".out"), true);
+
+    OJUInt32_t testCount = fileList.size();
     if(testCount <= 0)
     {
         output_.Result = AppConfig::JudgeCode::SystemError;
 
-        OJSprintf(buf, OJStr("not found test data for solution %d problem %d."),
+        OJSprintf(buf, OJStr("[JudgeTask] not found test data for solution %d problem %d."),
             Input.SolutionID, Input.ProblemID);
         logger->logError(buf);
-        return false;
+        return;
     }
 
-    OJInt32_t accepted = 0;
-    for(OJInt32_t i=0; i<testCount; ++i)
+    //测试多组数据
+    OJUInt32_t accepted = 0;
+    for(OJUInt32_t i=0; i<testCount; ++i)
     {
-        if(!excute())
+        answerOutputFile_ = fileList[i];
+        answerInputFile_ = FileTool::RemoveFileExt(answerOutputFile_);
+        answerInputFile_ += OJStr(".in");
+
+        logger->logTrace(OJString(OJStr("[JudgeTask] input file: ")) + answerInputFile_);
+        logger->logTrace(OJString(OJStr("[JudgeTask] output file: ")) + answerOutputFile_);
+
+        if(!safeRemoveFile(userOutputFile_))
         {
-            continue;
+            output_.Result = AppConfig::JudgeCode::SystemError;
+            break;
         }
 
-        if(match())
+        if(!excute())
         {
-            ++accepted;
+            break;
         }
+            
+        if(!match())
+        {
+            break;
+        }
+        
+        ++accepted;
     }
 
     output_.PassRate = float(accepted)/testCount;
-    return true;
 }
 
 bool JudgeTask::doClean()
@@ -148,6 +184,10 @@ bool JudgeTask::doClean()
         faild = true;
     }
     if(!safeRemoveFile(exeFile_))
+    {
+        faild = true;
+    }
+    if(!safeRemoveFile(userOutputFile_))
     {
         faild = true;
     }
@@ -166,28 +206,99 @@ bool JudgeTask::doClean()
 
 bool JudgeTask::compile()
 {
-    static ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    logger->logTrace(OJStr("[JudgeTask] start compile..."));
+    
     CompilerPtr compiler = CompilerFactory::create(Input.Language);
-    OJInt32_t code = compiler->run(codeFile_, exeFile_, compileFile_);
-    if(code != 0)
+    compiler->run(codeFile_, exeFile_, compileFile_);
+
+    if(compiler->isAccept())
+    {
+        output_.Result = AppConfig::JudgeCode::Accept;
+    }
+    else if(compiler->isSystemError())
+    {
+        output_.Result = AppConfig::JudgeCode::SystemError;
+    }
+    else if(compiler->isCompileError())
     {
         output_.Result = AppConfig::JudgeCode::CompileError;
         
-        //TODO: 读取编译错误信息
-        
+        std::vector<OJChar_t> buffer;
+        if(FileTool::ReadFile(buffer, compileFile_) && !buffer.empty())
+        {
+            output_.CompileError = &buffer[0];
+        }
     }
 
-    return code == 0;
+    return compiler->isAccept();
 }
 
 bool JudgeTask::excute()
 {
-    return false;
+    ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    logger->logTrace(OJStr("[JudgeTask] start excute..."));
+
+    ExcuterPtr excuter = ExcuterFactory::create(Input.Language);
+    excuter->run(exeFile_, answerInputFile_, userOutputFile_, Input.LimitTime, Input.LimitMemory);
+    
+    if(excuter->isAccept())
+    {
+        output_.Result = AppConfig::JudgeCode::Accept;
+    }
+    else if(excuter->isSystemError())
+    {
+        output_.Result = AppConfig::JudgeCode::SystemError;
+    }
+    else if(excuter->isOutputOutOfLimited())
+    {
+        output_.Result = AppConfig::JudgeCode::OutputLimited;
+    }
+    else if(excuter->isTimeOutOfLimited())
+    {
+        output_.Result = AppConfig::JudgeCode::TimeLimitExceed;
+    }
+    else if(excuter->isMemoryOutOfLimited())
+    {
+        output_.Result = AppConfig::JudgeCode::MemoryLimitExceed;
+    }
+    else if(excuter->isRuntimeError())
+    {
+        output_.Result = AppConfig::JudgeCode::RuntimeError;
+    }
+
+    output_.RunTime = excuter->getRunTime();
+    output_.RunMemory = excuter->getRunMemory();
+
+    return excuter->isAccept();
 }
 
 bool JudgeTask::match()
 {
-    return false;
+    ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    logger->logTrace(OJStr("[JudgeTask] start match..."));
+
+    MatcherPtr matcher = MatcherFactory::create();
+    matcher->run(answerOutputFile_, userOutputFile_);
+
+    if(matcher->isAccept())
+    {
+        output_.Result = AppConfig::JudgeCode::Accept;
+    }
+    else if(matcher->isPresentError())
+    {
+        output_.Result = AppConfig::JudgeCode::PresentError;
+    }
+    else if(matcher->isWrongAnswer())
+    {
+        output_.Result = AppConfig::JudgeCode::WrongAnswer;
+    }
+    else if(matcher->isSystemError())
+    {
+        output_.Result = AppConfig::JudgeCode::SystemError;
+    }
+
+    return matcher->isAccept();
 }
 
 
@@ -226,7 +337,7 @@ void JudgeThread::operator()()
 
         if(!pTask)//没有任务
         {
-            Sleep(1000);
+            OJSleep(1000);
             continue;
         }
 
@@ -243,7 +354,7 @@ void JudgeThread::operator()()
         finisheTaskMgr_->addTask(pTask);
         finisheTaskMgr_->unlock();
 
-        Sleep(10);//防止线程过度繁忙
+        OJSleep(10);//防止线程过度繁忙
     }
 
     OJSprintf(buffer, OJStr("[JudgeThread][%d]end."), id_);
@@ -270,19 +381,19 @@ JudgeDBRunThread::JudgeDBRunThread(IMUST::DBManagerPtr dbm)
 void JudgeDBRunThread::operator()()
 {
     IMUST::ILogger *logger = IMUST::LoggerFactory::getLogger(IMUST::LoggerId::AppInitLoggerId);
-    logger->logTrace(GetOJString("db thread start..."));
+    logger->logTrace(GetOJString("[DBThread] thread start..."));
 
     while(!g_sigExit)
     {
         if(!dbm_->run())
         {
-            logger->logError(GetOJString("db thread was dead!"));
+            logger->logError(GetOJString("[DBThread] thread was dead!"));
             break;
         }
-        Sleep(100);
+        OJSleep(100);
     }
 
-    logger->logTrace(GetOJString("db thread end."));
+    logger->logTrace(GetOJString("[DBThread] thread end."));
 }
 
 }   // namespace IMUST
