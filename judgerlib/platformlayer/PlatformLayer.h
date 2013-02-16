@@ -40,6 +40,7 @@ typedef             unsigned long long              OJUInt64_t;
 
 #define OJSprintf   swprintf
 #define OJSscanf    swscanf
+#define OJSleep     Sleep
 
 #define JUDGER_SAFE_DELETE_OBJ_AND_RESET(obj)       \
     if ((obj))                                      \
