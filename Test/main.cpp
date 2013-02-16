@@ -124,7 +124,7 @@ struct TaskThread
             {
                 g_taskManager.popTask()->run();
                 g_taskManager.unlock();
-                Sleep(50);
+                OJSleep(50);
             } 
             else
             {
@@ -138,7 +138,7 @@ struct TaskThread
                     g_taskManager.addTask(new IMUST::MockTask(i));
                 j += 10;
                 g_taskManager.unlock();
-                Sleep(50);
+                OJSleep(50);
             }
         }
 
@@ -171,7 +171,7 @@ struct Task2Thread
 
             if(!pTask)
             {
-                Sleep(1000);
+                OJSleep(1000);
                 continue;
             }
 
@@ -181,7 +181,7 @@ struct Task2Thread
             finisheTaskMgr_->addTask(pTask);
             finisheTaskMgr_->unlock();
 
-            Sleep(100);
+            OJSleep(100);
         }
 
         OJCout<<GetOJString("thread:")<< id_ <<GetOJString("exit.")<<endl;
@@ -208,7 +208,7 @@ struct DB2Thread
                 OJCout<<GetOJString("db thread dead!")<<std::endl;
                 break;
             }
-            Sleep(1000);
+            OJSleep(1000);
         }
     }
 
@@ -303,11 +303,15 @@ int main()
 #endif
 
 // 测试进程
-#if 0
+#if 1
     {
-        //LoadLibraryW(L"windowsapihook.dll");
-        IMUST::WindowsProcess wp(GetOJString("D:\\in.txt"), GetOJString("D:\\out.txt"));
-        wp.create(GetOJString("D:\\Code\\USACO\\Debug\\USACO.exe"), 1000, 100 * 1000);
+        LoadLibraryW(L"windowsapihook.dll");
+
+        MessageBoxA(NULL, "not hooked", "", MB_OK);
+        MessageBoxW(NULL, L"not hooked", L"", MB_OK);
+
+        IMUST::WindowsProcess wp(GetOJString(""), GetOJString(""));
+        wp.create(GetOJString("calc.exe"), 10000, 100 * 1024);
         wp.getExitCode();
     }
 
@@ -482,14 +486,14 @@ int main()
 #endif
 
 // 测试filetool异常情况
-#if 1
+#if 0
     IMUST::FileTool::RemoveFile(GetOJString("C:\\aaa"));
     //IMUST::FileTool::RemoveFile(GetOJString("D:\\aaaaaa"));
 
 #endif
 
 // 解决日志中文乱码
-#if 1
+#if 0
     setlocale(LC_ALL, "");
     IMUST::ILogger *l = IMUST::LoggerFactory::getLogger(IMUST::LoggerId::AppInitLoggerId);
     IMUST::OJString msg(GetOJString("中文"));
