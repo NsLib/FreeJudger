@@ -7,6 +7,15 @@
 
 namespace IMUST
 {
+namespace ProcessExitCode
+{
+    const OJInt32_t Success         = 0;
+    const OJInt32_t SystemError     = 1;
+    const OJInt32_t RuntimeError    = 2;
+    const OJInt32_t TimeLimited     = 3;
+    const OJInt32_t MemoryLimited   = 4;
+    const OJInt32_t UnknowCode      = 99;
+}
 
 class JUDGER_API IProcess
 {
@@ -66,6 +75,10 @@ public:
                 ULONG &completionKey, 
                 LPOVERLAPPED &processInfo, 
                 const DWORD time = INFINITE);
+    bool queryInformation(JOBOBJECTINFOCLASS informationClass,
+        LPVOID lpInformation,
+        DWORD cbInformationLength,
+        LPDWORD lpReturnLength);
 
 private:
     bool setInformation(JOBOBJECTINFOCLASS infoClass,
@@ -99,6 +112,9 @@ public:
     virtual OJInt32_t join(OJInt32_t time);
     virtual OJInt32_t getExitCode();
     virtual void kill();
+    OJInt32_t getExitCodeEx(){ return exitCode_; }
+    OJInt32_t getRunTime();
+    OJInt32_t getRunMemory();
 
 private:
     HANDLE		processHandle_;
