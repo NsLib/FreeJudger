@@ -21,6 +21,7 @@ OJString GetFullFileName(const OJString &path);
 OJString GetFilePath(const OJString &path);
 OJString GetFileName(const OJString &path);
 OJString GetFileExt(const OJString &path);
+OJString RemoveFileExt(const OJString & path);
 bool GetSpecificExtFiles(FileNameList &files,
     const OJString &path,
     const OJString &ext,

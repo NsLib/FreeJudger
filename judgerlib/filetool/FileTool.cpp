@@ -205,6 +205,21 @@ OJString GetFileName(const OJString &path)
     return res;
 }
 
+OJString RemoveFileExt(const OJString & path)
+{
+    OJString res(path);
+    if (!res.empty())
+    {
+        OJString::size_type pos = res.find_last_of(OJCh('.'));
+        if(pos != res.npos)
+        {
+            res.erase(pos);
+        }
+    }
+
+    return res;
+}
+
 OJString GetFileExt(const OJString &path)
 {
     return fs::path(path).extension().wstring();
