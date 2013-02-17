@@ -1,6 +1,7 @@
 
 #include "Process.h"
 #include "../logger/Logger.h"
+#include "../util/Utility.h"
 
 
 namespace IMUST
@@ -326,7 +327,11 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
     
 	if (!res)
     {
-        logger->logError(GetOJString("[process] - IMUST::WindowsProcess::create - can't creat process"));
+        OJChar_t buffer[256];
+        OJSprintf(buffer, 
+            OJStr("[process] - IMUST::WindowsProcess::create - can't creat process. last error: %u"), 
+            GetLastError());
+        logger->logError(buffer);
         return -1;
     }
 		
@@ -350,6 +355,7 @@ OJInt32_t WindowsProcess::start()
         return -1;
     }
 
+
     ResumeThread(threadHandle_);
     
     SAFE_CLOSE_HANDLE_AND_RESET(inputFileHandle_)
@@ -364,12 +370,18 @@ OJInt32_t WindowsProcess::start()
 	bool done = false;  
 	while(!done)  
 	{
-        jobHandle_.getState(ExecuteResult, completeKey, processInfo);
+        if(!jobHandle_.getState(ExecuteResult, completeKey, processInfo))
+        {
+            DEBUG_MSG(OJStr("get job State faild!"));
+            OJSleep(10);
+            continue;
+        }
+        DWORD dwCode = (DWORD)processInfo;
 
 		switch (ExecuteResult)   
 		{  
 		case JOB_OBJECT_MSG_NEW_PROCESS:    
-            DEBUG_MSG(OJStr("[WindowsProcess]JOB_OBJECT_MSG_NEW_PROCESS"));
+            //DEBUG_MSG_VS(OJStr("[WindowsProcess]new process: %u"), dwCode);
 			break;
 		case JOB_OBJECT_MSG_END_OF_JOB_TIME:  
             DEBUG_MSG(OJStr("[WindowsProcess]Job time limit reached")); 
@@ -398,9 +410,12 @@ OJInt32_t WindowsProcess::start()
             DEBUG_MSG(OJStr("[WindowsProcess]Job contains no active processes")); 
 			done = true;  
 			break;
-		case JOB_OBJECT_MSG_EXIT_PROCESS:   
-            DEBUG_MSG(OJStr("[WindowsProcess]Process terminated"));
-			done = true;  
+		case JOB_OBJECT_MSG_EXIT_PROCESS: 
+            //DEBUG_MSG_VS(OJStr("[WindowsProcess]Process %u exit."), dwCode);
+            if(::GetProcessId(processHandle_) == dwCode)
+			{
+                done = true;
+            }
 			break;  
 		case JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS:   
             DEBUG_MSG(OJStr("[WindowsProcess]Process terminated abnormally"));
@@ -414,18 +429,21 @@ OJInt32_t WindowsProcess::start()
 		}  
 	}  
 
-    OJSleep(100);
     while(!jobHandle_.terminate())
     {
         DEBUG_MSG(OJStr("terminate job faild!"));
         OJSleep(1000);
     }
 
+    
     if(ProcessExitCode::Success == exitCode_)
     {
-        if(getExitCode() != 0)
+        DWORD code = getExitCode();
+        if(code != 0)
         {
             exitCode_ = ProcessExitCode::RuntimeError;
+            DEBUG_MSG_VS(OJStr("process exit with code : %u, last error: %u"), 
+                code, GetLastError());
         }
     }
 
