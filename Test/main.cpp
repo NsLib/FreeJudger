@@ -19,6 +19,8 @@
 
 #include "../judgerlib/config/AppConfig.h"
 
+#include "../judgerlib/util/Utility.h"
+
 #include <vector>
 
 
@@ -99,6 +101,7 @@ public:
         delete pTask;
     }
 };
+
 
 }   // namespace IMUST
 
@@ -303,7 +306,7 @@ int main()
 #endif
 
 // 测试进程
-#if 1
+#if 0
     {
         LoadLibraryW(L"windowsapihook.dll");
 
@@ -499,6 +502,10 @@ int main()
     IMUST::OJString msg(GetOJString("中文"));
     l->logDebug(msg); 
 #endif
+
+    IMUST::OJString dest(OJStr("xxx"));
+    IMUST::FormatString(dest, OJStr("nihao %s %d"), OJStr("xx"), 2);
+    OJCout<<dest<<endl;
 
     system("pause");
     return 0;

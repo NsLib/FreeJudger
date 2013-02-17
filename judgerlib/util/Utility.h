@@ -75,8 +75,14 @@ OJString String2OJString(const char *str);
 OJString String2OJString(const std::string str);
 
 
+bool FormatStringVS(OJString & dest, const OJChar_t * pFormat, va_list pArgList);
+
+bool FormatString(OJString & dest, const OJChar_t * pFormat, ...);
+
+void DebugMessage(const OJChar_t * pFormat, ...);
 
 
+#define DEBUG_MSG_VS DebugMessage
 
 }   // namespace IMUST
 
