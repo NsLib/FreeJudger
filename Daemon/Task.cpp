@@ -239,6 +239,13 @@ bool JudgeTask::excute()
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
     logger->logTrace(OJStr("[JudgeTask] start excute..."));
 
+    if(!FileTool::IsFileExist(exeFile_))
+    {
+        logger->logError(OJStr("[JudgeTask] not found exe file!"));
+        output_.Result = AppConfig::JudgeCode::SystemError;
+        return false;
+    }
+
     ExcuterPtr excuter = ExcuterFactory::create(Input.Language);
     excuter->run(exeFile_, answerInputFile_, userOutputFile_, Input.LimitTime, Input.LimitMemory);
     
