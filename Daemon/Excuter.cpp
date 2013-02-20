@@ -97,7 +97,7 @@ public:
         OJSprintf(buffer, OJStr("java -cp %s %s"), exePath.c_str(), exeFileName.c_str());
 
         IMUST::WindowsProcess wp(inputFile, outputFile);
-        wp.create(buffer, limitTime, limitMemory);
+        wp.create(buffer, limitTime*30, limitMemory*10);
         result_ = wp.getExitCodeEx();
 
         runTime_ = wp.getRunTime();

@@ -2,6 +2,7 @@
 
 #include "../judgerlib/config/AppConfig.h"
 #include "../judgerlib/process/Process.h"
+#include "../judgerlib/util/Utility.h"
 
 
 namespace IMUST
@@ -11,6 +12,9 @@ namespace CompileArg
 {
     const OJInt32_t limitTime = 20000;
     const OJInt32_t limitMemory = 32*1024*1024;
+
+    const OJInt32_t javaLimitTime = 20000;
+    const OJInt32_t javaLimitMemory = 128*1024*1024;
 
     const OJString gcc = OJStr("gcc %s -o %s -O2 -Wall -lm --static -std=c99 -DONLINE_JUDGE");
     const OJString gPlus = OJStr("g++ %s -o %s -O2 -Wall -lm --static -DONLINE_JUDGE");
@@ -38,7 +42,6 @@ bool ICompiler::isCompileError()
     return result_ == ProcessExitCode::RuntimeError;
 }
 
-
 class CCompiler : public ICompiler
 {
 public:
@@ -47,11 +50,11 @@ public:
         const OJString & exeFile,
         const OJString & compileFile)
     {
-        OJChar_t buffer[1024];
-        OJSprintf(buffer, CompileArg::gcc.c_str(), codeFile.c_str(), exeFile.c_str());
-
+        OJString cmdLine;
+        FormatString(cmdLine, CompileArg::gcc.c_str(), codeFile.c_str(), exeFile.c_str());
+        
         IMUST::WindowsProcess wp(OJStr(""), compileFile);
-        wp.create(buffer, CompileArg::limitTime, CompileArg::limitMemory);
+        wp.create(cmdLine, CompileArg::limitTime, CompileArg::limitMemory);
         result_ = wp.getExitCodeEx();
 
         return isAccept();
@@ -66,11 +69,11 @@ public:
         const OJString & exeFile,
         const OJString & compileFile)
     {
-        OJChar_t buffer[1024];
-        OJSprintf(buffer, CompileArg::gPlus.c_str(), codeFile.c_str(), exeFile.c_str());
+        OJString cmdLine;
+        FormatString(cmdLine, CompileArg::gPlus.c_str(), codeFile.c_str(), exeFile.c_str());
 
         IMUST::WindowsProcess wp(GetOJString(""), compileFile);
-        wp.create(buffer, CompileArg::limitTime, CompileArg::limitMemory);
+        wp.create(cmdLine, CompileArg::limitTime, CompileArg::limitMemory);
         result_ = wp.getExitCodeEx();
 
         return isAccept();
@@ -85,11 +88,11 @@ public:
         const OJString & exeFile,
         const OJString & compileFile)
     {
-        OJChar_t buffer[1024];
-        OJSprintf(buffer, CompileArg::java.c_str(), codeFile.c_str());
+        OJString cmdLine;
+        FormatString(cmdLine, CompileArg::java.c_str(), codeFile.c_str());
 
         IMUST::WindowsProcess wp(GetOJString(""), compileFile);
-        wp.create(buffer, CompileArg::limitTime, CompileArg::limitMemory);
+        wp.create(cmdLine, CompileArg::javaLimitTime, CompileArg::javaLimitMemory);
         result_ = wp.getExitCodeEx();
 
         return isAccept();

@@ -59,6 +59,24 @@ OJString getLanguageExt(OJInt32_t language)
     return OJStr("unknown");
 }
 
+OJString getExcuterExt(OJInt32_t language)
+{
+    if(language == AppConfig::Language::C)
+    {
+        return OJStr("exe");
+    }
+    else if(language == AppConfig::Language::Cxx)
+    {
+        return OJStr("exe");
+    }
+    else if(language == AppConfig::Language::Java)
+    {
+        return OJStr("class");
+    }
+
+    return OJStr("unknown");
+}
+
 JudgeTask::JudgeTask(const TaskInputData & inputData) 
     : Input(inputData)
     , judgeID_(0)
@@ -74,22 +92,14 @@ void JudgeTask::init(OJInt32_t judgeID)
     judgeID_ = judgeID;
 
     OJString fileExt = getLanguageExt(Input.Language);
+    OJString exeExt = getExcuterExt(Input.Language);
 
-    OJChar_t buffer[1024];
+    FormatString(codeFile_, OJStr("work\\%d\\Main.%s"), judgeID_, fileExt.c_str());
+    FormatString(exeFile_, OJStr("work\\%d\\Main.%s"), judgeID_, exeExt.c_str());
+    FormatString(compileFile_, OJStr("work\\%d\\compile.txt"), judgeID_);
+    FormatString(userOutputFile_, OJStr("work\\%d\\output.txt"), judgeID_);
 
-    OJSprintf(buffer, OJStr("work\\%d\\Main.%s"), judgeID_, fileExt.c_str());
-    codeFile_ = buffer;
-    
     FileTool::WriteFile(Input.UserCode, codeFile_);
-
-    OJSprintf(buffer, OJStr("work\\%d\\Main.exe"), judgeID_);
-    exeFile_ = buffer;
-
-    OJSprintf(buffer, OJStr("work\\%d\\compile.txt"), judgeID_);
-    compileFile_ = buffer;
-
-    OJSprintf(buffer, OJStr("work\\%d\\output.txt"), judgeID_);
-    userOutputFile_ = buffer;
 }
 
 bool JudgeTask::run()
@@ -238,10 +248,13 @@ bool JudgeTask::excute()
 {
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
     logger->logTrace(OJStr("[JudgeTask] start excute..."));
+    
+    OJString infoBuffer;
 
     if(!FileTool::IsFileExist(exeFile_))
     {
-        logger->logError(OJStr("[JudgeTask] not found exe file!"));
+        FormatString(infoBuffer, OJStr("[JudgeTask] not found exe file! %s."), exeFile_);
+        logger->logError(infoBuffer);
         output_.Result = AppConfig::JudgeCode::SystemError;
         return false;
     }

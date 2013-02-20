@@ -27,8 +27,8 @@ public:
     bool isRuntimeError();
     bool isSystemError();
 
-    OJInt32_t getRunMemory(){ return runTime_; }
-    OJInt32_t getRunTime(){ return runMemory_; }
+    OJInt32_t getRunMemory(){ return runMemory_ ; }
+    OJInt32_t getRunTime(){ return runTime_; }
 
 protected:
 
