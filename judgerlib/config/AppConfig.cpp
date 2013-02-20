@@ -53,6 +53,14 @@ namespace JudgeCode
     OJInt32_t   UnknownError        =   99;
 }
 
+namespace Language
+{
+    OJInt32_t   C                   = 0;
+    OJInt32_t   Cxx                 = 1;
+    OJInt32_t   Pascal              = 2;
+    OJInt32_t   Java                = 3;
+}
+
 namespace Path
 {
     OJString    TestDataPath(GetOJString("D:\\testdata"));

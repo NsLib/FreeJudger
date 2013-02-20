@@ -37,6 +37,12 @@
 		<CompileTimeError>14</CompileTimeError>
         <UnknownError>99</UnknownError>
     </JudgeCode>
+	<Language>
+		<C>0</C>
+		<Cxx>1</Cxx>
+		<Pascal>2</Pascal>
+		<Java>3</Java>
+	</Language>
     <Path>
         <TestDataPath>D:\imustoj\testdata</TestDataPath>
     </Path>

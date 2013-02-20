@@ -2,6 +2,7 @@
 
 #include "../judgerlib/process/Process.h"
 #include "../judgerlib/filetool/FileTool.h"
+#include "../judgerlib/config/AppConfig.h"
 
 
 namespace IMUST
@@ -118,7 +119,19 @@ ExcuterFactory::~ExcuterFactory()
 
 /*static */ExcuterPtr ExcuterFactory::create(OJInt32_t language)
 {
-    return ExcuterPtr(new ExeExcuter());
+    if(language == AppConfig::Language::C \
+        || language == AppConfig::Language::Cxx)
+    {
+        return ExcuterPtr(new ExeExcuter());
+    }
+    else if(language == AppConfig::Language::Java)
+    {
+        return ExcuterPtr(new JavaExcuter());
+    }
+
+    assert(false && "unsupport code language!");
+
+    return NULL;
 }
 
 }//namespace IMUST

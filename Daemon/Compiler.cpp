@@ -106,20 +106,20 @@ CompilerFactory::~CompilerFactory()
 
 /*static */CompilerPtr CompilerFactory::create(OJInt32_t language)
 {
-    if(language == 0)
+    if(language == AppConfig::Language::C)
     {
         return CompilerPtr(new CCompiler());
     }
-    else if(language == 1)
+    else if(language == AppConfig::Language::Cxx)
     {
         return CompilerPtr(new CppCompiler());
     }
-    else if(language == 2)
+    else if(language == AppConfig::Language::Java)
     {
         return CompilerPtr(new JavaCompiler());
     }
 
-    assert(false && "unknown language!");
+    assert(false && "unsupport code language!");
 
     return NULL;
 }

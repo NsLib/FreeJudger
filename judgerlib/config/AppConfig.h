@@ -56,6 +56,14 @@ namespace JudgeCode
     extern OJInt32_t   UnknownError;
 }
 
+namespace Language
+{
+    extern OJInt32_t   C ;
+    extern OJInt32_t   Cxx;
+    extern OJInt32_t   Pascal;
+    extern OJInt32_t   Java;
+}
+
 namespace Path
 {
     extern OJString    TestDataPath;

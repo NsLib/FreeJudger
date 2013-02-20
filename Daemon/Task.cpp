@@ -43,15 +43,15 @@ bool safeRemoveFile(const OJString & file)
 //TODO: 将语言用到的数字，用常量代替。
 OJString getLanguageExt(OJInt32_t language)
 {
-    if(language == 0)
+    if(language == AppConfig::Language::C)
     {
         return OJStr("c");
     }
-    else if(language == 1)
+    else if(language == AppConfig::Language::Cxx)
     {
         return OJStr("cpp");
     }
-    else if(language == 2)
+    else if(language == AppConfig::Language::Java)
     {
         return OJStr("java");
     }
