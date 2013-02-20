@@ -23,6 +23,8 @@ public:
 
     virtual ~DBManager(void);
 
+    bool doTestBeforeRun();
+
     bool run();
 
 private:

@@ -60,6 +60,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     IMUST::DBManagerPtr dbManager(new IMUST::DBManager(mysql, 
         workingTaskMgr, finishedTaskMgr, taskFactory));
 
+    dbManager->doTestBeforeRun();
+
     
     if(false && NULL == LoadLibraryW(L"windowsapihook.dll"))
     {

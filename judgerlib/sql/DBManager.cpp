@@ -19,6 +19,7 @@ const OJInt32_t MaxBufferSize = 1024;
 
 namespace Statement
 {
+const OJString TestSql = OJStr("update solution set result = 0");
 
 const OJString SelectSolution2 = OJStr("SELECT solution_id, problem_id, user_id, language ")
     OJStr("FROM `solution` WHERE result=%d or result=%d limit 5");
@@ -80,6 +81,15 @@ DBManager::DBManager(SqlDriverPtr sqlDriver,
 
 DBManager::~DBManager(void)
 {
+}
+
+bool DBManager::doTestBeforeRun()
+{
+    if(!sqlDriver_->query(Statement::TestSql))
+    {
+        return false;
+    }
+    return true;
 }
 
 bool DBManager::run()
