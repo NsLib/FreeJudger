@@ -3,16 +3,15 @@
 #include "../judgerlib/taskmanager/TaskManager.h"
 #include "../judgerlib/config/AppConfig.h"
 #include "../judgerlib/filetool/FileTool.h"
+#include "../judgerlib/util/Utility.h"
 
 
-#include "Compiler.h"
-#include "Excuter.h"
-#include "Matcher.h"
+#include "../judgerlib/compiler/Compiler.h"
+#include "../judgerlib/excuter/Excuter.h"
+#include "../judgerlib/matcher/Matcher.h"
 
 extern bool g_sigExit;
 
-#pragma warning(push)
-#pragma warning(disable:4996)
 
 namespace IMUST
 {
@@ -21,7 +20,7 @@ namespace IMUST
 如果文件始终无法删除，将表示该子进程无法退出，这将是一个致命错误，评判线程应当结束。 */
 bool safeRemoveFile(const OJString & file)
 {
-    OJChar_t buffer[128];
+    OJString infoBuffer;
 
     for(OJInt32_t i=0; i<10; ++i)//尝试删除10次
     {
@@ -31,9 +30,9 @@ bool safeRemoveFile(const OJString & file)
         }
         OJSleep(1000);
 
-        OJSprintf(buffer, OJStr("safeRemoveFile '%s' faild with %d times. code:%d"), 
+        FormatString(infoBuffer, OJStr("safeRemoveFile '%s' faild with %d times. code:%d"), 
             file.c_str(), i+1, GetLastError());
-        LoggerFactory::getLogger(LoggerId::AppInitLoggerId)->logError(buffer);
+        LoggerFactory::getLogger(LoggerId::AppInitLoggerId)->logError(infoBuffer);
     }
 
     return false;
@@ -118,10 +117,10 @@ void JudgeTask::doRun()
 {
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
-    OJChar_t buf[256];
+    OJString infoBuffer;
 
-    OJSprintf(buf, OJStr("[JudgeTask] task %d"), Input.SolutionID);
-    logger->logInfo(buf);
+    FormatString(infoBuffer, OJStr("[JudgeTask] task %d"), Input.SolutionID);
+    logger->logInfo(infoBuffer);
 
     //编译
     if(!compile())
@@ -132,9 +131,9 @@ void JudgeTask::doRun()
     //搜索测试数据
     //TODO: 根据是否specialJudge，决定搜索.out还是.in文件。
 
-    OJSprintf(buf, OJStr("/%d"), Input.ProblemID);
+    FormatString(infoBuffer, OJStr("/%d"), Input.ProblemID);
     OJString path = AppConfig::Path::TestDataPath;
-    path += buf;
+    path += infoBuffer;
 
     logger->logTrace(OJString(OJStr("[JudgeTask] searche path: "))+path);
 
@@ -146,9 +145,9 @@ void JudgeTask::doRun()
     {
         output_.Result = AppConfig::JudgeCode::SystemError;
 
-        OJSprintf(buf, OJStr("[JudgeTask] not found test data for solution %d problem %d."),
+        FormatString(infoBuffer, OJStr("[JudgeTask] not found test data for solution %d problem %d."),
             Input.SolutionID, Input.ProblemID);
-        logger->logError(buf);
+        logger->logError(infoBuffer);
         return;
     }
 
@@ -298,7 +297,7 @@ bool JudgeTask::match()
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
     logger->logTrace(OJStr("[JudgeTask] start match..."));
 
-    MatcherPtr matcher = MatcherFactory::create();
+    MatcherPtr matcher = MatcherFactory::create(false, OJStr(""));
     matcher->run(answerOutputFile_, userOutputFile_);
 
     if(matcher->isAccept())
@@ -335,12 +334,12 @@ void JudgeThread::operator()()
 {
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
-    OJChar_t buffer[128];
-    OJSprintf(buffer, OJStr("work/%d"), id_);
-    FileTool::MakeDir(buffer);
+    OJString infoBuffer;
+    FormatString(infoBuffer, OJStr("work/%d"), id_);
+    FileTool::MakeDir(infoBuffer);
 
-    OJSprintf(buffer, OJStr("[JudgeThread][%d]start..."), id_);
-    logger->logTrace(buffer);
+    FormatString(infoBuffer, OJStr("[JudgeThread][%d]start..."), id_);
+    logger->logTrace(infoBuffer);
 
     while (!g_sigExit)
     {
@@ -364,8 +363,9 @@ void JudgeThread::operator()()
         pTask->init(id_);
         if(!pTask->run())
         {
-            OJSprintf(buffer, OJStr("[JudgeThread][%d]System Error!Judge thread will exit!"), id_);
-            logger->logError(buffer);
+            FormatString(infoBuffer, 
+                OJStr("[JudgeThread][%d]System Error!Judge thread will exit!"), id_);
+            logger->logError(infoBuffer);
             break;
         }
 
@@ -377,8 +377,8 @@ void JudgeThread::operator()()
         OJSleep(10);//防止线程过度繁忙
     }
 
-    OJSprintf(buffer, OJStr("[JudgeThread][%d]end."), id_);
-    logger->logTrace(buffer);
+    FormatString(infoBuffer, OJStr("[JudgeThread][%d]end."), id_);
+    logger->logTrace(infoBuffer);
 
 }
 
@@ -417,5 +417,3 @@ void JudgeDBRunThread::operator()()
 }
 
 }   // namespace IMUST
-
-#pragma warning(pop)

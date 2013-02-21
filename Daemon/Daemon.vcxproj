@@ -55,7 +55,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>logger.lib;config.lib;xml.lib;taskmanager.lib;sql.lib;filetool.lib;process.lib;util.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>logger.lib;config.lib;xml.lib;taskmanager.lib;sql.lib;filetool.lib;process.lib;util.lib;compiler.lib;excuter.lib;matcher.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -80,19 +80,13 @@
     <None Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Compiler.h" />
     <ClInclude Include="Daemon.h" />
-    <ClInclude Include="Excuter.h" />
     <ClInclude Include="InitApp.h" />
-    <ClInclude Include="Matcher.h" />
     <ClInclude Include="Task.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Compiler.cpp" />
     <ClCompile Include="Daemon.cpp" />
-    <ClCompile Include="Excuter.cpp" />
     <ClCompile Include="InitApp.cpp" />
-    <ClCompile Include="Matcher.cpp" />
     <ClCompile Include="Task.cpp" />
   </ItemGroup>
   <ItemGroup>

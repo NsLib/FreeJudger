@@ -33,15 +33,6 @@
     <ClInclude Include="Task.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Matcher.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Excuter.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Compiler.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Daemon.cpp">
@@ -51,15 +42,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Task.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Matcher.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Compiler.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Excuter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

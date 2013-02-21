@@ -1,0 +1,41 @@
+
+#include "CppCompiler.h"
+#include "../process/Process.h"
+#include "../util/Utility.h"
+
+namespace IMUST
+{
+       
+namespace CompileArg
+{
+    const OJInt32_t limitTime = 20000;
+    const OJInt32_t limitMemory = 32*1024*1024;
+
+    const OJString cmd = OJStr("g++ %s -o %s -O2 -Wall -lm --static -DONLINE_JUDGE");
+}
+
+CppCompiler::CppCompiler(void)
+{
+}
+
+
+CppCompiler::~CppCompiler(void)
+{
+}
+
+bool CppCompiler::run(
+    const OJString & codeFile,
+    const OJString & exeFile,
+    const OJString & compileFile)
+{
+    OJString cmdLine;
+    FormatString(cmdLine, CompileArg::cmd.c_str(), codeFile.c_str(), exeFile.c_str());
+
+    IMUST::WindowsProcess wp(GetOJString(""), compileFile);
+    wp.create(cmdLine, CompileArg::limitTime, CompileArg::limitMemory);
+    result_ = wp.getExitCodeEx();
+
+    return isAccept();
+}
+
+}//namespace IMUST
