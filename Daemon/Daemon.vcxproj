@@ -82,11 +82,13 @@
   <ItemGroup>
     <ClInclude Include="Daemon.h" />
     <ClInclude Include="InitApp.h" />
+    <ClInclude Include="JudgeCore.h" />
     <ClInclude Include="Task.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Daemon.cpp" />
     <ClCompile Include="InitApp.cpp" />
+    <ClCompile Include="JudgeCore.cpp" />
     <ClCompile Include="Task.cpp" />
   </ItemGroup>
   <ItemGroup>
