@@ -2,3 +2,5 @@
 *.pdb
 *.ilk
 *.exe
+*.log
+windowsapihook.dll

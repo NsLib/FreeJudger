@@ -13,7 +13,7 @@ const OJString WhiteSpaces = OJStr(" \r\n\t");
     
 bool isWhiteSpace(OJChar_t ch)
 {
-    return ch==OJCh('\0') || (WhiteSpaces.find(ch) != WhiteSpaces.npos);
+    return WhiteSpaces.find(ch) != WhiteSpaces.npos;
 }
 
 }
