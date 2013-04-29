@@ -91,15 +91,11 @@ public:
     MockTaskFactory(){}
     virtual ~MockTaskFactory(){}
 
-    virtual ITask* create(const TaskInputData & input)
+    virtual TaskPtr create(const TaskInputData & input)
     {
-        return new MockTask(input);
+        return TaskPtr(new MockTask(input));
     }
 
-    virtual void destroy(ITask* pTask)
-    {
-        delete pTask;
-    }
 };
 
 
@@ -138,7 +134,7 @@ struct TaskThread
                 }
                 g_logger->logInfo(GetOJString("add task"));
                 for (; i < j; ++i)
-                    g_taskManager.addTask(new IMUST::MockTask(i));
+                    g_taskManager.addTask(IMUST::TaskPtr(new IMUST::MockTask(i)));
                 j += 10;
                 g_taskManager.unlock();
                 OJSleep(50);
@@ -164,7 +160,7 @@ struct Task2Thread
 
         while(!g_judgerStop)
         {
-            IMUST::ITask* pTask = NULL;
+            IMUST::TaskPtr pTask;
             workingTaskMgr_->lock();
             if(workingTaskMgr_->hasTask())
             {

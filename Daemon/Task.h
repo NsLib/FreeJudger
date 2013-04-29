@@ -73,9 +73,7 @@ public:
     JudgeTaskFactory(){}
     virtual ~JudgeTaskFactory(){}
 
-    virtual ITask* create(const TaskInputData & input);
-
-    virtual void destroy(ITask* pTask);
+    virtual TaskPtr create(const TaskInputData & input);
 };
 
 

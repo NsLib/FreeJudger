@@ -47,6 +47,7 @@ public:
 
     virtual const TaskInputData & input() const = 0;
 };
+typedef std::shared_ptr<ITask> TaskPtr;
 
 class JUDGER_API TaskManager
 {
@@ -58,11 +59,11 @@ public:
     void unlock();
 
     bool hasTask();
-    void addTask(ITask *task);
-    ITask *popTask();
+    void addTask(TaskPtr task);
+    TaskPtr popTask();
 
 private:
-    typedef std::list<ITask *> TaskListType;
+    typedef std::list<TaskPtr> TaskListType;
     TaskListType taskList_;
 
     Mutex   mutex_;
@@ -75,9 +76,7 @@ public:
     TaskFactory();
     virtual ~TaskFactory();
 
-    virtual ITask* create(const TaskInputData & input) = 0;
-
-    virtual void destroy(ITask* pTask) = 0;
+    virtual TaskPtr create(const TaskInputData & input) = 0;
 };
 
 

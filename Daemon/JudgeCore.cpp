@@ -7,6 +7,7 @@
 #include "../judgerlib/filetool/FileTool.h"
 #include "../judgerlib/process/Process.h"
 #include "Task.h"
+#include "InitApp.h"
 
 bool g_sigExit = false;
 
@@ -29,8 +30,29 @@ JudgeCore::~JudgeCore()
 
 bool JudgeCore::startService()
 {
+    if (!InitApp())
+        return false;
+
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
+    //登录Windows判题用户
+    if(AppConfig::WindowsUser::Enable)
+    {
+        windowsUser_ = WindowsUserPtr(new WindowsUser());
+        if(!windowsUser_->login(
+            AppConfig::WindowsUser::Name, 
+            OJStr(""), 
+            AppConfig::WindowsUser::Password))
+        {
+            logger->logError(OJStr("JudgeCore::startService login windows user failed."));
+            return false;
+        }
+
+        logger->logInfo(OJStr("login windows succed."));
+        ProcessFactory::setWindowsUser(windowsUser_);
+    }
+
+    //创建sql设备
     mysql_ = SqlFactory::createDriver(SqlType::MySql);
     if(!mysql_->loadService())
     {
@@ -40,6 +62,7 @@ bool JudgeCore::startService()
         return false;
     }
 
+    //连接数据库
     if(!mysql_->connect(AppConfig::MySql::Ip, 
                     AppConfig::MySql::Port,
                     AppConfig::MySql::User,
@@ -53,14 +76,16 @@ bool JudgeCore::startService()
     }
     mysql_->setCharSet(OJStr("utf-8"));
     
+    //创建数据库管理器
     dbManager_ = DBManagerPtr(new DBManager(mysql_, 
         workingTaskMgr_, finishedTaskMgr_, taskFactory_));
 
     //TODO: 移除此处的测试操作
+    logger->logInfo(OJStr("clear db data."));
     dbManager_->doTestBeforeRun();
 
     //hook操作
-    if(false && NULL == LoadLibraryW(L"windowsapihook.dll"))
+    if(false && NULL == LoadLibrary(OJStr("windowsapihook.dll")))
     {
         logger->logWarn(GetOJString("[Daemon] - WinMain - load hook dll faild! - "));
     }
@@ -68,7 +93,7 @@ bool JudgeCore::startService()
     //启动数据库线程
     dbThread_ = ThreadPtr(new Thread(JudgeDBRunThread(dbManager_)));
 
-
+    //创建工作目录
     FileTool::MakeDir(OJStr("work"));
 
     //启动评判线程
@@ -85,17 +110,30 @@ void JudgeCore::stopService()
 {
     g_sigExit = true;
 
-    dbThread_->join();
+    if (dbThread_)
+    {
+        dbThread_->join();
+    }
 
     for(JudgeThreadVector::iterator it = judgeThreadPool_.begin();
         it != judgeThreadPool_.end(); ++it)
     {
-        (*it)->join();
+        if (*it)
+        {
+            (*it)->join();
+        }
     }
 
-    mysql_->disconect();
-    mysql_->unloadService();
+    if (mysql_)
+    {
+        mysql_->disconect();
+        mysql_->unloadService();
+    }
 
+    if (windowsUser_)
+    {
+        windowsUser_->logout();
+    }
 }
 
 }//namespace IMUST

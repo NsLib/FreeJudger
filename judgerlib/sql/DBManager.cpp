@@ -179,7 +179,7 @@ bool DBManager::readDB()
         OJInt32_t r = readTaskData(taskData);
         if(r == 0 )
         {
-            ITask* pTask = taskFactory_->create(taskData);
+            TaskPtr pTask = taskFactory_->create(taskData);
             workingTaskMgr_->addTask(pTask);
             OJCout<<OJStr("add task:")<<taskData.SolutionID<<std::endl;
         }
@@ -264,7 +264,7 @@ OJInt32_t DBManager::readTaskData(TaskInputData & taskData)
 
 bool DBManager::writeFinishedTask()
 {
-    ITask* pTask = NULL;
+    TaskPtr pTask;
     finishedTaskMgr_->lock();
     if(finishedTaskMgr_->hasTask())
     {
@@ -272,29 +272,26 @@ bool DBManager::writeFinishedTask()
     }
     finishedTaskMgr_->unlock();
 
-    if(NULL == pTask)
+    if(!pTask)
     {
         return true;
     }
 
     if(pTask->input().ProblemID == 0)//IDE测试功能，不写数据库
     {
-        taskFactory_->destroy(pTask);
         return true;
     }
     
     if(!writeToDB(pTask))
     {
-        taskFactory_->destroy(pTask);
         return false;
     }
 
     OJCout<<GetOJString("write finished:")<<pTask->input().SolutionID<<std::endl;
-    taskFactory_->destroy(pTask);
     return true;
 }
 
-bool DBManager::writeToDB(const ITask* pTask)
+bool DBManager::writeToDB(TaskPtr pTask)
 {
     assert(pTask);
 

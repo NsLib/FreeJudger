@@ -48,7 +48,7 @@ namespace JudgeCode
     OJInt32_t   RuntimeError        =   10;
     OJInt32_t   CompileError        =   11;
     OJInt32_t   CompileOK           =   12;
-    OJInt32_t   CompileTimeError     =   14;
+    OJInt32_t   CompileTimeError    =   14;
     OJInt32_t   SystemError         =   13;
     OJInt32_t   UnknownError        =   99;
 }
@@ -64,6 +64,13 @@ namespace Language
 namespace Path
 {
     OJString    TestDataPath(GetOJString("D:\\testdata"));
+}
+
+namespace WindowsUser
+{
+    bool        Enable      = true;
+    OJString    Name        = OJStr("acmer");
+    OJString    Password    = OJStr("imustacm");
 }
 
 bool InitAppConfig()
@@ -124,6 +131,10 @@ bool InitAppConfig()
     READ_APP_CONFIG(readInt32, "JudgeCode/UnknownError", JudgeCode::UnknownError);
 
     READ_APP_CONFIG(readString, "Path/TestDataPath", Path::TestDataPath);
+
+    READ_APP_CONFIG(readBool, "WindowsUser/Enable", WindowsUser::Enable);
+    READ_APP_CONFIG(readString, "WindowsUser/Name", WindowsUser::Name);
+    READ_APP_CONFIG(readString, "WindowsUser/Password", WindowsUser::Password);
    
 #undef READ_APP_CONFIG
 

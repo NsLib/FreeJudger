@@ -39,7 +39,6 @@ bool safeRemoveFile(const OJString & file)
 }
 
 //获得文件扩展名
-//TODO: 将语言用到的数字，用常量代替。
 OJString getLanguageExt(OJInt32_t language)
 {
     if(language == AppConfig::Language::C)
@@ -90,13 +89,13 @@ void JudgeTask::init(OJInt32_t judgeID)
 {
     judgeID_ = judgeID;
 
-    OJString fileExt = getLanguageExt(Input.Language);
+    OJString codeExt = getLanguageExt(Input.Language);
     OJString exeExt = getExcuterExt(Input.Language);
 
-    FormatString(codeFile_, OJStr("work\\%d\\Main.%s"), judgeID_, fileExt.c_str());
-    FormatString(exeFile_, OJStr("work\\%d\\Main.%s"), judgeID_, exeExt.c_str());
-    FormatString(compileFile_, OJStr("work\\%d\\compile.txt"), judgeID_);
-    FormatString(userOutputFile_, OJStr("work\\%d\\output.txt"), judgeID_);
+    FormatString(codeFile_, OJStr("work/%d/Main.%s"), judgeID_, codeExt.c_str());
+    FormatString(exeFile_, OJStr("work/%d/Main.%s"), judgeID_, exeExt.c_str());
+    FormatString(compileFile_, OJStr("work/%d/compile.txt"), judgeID_);
+    FormatString(userOutputFile_, OJStr("work/%d/output.txt"), judgeID_);
 
     FileTool::WriteFile(Input.UserCode, codeFile_);
 }
@@ -129,19 +128,18 @@ void JudgeTask::doRun()
     }
 
     //搜索测试数据
+
+    OJString path;
+    FormatString(path, OJStr("%s/%d"), AppConfig::Path::TestDataPath.c_str(), Input.ProblemID);
+    
+    DebugMessage(OJStr("[JudgeTask] %d search path: %s"), Input.SolutionID, path.c_str());
+
     //TODO: 根据是否specialJudge，决定搜索.out还是.in文件。
-
-    FormatString(infoBuffer, OJStr("/%d"), Input.ProblemID);
-    OJString path = AppConfig::Path::TestDataPath;
-    path += infoBuffer;
-
-    logger->logTrace(OJString(OJStr("[JudgeTask] searche path: "))+path);
-
     FileTool::FileNameList fileList;
     FileTool::GetSpecificExtFiles(fileList, path, OJStr(".out"), true);
 
     OJUInt32_t testCount = fileList.size();
-    if(testCount <= 0)
+    if(testCount <= 0)//没有测试数据
     {
         output_.Result = AppConfig::JudgeCode::SystemError;
 
@@ -159,8 +157,10 @@ void JudgeTask::doRun()
         answerInputFile_ = FileTool::RemoveFileExt(answerOutputFile_);
         answerInputFile_ += OJStr(".in");
 
-        logger->logTrace(OJString(OJStr("[JudgeTask] input file: ")) + answerInputFile_);
-        logger->logTrace(OJString(OJStr("[JudgeTask] output file: ")) + answerOutputFile_);
+        DebugMessage(OJStr("[JudgeTask] %d input file: %s"), 
+            Input.SolutionID, answerInputFile_.c_str());
+        DebugMessage(OJStr("[JudgeTask] %d output file: %s"), 
+            Input.SolutionID, answerOutputFile_.c_str());
 
         if(!safeRemoveFile(userOutputFile_))
         {
@@ -344,7 +344,7 @@ void JudgeThread::operator()()
     while (!g_sigExit)
     {
 
-        IMUST::ITask* pTask = NULL;
+        IMUST::TaskPtr pTask;
 
         //从任务队列取任务
         workingTaskMgr_->lock();
@@ -382,14 +382,9 @@ void JudgeThread::operator()()
 
 }
 
-ITask* JudgeTaskFactory::create(const TaskInputData & input)
+TaskPtr JudgeTaskFactory::create(const TaskInputData & input)
 {
-    return new JudgeTask(input);
-}
-
-void JudgeTaskFactory::destroy(ITask* pTask)
-{
-    delete pTask;
+    return TaskPtr(new JudgeTask(input));
 }
 
 
@@ -407,7 +402,7 @@ void JudgeDBRunThread::operator()()
     {
         if(!dbm_->run())
         {
-            logger->logError(GetOJString("[DBThread] thread was dead!"));
+            logger->logError(GetOJString("[DBThread] db manager was dead!"));
             break;
         }
         OJSleep(100);

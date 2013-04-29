@@ -14,9 +14,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
-    if (!IMUST::InitApp())
-        return EXIT_FAILURE;
-
     IMUST::JudgeCore judgeCore;
     if(!judgeCore.startService())
         return EXIT_FAILURE;

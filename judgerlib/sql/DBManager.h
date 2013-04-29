@@ -37,7 +37,7 @@ private:
 
     bool writeFinishedTask();
 
-    bool writeToDB(const ITask* pTask);
+    bool writeToDB(TaskPtr pTask);
 
 private:
     SqlDriverPtr    sqlDriver_;

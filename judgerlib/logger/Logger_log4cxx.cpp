@@ -51,9 +51,12 @@ void Log4CxxLoggerImpl::logFatal(const OJString &msg) const
 
 void Log4CxxLoggerImpl::logError(const OJString &msg) const
 {
-    (*logger_)->error(msg);
+    //TODO: ÒÆ³ýERRORÇ°×º¡£
+    OJString str = OJStr("ERROR: ");
+    str += msg;
+    (*logger_)->error(str);
 
-    DEBUG_MSG(msg.c_str());
+    DEBUG_MSG(str.c_str());
 }
 
 void Log4CxxLoggerImpl::logWarn(const OJString &msg) const

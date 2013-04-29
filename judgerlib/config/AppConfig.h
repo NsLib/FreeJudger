@@ -69,6 +69,13 @@ namespace Path
     extern OJString    TestDataPath;
 }
 
+namespace WindowsUser
+{
+    extern bool Enable;
+    extern OJString Name;
+    extern OJString Password;
+}
+
 
 }   // AppConfig
 }   // IMUST

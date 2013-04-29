@@ -23,12 +23,12 @@ bool ExeExcuter::run(
     OJInt32_t limitMemory
     )
 {
-    IMUST::WindowsProcess wp(inputFile, outputFile);
-    wp.create(exeFile, limitTime, limitMemory);
-    result_ = wp.getExitCodeEx();
+    ProcessPtr wp = ProcessFactory::create(ProcessType::WithUser, inputFile, outputFile);
+    wp->create(exeFile, limitTime, limitMemory);
+    result_ = wp->getExitCodeEx();
 
-    runTime_ = wp.getRunTime();
-    runMemory_ = wp.getRunMemory();
+    runTime_ = wp->getRunTime();
+    runMemory_ = wp->getRunMemory();
 
     return isAccept();
 }

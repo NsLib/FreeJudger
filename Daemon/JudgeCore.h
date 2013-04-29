@@ -3,6 +3,7 @@
 #include "../judgerlib/taskmanager/TaskManager.h"
 #include "../judgerlib/thread/Thread.h"
 #include "../judgerlib/sql/DBManager.h"
+#include "../judgerlib/process/WindowsUser.h"
 
 namespace IMUST
 {
@@ -29,6 +30,8 @@ private:
 
     ThreadPtr           dbThread_;
     JudgeThreadVector   judgeThreadPool_;
+
+    WindowsUserPtr       windowsUser_;
 };
 
 }//namespace IMUST

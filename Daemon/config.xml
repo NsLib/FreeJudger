@@ -43,6 +43,11 @@
 		<Pascal>2</Pascal>
 		<Java>3</Java>
 	</Language>
+	<WindowsUser>
+		<Enable>true</Enable>
+		<Name>acmer</Name>
+		<Password>imustacm</Password>
+	</WindowsUser>
     <Path>
         <TestDataPath>D:\imustoj\testdata</TestDataPath>
     </Path>

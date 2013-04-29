@@ -31,11 +31,23 @@
         <MemoryLimitExceed>8</MemoryLimitExceed>
         <OutputLimited>9</OutputLimited>
         <RuntimeError>10</RuntimeError>
-        <ComileTimeError>11</ComileTimeError>
+        <CompileError>11</CompileError>
         <CompileOK>12</CompileOK>
         <SystemError>13</SystemError>
+		<CompileTimeError>14</CompileTimeError>
         <UnknownError>99</UnknownError>
     </JudgeCode>
+	<Language>
+		<C>0</C>
+		<Cxx>1</Cxx>
+		<Pascal>2</Pascal>
+		<Java>3</Java>
+	</Language>
+	<WindowsUser>
+		<Enable>true</Enable>
+		<Name>acmer</Name>
+		<Password>imustacm</Password>
+	</WindowsUser>
     <Path>
         <TestDataPath>D:\imustoj\testdata</TestDataPath>
     </Path>
