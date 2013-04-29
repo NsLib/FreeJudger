@@ -425,10 +425,13 @@ OJInt32_t WindowsProcess::start()
 			exitCode_ = ProcessExitCode::MemoryLimited;  
 			done = true;  
 			break;  
-		case JOB_OBJECT_MSG_JOB_MEMORY_LIMIT:   
-            DEBUG_MSG(OJStr("[WindowsProcess]exceeded job memory limit"));
-			exitCode_ = ProcessExitCode::MemoryLimited;  
-			done = true;  
+        case JOB_OBJECT_MSG_JOB_MEMORY_LIMIT:  
+            {
+                OJInt32_t mem = getRunMemory();  
+                DebugMessage(OJStr("[WindowsProcess]exceeded job memory limit with %dkb"), mem);
+                exitCode_ = ProcessExitCode::MemoryLimited; 
+                done = true;  
+            }
 			break;  
 		case JOB_OBJECT_MSG_ACTIVE_PROCESS_LIMIT:  
             DEBUG_MSG(OJStr("[WindowsProcess]Too many active processes in job"));

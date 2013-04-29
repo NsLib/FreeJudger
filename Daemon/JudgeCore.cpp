@@ -91,9 +91,11 @@ bool JudgeCore::startService()
     dbManager_->doTestBeforeRun();
 
     //hook操作
-    if(false && NULL == LoadLibrary(OJStr("windowsapihook.dll")))
+    if(NULL == LoadLibrary(OJStr("windowsapihook.dll")))
     {
-        logger->logWarn(GetOJString("[Daemon] - WinMain - load hook dll faild! - "));
+        OJString msg;
+        FormatString(msg, OJStr("[Daemon] - WinMain - load hook dll faild! - %d"), GetLastError());
+        logger->logWarn(msg);
     }
 
     //启动数据库线程
