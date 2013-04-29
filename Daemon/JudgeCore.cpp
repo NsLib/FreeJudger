@@ -33,6 +33,12 @@ bool JudgeCore::startService()
     if (!InitApp())
         return false;
 
+    //创建工作目录
+    if(!FileTool::MakeDir(OJStr("work")))
+    {
+        return false;
+    }
+
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
     //登录Windows判题用户
@@ -92,9 +98,6 @@ bool JudgeCore::startService()
 
     //启动数据库线程
     dbThread_ = ThreadPtr(new Thread(JudgeDBRunThread(dbManager_)));
-
-    //创建工作目录
-    FileTool::MakeDir(OJStr("work"));
 
     //启动评判线程
     for(IMUST::OJInt32_t i=0; i<AppConfig::CpuInfo::NumberOfCore; ++i)
