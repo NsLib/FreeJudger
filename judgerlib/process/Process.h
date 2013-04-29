@@ -3,10 +3,12 @@
 #include "../platformlayer/PlatformLayer.h"
 #include "../thread/Thread.h"
 
+#include "WindowsUser.h"
 #include <Windows.h>
 
 namespace IMUST
 {
+
 namespace ProcessExitCode
 {
     const OJInt32_t Success         = 0;
@@ -15,6 +17,13 @@ namespace ProcessExitCode
     const OJInt32_t TimeLimited     = 3;
     const OJInt32_t MemoryLimited   = 4;
     const OJInt32_t UnknowCode      = 99;
+}
+
+namespace ProcessType
+{
+    const OJInt32_t Normal      = 0;
+    const OJInt32_t WithJob     = 1;
+    const OJInt32_t WithUser    = 2;
 }
 
 class JUDGER_API IProcess
@@ -34,7 +43,13 @@ public:
     virtual OJInt32_t join(OJInt32_t time) = 0;
     virtual OJInt32_t getExitCode() = 0;
     virtual void kill() = 0;
+
+    virtual OJInt32_t getExitCodeEx() = 0;
+    virtual OJInt32_t getRunTime() = 0;
+    virtual OJInt32_t getRunMemory() = 0;
 };
+
+typedef std::shared_ptr<IProcess> ProcessPtr;
 
 namespace
 {
@@ -116,6 +131,23 @@ public:
     OJInt32_t getRunTime();
     OJInt32_t getRunMemory();
 
+protected:
+
+    /**
+     * 重载此函数，以创建不同类型的进程。 
+     */
+    virtual bool createProcess(
+        LPCTSTR lpApplicationName,
+        LPTSTR lpCommandLine,
+        LPSECURITY_ATTRIBUTES lpProcessAttributes,
+        LPSECURITY_ATTRIBUTES lpThreadAttributes,
+        BOOL bInheritHandles,
+        DWORD dwCreationFlags,
+        LPVOID lpEnvironment,
+        LPCTSTR lpCurrentDirectory,
+        LPSTARTUPINFO lpStartupInfo,
+        LPPROCESS_INFORMATION lpProcessInformation);
+
 private:
     HANDLE		processHandle_;
 	HANDLE		threadHandle_;
@@ -128,9 +160,54 @@ private:
 	static	ULONG		s_id_;	
 };
 
+/**
+ *  使用低权限的Windows用户创建进程
+ */
+class JUDGER_API WindowsUserProcess : public WindowsProcess
+{
+public:
+    WindowsUserProcess(WindowsUserPtr user,
+        const OJString &inputFileName = GetOJString(""),
+        const OJString &outputFileName = GetOJString(""));
+
+    virtual ~WindowsUserProcess();
+
+protected:
+
+    virtual bool createProcess(
+        LPCTSTR lpApplicationName,
+        LPTSTR lpCommandLine,
+        LPSECURITY_ATTRIBUTES lpProcessAttributes,
+        LPSECURITY_ATTRIBUTES lpThreadAttributes,
+        BOOL bInheritHandles,
+        DWORD dwCreationFlags,
+        LPVOID lpEnvironment,
+        LPCTSTR lpCurrentDirectory,
+        LPSTARTUPINFO lpStartupInfo,
+        LPPROCESS_INFORMATION lpProcessInformation);
+
+private:
+
+    WindowsUserPtr   userPtr_;
+};
 
 
+class ProcessFactory
+{
+    MAKE_CLASS_UNCOPYABLE(ProcessFactory);
+public:
+    ProcessFactory();
+    ~ProcessFactory();
 
+    static ProcessPtr create(int type,
+        const OJString &inputFileName = GetOJString(""),
+        const OJString &outputFileName = GetOJString(""));
 
+    static void setWindowsUser(WindowsUserPtr user);
+
+private:
+
+    static WindowsUserPtr   s_userPtr_;
+};
 
 }   // namespace IMUST

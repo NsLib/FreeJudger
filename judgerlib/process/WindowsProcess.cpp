@@ -2,6 +2,7 @@
 #include "Process.h"
 #include "../logger/Logger.h"
 #include "../util/Utility.h"
+#include "../config/AppConfig.h"
 
 
 namespace IMUST
@@ -260,6 +261,31 @@ WindowsProcess::~WindowsProcess()
     SAFE_CLOSE_HANDLE_AND_RESET(threadHandle_)
 }
 
+bool WindowsProcess::createProcess(
+    LPCTSTR lpApplicationName,
+    LPTSTR lpCommandLine,
+    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    BOOL bInheritHandles,
+    DWORD dwCreationFlags,
+    LPVOID lpEnvironment,
+    LPCTSTR lpCurrentDirectory,
+    LPSTARTUPINFO lpStartupInfo,
+    LPPROCESS_INFORMATION lpProcessInformation)
+{
+    return !!CreateProcess(
+        lpApplicationName,
+        lpCommandLine,
+        lpProcessAttributes,
+        lpThreadAttributes,
+        bInheritHandles,
+        dwCreationFlags,
+        lpEnvironment,
+        lpCurrentDirectory,
+        lpStartupInfo,
+        lpProcessInformation);
+}
+
 OJInt32_t WindowsProcess::create(const OJString &cmd,
 								const OJInt32_t timeLimit,
 								const OJInt32_t memoryLimit,
@@ -313,7 +339,8 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
     si.hStdOutput = si.hStdError = outputFileHandle_;
     si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
 	
-	bool res =  !!CreateProcess(NULL,    //   No module name (use command line).   
+	bool res =  createProcess(
+        NULL,    //   No module name (use command line).   
 		cmdline, //   Command line.   
 		NULL,    //   Process handle not inheritable.   
 		NULL,    //   Thread handle not inheritable.   
@@ -494,9 +521,105 @@ void WindowsProcess::kill()
     TerminateProcess(processHandle_, -1);
 }
 
+//////////////////////////////////////////////////////////////////////////
 
+WindowsUserProcess::WindowsUserProcess(WindowsUserPtr user,
+    const OJString &inputFileName,
+    const OJString &outputFileName)
+    : WindowsProcess(inputFileName, outputFileName)
+    , userPtr_(user)
+{
 
+}
 
+WindowsUserProcess::~WindowsUserProcess()
+{
+
+}
+
+bool WindowsUserProcess::createProcess(
+        LPCTSTR lpApplicationName,
+        LPTSTR lpCommandLine,
+        LPSECURITY_ATTRIBUTES lpProcessAttributes,
+        LPSECURITY_ATTRIBUTES lpThreadAttributes,
+        BOOL bInheritHandles,
+        DWORD dwCreationFlags,
+        LPVOID lpEnvironment,
+        LPCTSTR lpCurrentDirectory,
+        LPSTARTUPINFO lpStartupInfo,
+        LPPROCESS_INFORMATION lpProcessInformation)
+{
+    if (!userPtr_)
+    {
+        throw(std::runtime_error("windows user invalid!"));
+    }
+
+    lpStartupInfo->lpDesktop = OJStr("winsta0\\default");//ÉèÖÃ½»»¥×ÀÃæ
+
+    return userPtr_->createProcess(
+        lpApplicationName,
+        lpCommandLine,
+        lpProcessAttributes,
+        lpThreadAttributes,
+        bInheritHandles,
+        dwCreationFlags,
+        lpEnvironment,
+        lpCurrentDirectory,
+        lpStartupInfo,
+        lpProcessInformation);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+/*static*/ WindowsUserPtr  ProcessFactory::s_userPtr_;
+
+ProcessFactory::ProcessFactory()
+{
+
+}
+
+ProcessFactory::~ProcessFactory()
+{
+
+}
+
+/*static*/ ProcessPtr ProcessFactory::create(int type,
+    const OJString &inputFileName,
+    const OJString &outputFileName)
+{
+    IProcess* pProcess = NULL;
+
+    if (type == ProcessType::Normal)
+    {
+        pProcess = new WindowsProcess(inputFileName, outputFileName);
+    }
+    else if (type == ProcessType::WithJob)
+    {
+        pProcess = new WindowsProcess(inputFileName, outputFileName);
+    }
+    else if (type == ProcessType::WithUser)
+    {
+        if (AppConfig::WindowsUser::Enable)
+        {
+            pProcess = new WindowsUserProcess(s_userPtr_, inputFileName, outputFileName);
+        }
+        else
+        {
+            pProcess = new WindowsProcess(inputFileName, outputFileName);
+        }
+    }
+    else
+    {
+        throw(std::invalid_argument("invalid process type!"));
+    }
+
+    return ProcessPtr(pProcess);
+}
+
+/*static*/ void ProcessFactory::setWindowsUser(WindowsUserPtr user)
+{
+    s_userPtr_ = user;
+}
 
 
 

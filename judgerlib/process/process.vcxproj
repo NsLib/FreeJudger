@@ -82,10 +82,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Process.h" />
+    <ClInclude Include="WindowsUser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="WindowsProcess.cpp" />
+    <ClCompile Include="WindowsUser.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
