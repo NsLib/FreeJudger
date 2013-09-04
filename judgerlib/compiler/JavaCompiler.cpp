@@ -32,9 +32,9 @@ bool JavaCompiler::run(
     OJString cmdLine;
     FormatString(cmdLine, CompileArg::Cmd.c_str(), codeFile.c_str());
 
-    IMUST::WindowsProcess wp(GetOJString(""), compileFile);
-    wp.create(cmdLine, CompileArg::LimitTime, CompileArg::LimitMemory);
-    result_ = wp.getExitCodeEx();
+    ProcessPtr wp = ProcessFactory::create(ProcessType::WithJob, GetOJString(""), compileFile);
+    wp->create(cmdLine, CompileArg::LimitTime, CompileArg::LimitMemory);
+    result_ = wp->getExitCodeEx();
 
     return isAccept();
 }

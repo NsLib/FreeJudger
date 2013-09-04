@@ -1,14 +1,11 @@
 ﻿
-#include "Process.h"
+#include "WindowsProcess.h"
 #include "../logger/Logger.h"
 #include "../util/Utility.h"
 #include "../config/AppConfig.h"
 
 
 namespace IMUST
-{
-
-namespace
 {
 
 WindowsProcessInOut::WindowsProcessInOut(const OJString &inputFileName,
@@ -91,6 +88,10 @@ bool WindowsProcessInOut::createOutputFile()
     return outputFileHandle_ != NULL;
 }
 
+///////////////////////////////////////////////////////////////////////
+///windows作业对象
+///////////////////////////////////////////////////////////////////////
+
 WindowsJob::WindowsJob() :
 	jobHandle_(NULL), iocpHandle_(NULL)
 {
@@ -135,6 +136,7 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
 {
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
+    //限制时间，单位为100ns。 1ms = 10的6次方ns = 10000 * 100ns。
     OJInt64_t   limitTime       = timeLimit * 10000;    // ms->100ns
     int         limitMemory     = memoryLimit;   //bytes
 
@@ -146,10 +148,11 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
     ZeroMemory(&subProcessLimitRes, sizeof(subProcessLimitRes));
 
     JOBOBJECT_BASIC_LIMIT_INFORMATION & basicInfo = subProcessLimitRes.BasicLimitInformation;
-    basicInfo.LimitFlags = JOB_OBJECT_LIMIT_JOB_TIME| \
-        JOB_OBJECT_LIMIT_PRIORITY_CLASS| \
-        JOB_OBJECT_LIMIT_JOB_MEMORY| \
-        JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION;
+    basicInfo.LimitFlags = \
+        JOB_OBJECT_LIMIT_JOB_TIME | /*限制job时间*/ \
+        JOB_OBJECT_LIMIT_PRIORITY_CLASS | /*限制job优先级*/  \
+        JOB_OBJECT_LIMIT_JOB_MEMORY | /*限制job内存*/   \
+        JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION /*遇到异常，让进程直接死掉。*/;
     basicInfo.PriorityClass = NORMAL_PRIORITY_CLASS;      //优先级为默认
     basicInfo.PerJobUserTimeLimit.QuadPart = limitTime; //子进程执行时间ns(1s=10^9ns)
     subProcessLimitRes.JobMemoryLimit = limitMemory;    //内存限制
@@ -163,7 +166,7 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
     //让完成端口发出时间限制的消息
     JOBOBJECT_END_OF_JOB_TIME_INFORMATION timeReport;
     ZeroMemory(&timeReport, sizeof(timeReport));
-    timeReport.EndOfJobTimeAction = JOB_OBJECT_POST_AT_END_OF_JOB;
+    timeReport.EndOfJobTimeAction = JOB_OBJECT_POST_AT_END_OF_JOB;//时间到了，通过管道发出信息。
 
     if (!setInformation(JobObjectEndOfJobTimeInformation, &timeReport, sizeof(JOBOBJECT_END_OF_JOB_TIME_INFORMATION)))
     {
@@ -171,14 +174,14 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
         return false;
     }
 
-    //UI限制
+    //UI限制。禁止访问一些资源。
     JOBOBJECT_BASIC_UI_RESTRICTIONS subProcessLimitUi;
     ZeroMemory(&subProcessLimitUi, sizeof(subProcessLimitUi));
-    subProcessLimitUi.UIRestrictionsClass = JOB_OBJECT_UILIMIT_NONE| \
+    subProcessLimitUi.UIRestrictionsClass = JOB_OBJECT_UILIMIT_NONE | \
         JOB_OBJECT_UILIMIT_DESKTOP| \
         JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS| \
         JOB_OBJECT_UILIMIT_DISPLAYSETTINGS| \
-        JOB_OBJECT_UILIMIT_EXITWINDOWS| \
+        JOB_OBJECT_UILIMIT_EXITWINDOWS| /*关机*/    \
         JOB_OBJECT_UILIMIT_GLOBALATOMS| \
         JOB_OBJECT_UILIMIT_HANDLES| \
         JOB_OBJECT_UILIMIT_READCLIPBOARD;
@@ -189,11 +192,13 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
         return false;
     }
 
-    //将作业关联到完成端口，以确定其运行情况，及退出的原因
+    //将作业关联到完成端口，以确定其运行情况，及退出的原因。完成端口可理解为管道，job和应用程序分别位于管道的两端。
+    //应用程序可以通过管道，查询job的工作状态。
     s_mutex_.lock();
     ULONG id = ++s_id_;
     s_mutex_.unlock();
 
+    //创建完成端口
     iocpHandle_ = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, id, 0);
     if (NULL == iocpHandle_)
     {
@@ -241,8 +246,10 @@ bool WindowsJob::queryInformation(JOBOBJECTINFOCLASS informationClass,
 ULONG   WindowsJob::s_id_(0);
 Mutex   WindowsJob::s_mutex_;
 
-}	// namespace
 
+///////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////
 
 WindowsProcess::WindowsProcess(
 	const OJString &inputFileName,
@@ -273,7 +280,7 @@ bool WindowsProcess::createProcess(
     LPSTARTUPINFO lpStartupInfo,
     LPPROCESS_INFORMATION lpProcessInformation)
 {
-    return !!CreateProcess(
+    return !!CreateProcessW(
         lpApplicationName,
         lpCommandLine,
         lpProcessAttributes,
@@ -334,10 +341,10 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
     ZeroMemory(&pi, sizeof(pi)); 
 	
 	si.cb = sizeof(si); 
-	si.wShowWindow = SW_HIDE;
+	si.wShowWindow = SW_HIDE;//隐藏窗口
     si.hStdInput = inputFileHandle_;
     si.hStdOutput = si.hStdError = outputFileHandle_;
-    si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+    si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW; //使用handel项和wShowWindow项。
 	
 	bool res =  createProcess(
         NULL,    //   No module name (use command line).   
@@ -366,8 +373,7 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
 	processHandle_ = pi.hProcess;
 	threadHandle_ = pi.hThread;
 
-	if(startImmediately)
-		start();
+	if(startImmediately) start();
 
 	return 1;
 }
@@ -376,15 +382,17 @@ OJInt32_t WindowsProcess::start()
 {
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
+    //加到作业中
 	if (!jobHandle_.assinProcess(processHandle_))
     {
         logger->logError(GetOJString("[process] - IMUST::WindowsProcess::start - can't assign process to job"));
         return -1;
     }
 
-
+    //起点线程
     ResumeThread(threadHandle_);
     
+    //关闭不使用的句柄。让进程执行完毕后立即退出。
     SAFE_CLOSE_HANDLE_AND_RESET(inputFileHandle_)
     SAFE_CLOSE_HANDLE_AND_RESET(outputFileHandle_)
     SAFE_CLOSE_HANDLE_AND_RESET(threadHandle_)
@@ -410,22 +418,22 @@ OJInt32_t WindowsProcess::start()
 		case JOB_OBJECT_MSG_NEW_PROCESS:    
             //DEBUG_MSG_VS(OJStr("[WindowsProcess]new process: %u"), dwCode);
 			break;
-		case JOB_OBJECT_MSG_END_OF_JOB_TIME:  
+		case JOB_OBJECT_MSG_END_OF_JOB_TIME: //job超时
             DEBUG_MSG(OJStr("[WindowsProcess]Job time limit reached")); 
             exitCode_ = ProcessExitCode::TimeLimited;  
 			done = true;  
 			break;  
-		case JOB_OBJECT_MSG_END_OF_PROCESS_TIME:   
+		case JOB_OBJECT_MSG_END_OF_PROCESS_TIME:   //线程超时
 			DEBUG_MSG(OJStr("[WindowsProcess]process time limit reached"));
 			exitCode_ = ProcessExitCode::TimeLimited;  
 			done = true;  
 			break;  
-		case JOB_OBJECT_MSG_PROCESS_MEMORY_LIMIT:   
+		case JOB_OBJECT_MSG_PROCESS_MEMORY_LIMIT:   //进程内存超限
             DEBUG_MSG(OJStr("[WindowsProcess]Process exceeded memory limit"));  
 			exitCode_ = ProcessExitCode::MemoryLimited;  
 			done = true;  
 			break;  
-        case JOB_OBJECT_MSG_JOB_MEMORY_LIMIT:  
+        case JOB_OBJECT_MSG_JOB_MEMORY_LIMIT: //job内存超限
             {
                 OJInt32_t mem = getRunMemory();  
                 DebugMessage(OJStr("[WindowsProcess]exceeded job memory limit with %dkb"), mem);
@@ -433,21 +441,21 @@ OJInt32_t WindowsProcess::start()
                 done = true;  
             }
 			break;  
-		case JOB_OBJECT_MSG_ACTIVE_PROCESS_LIMIT:  
+		case JOB_OBJECT_MSG_ACTIVE_PROCESS_LIMIT:  //超出运行的进程数量
             DEBUG_MSG(OJStr("[WindowsProcess]Too many active processes in job"));
 			break;  
 		case JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO:  
             DEBUG_MSG(OJStr("[WindowsProcess]Job contains no active processes")); 
 			done = true;  
 			break;
-		case JOB_OBJECT_MSG_EXIT_PROCESS: 
+		case JOB_OBJECT_MSG_EXIT_PROCESS: //进程退出
             //DEBUG_MSG_VS(OJStr("[WindowsProcess]Process %u exit."), dwCode);
             if(::GetProcessId(processHandle_) == dwCode)
 			{
                 done = true;
             }
 			break;  
-		case JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS:   
+		case JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS: //进程异常结束
             DEBUG_MSG(OJStr("[WindowsProcess]Process terminated abnormally"));
             exitCode_ = ProcessExitCode::RuntimeError;  
 			done = true;  
@@ -459,16 +467,16 @@ OJInt32_t WindowsProcess::start()
 		}  
 	}  
 
-    while(!jobHandle_.terminate())
+    while(!jobHandle_.terminate())//强制关闭作业
     {
-        DEBUG_MSG(OJStr("terminate job faild!"));
-        OJSleep(1000);
+        DEBUG_MSG(OJStr("Terminate job faild!"));
+        OJSleep(500);
     }
 
-    
+    //正常退出。即不是超时等状况。
     if(ProcessExitCode::Success == exitCode_)
     {
-        DWORD code = getExitCode();
+        DWORD code = getExitCode();//获取进程返回值，以判断进程是否执行成功。
         if(code != 0)
         {
             exitCode_ = ProcessExitCode::RuntimeError;
@@ -524,7 +532,9 @@ void WindowsProcess::kill()
     TerminateProcess(processHandle_, -1);
 }
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////
 
 WindowsUserProcess::WindowsUserProcess(WindowsUserPtr user,
     const OJString &inputFileName,
@@ -554,7 +564,7 @@ bool WindowsUserProcess::createProcess(
 {
     if (!userPtr_)
     {
-        throw(std::runtime_error("windows user invalid!"));
+        throw(std::runtime_error("Invalid windows user !"));
     }
 
     lpStartupInfo->lpDesktop = OJStr("winsta0\\default");//设置交互桌面
@@ -613,7 +623,7 @@ ProcessFactory::~ProcessFactory()
     }
     else
     {
-        throw(std::invalid_argument("invalid process type!"));
+        throw(std::invalid_argument("Invalid process type!"));
     }
 
     return ProcessPtr(pProcess);

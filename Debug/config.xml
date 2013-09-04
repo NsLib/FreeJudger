@@ -44,7 +44,7 @@
 		<Java>3</Java>
 	</Language>
 	<WindowsUser>
-		<Enable>true</Enable>
+		<Enable>false</Enable>
 		<Name>acmer</Name>
 		<Password>imustacm</Password>
 	</WindowsUser>

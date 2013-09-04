@@ -24,6 +24,9 @@
     <ClInclude Include="WindowsUser.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="WindowsProcess.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Process.cpp">

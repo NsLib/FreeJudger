@@ -50,7 +50,8 @@ bool JudgeCore::startService()
             OJStr(""), 
             AppConfig::WindowsUser::Password))
         {
-            logger->logError(OJStr("JudgeCore::startService login windows user failed."));
+            logger->logError(OJStr("JudgeCore::startService login windows user failed. ")
+                OJStr("You need to create an Windows user, or disable Windows user by modify the config.xml"));
             return false;
         }
 

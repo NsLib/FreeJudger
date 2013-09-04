@@ -30,12 +30,12 @@ bool JavaExcuter::run(
     OJString cmdBuffer;
     FormatString(cmdBuffer, OJStr("java -cp %s %s"), exePath.c_str(), exeFileName.c_str());
 
-    IMUST::WindowsProcess wp(inputFile, outputFile);
-    wp.create(cmdBuffer, limitTime*30, limitMemory*10);
-    result_ = wp.getExitCodeEx();
+    ProcessPtr wp = ProcessFactory::create(ProcessType::WithUser, inputFile, outputFile);
+    wp->create(cmdBuffer, limitTime*30, limitMemory*10);
+    result_ = wp->getExitCodeEx();
 
-    runTime_ = wp.getRunTime();
-    runMemory_ = wp.getRunMemory();
+    runTime_ = wp->getRunTime();
+    runMemory_ = wp->getRunMemory();
 
     return isAccept();
 }

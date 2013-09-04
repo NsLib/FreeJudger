@@ -82,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Process.h" />
+    <ClInclude Include="WindowsProcess.h" />
     <ClInclude Include="WindowsUser.h" />
   </ItemGroup>
   <ItemGroup>

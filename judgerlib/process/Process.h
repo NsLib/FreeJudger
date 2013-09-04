@@ -9,6 +9,7 @@
 namespace IMUST
 {
 
+///进程退出码
 namespace ProcessExitCode
 {
     const OJInt32_t Success         = 0;
@@ -19,13 +20,15 @@ namespace ProcessExitCode
     const OJInt32_t UnknowCode      = 99;
 }
 
+///进程类型
 namespace ProcessType
 {
-    const OJInt32_t Normal      = 0;
-    const OJInt32_t WithJob     = 1;
-    const OJInt32_t WithUser    = 2;
+    const OJInt32_t Normal      = 0;///<最普通的进程
+    const OJInt32_t WithJob     = 1;///<在作业对象中启动进程
+    const OJInt32_t WithUser    = 2;///<使用一个windows用户来启动进程
 }
 
+///进程基类
 class JUDGER_API IProcess
 {
     MAKE_CLASS_UNCOPYABLE(IProcess);
@@ -34,171 +37,54 @@ public:
     IProcess();
     virtual ~IProcess();
 
+    /** 创建进程。
+     * @param   cmd     命令行参数
+     * @param   timeLimit   要限定的时间
+     * @param   memoryLimit     要限定的内存
+     * @param   startImmediately    创建完成之后，是否立即启动。
+     */
     virtual OJInt32_t create(const OJString &cmd,
 							const OJInt32_t timeLimit,
 							const OJInt32_t memoryLimit,
 							bool startImmediately = true) = 0;
+
+    ///启动进程
     virtual OJInt32_t start() = 0;
+
+    ///进程是否允许状态
     virtual bool isRunning() = 0;
+
+    ///等待进程结束。并返回退出码。
     virtual OJInt32_t join(OJInt32_t time) = 0;
+
+    ///获取进程真正的退出码
     virtual OJInt32_t getExitCode() = 0;
+
+    ///杀死进程
     virtual void kill() = 0;
 
+    ///获取转义之后的退出码。为ProcessExitCode中的一个。
     virtual OJInt32_t getExitCodeEx() = 0;
+
+    ///获取运行时间
     virtual OJInt32_t getRunTime() = 0;
+
+    ///获取占用内存
     virtual OJInt32_t getRunMemory() = 0;
 };
 
 typedef std::shared_ptr<IProcess> ProcessPtr;
 
-namespace
-{
-
-class JUDGER_API WindowsProcessInOut : public IProcess
-{
-public:
-	WindowsProcessInOut(const OJString &inputFileName,
-						const OJString &outputFileName);
-	virtual ~WindowsProcessInOut();
-
-protected:
-    virtual bool createInputFile();
-    virtual bool createOutputFile();
-
-protected:
-    HANDLE		inputFileHandle_;
-    HANDLE		outputFileHandle_;
-    OJString	inputFileName_;
-    OJString	outputFileName_;
-};
-
-class JUDGER_API WindowsJob
-{
-    MAKE_CLASS_UNCOPYABLE(WindowsJob);
-
-public:
-	WindowsJob();
-	~WindowsJob();
-
-	bool create(LPSECURITY_ATTRIBUTES lpJobAttributes = NULL);
-	DWORD wait(DWORD time = INFINITE);
-	bool terminate(DWORD exitCode = 4);
-	bool assinProcess(HANDLE handel);
-    bool setLimit(const OJInt32_t timeLimit,
-                const OJInt32_t memoryLimit);
-    bool getState(DWORD &executeResult, 
-                ULONG &completionKey, 
-                LPOVERLAPPED &processInfo, 
-                const DWORD time = INFINITE);
-    bool queryInformation(JOBOBJECTINFOCLASS informationClass,
-        LPVOID lpInformation,
-        DWORD cbInformationLength,
-        LPDWORD lpReturnLength);
-
-private:
-    bool setInformation(JOBOBJECTINFOCLASS infoClass,
-        LPVOID lpInfo,
-        DWORD cbInfoLength);
-
-private:
-	HANDLE      jobHandle_;
-    HANDLE		iocpHandle_;
-
-private:
-    static	Mutex		s_mutex_;
-    static	ULONG		s_id_;	
-};
-
-}	// namespace
-
-class JUDGER_API WindowsProcess : public WindowsProcessInOut
-{
-public:
-	WindowsProcess(const OJString &inputFileName = GetOJString(""),
-					const OJString &outputFileName = GetOJString(""));
-    virtual ~WindowsProcess();
-
-    virtual OJInt32_t create(const OJString &cmd,
-							const OJInt32_t timeLimit,
-							const OJInt32_t memoryLimit,
-							bool startImmediately = true);
-    virtual OJInt32_t start();
-    virtual bool isRunning();
-    virtual OJInt32_t join(OJInt32_t time);
-    virtual OJInt32_t getExitCode();
-    virtual void kill();
-    OJInt32_t getExitCodeEx(){ return exitCode_; }
-    OJInt32_t getRunTime();
-    OJInt32_t getRunMemory();
-
-protected:
-
-    /**
-     * 重载此函数，以创建不同类型的进程。 
-     */
-    virtual bool createProcess(
-        LPCTSTR lpApplicationName,
-        LPTSTR lpCommandLine,
-        LPSECURITY_ATTRIBUTES lpProcessAttributes,
-        LPSECURITY_ATTRIBUTES lpThreadAttributes,
-        BOOL bInheritHandles,
-        DWORD dwCreationFlags,
-        LPVOID lpEnvironment,
-        LPCTSTR lpCurrentDirectory,
-        LPSTARTUPINFO lpStartupInfo,
-        LPPROCESS_INFORMATION lpProcessInformation);
-
-private:
-    HANDLE		processHandle_;
-	HANDLE		threadHandle_;
-	WindowsJob	jobHandle_;
-	OJInt32_t	exitCode_;
-
-
-private:
-	static	Mutex		s_mutex_;
-	static	ULONG		s_id_;	
-};
-
-/**
- *  使用低权限的Windows用户创建进程
- */
-class JUDGER_API WindowsUserProcess : public WindowsProcess
-{
-public:
-    WindowsUserProcess(WindowsUserPtr user,
-        const OJString &inputFileName = GetOJString(""),
-        const OJString &outputFileName = GetOJString(""));
-
-    virtual ~WindowsUserProcess();
-
-protected:
-
-    virtual bool createProcess(
-        LPCTSTR lpApplicationName,
-        LPTSTR lpCommandLine,
-        LPSECURITY_ATTRIBUTES lpProcessAttributes,
-        LPSECURITY_ATTRIBUTES lpThreadAttributes,
-        BOOL bInheritHandles,
-        DWORD dwCreationFlags,
-        LPVOID lpEnvironment,
-        LPCTSTR lpCurrentDirectory,
-        LPSTARTUPINFO lpStartupInfo,
-        LPPROCESS_INFORMATION lpProcessInformation);
-
-private:
-
-    WindowsUserPtr   userPtr_;
-};
-
-
-class ProcessFactory
+///进程工厂
+class JUDGER_API ProcessFactory
 {
     MAKE_CLASS_UNCOPYABLE(ProcessFactory);
+
 public:
     ProcessFactory();
     ~ProcessFactory();
 
+    ///根据类型创建进程
     static ProcessPtr create(int type,
         const OJString &inputFileName = GetOJString(""),
         const OJString &outputFileName = GetOJString(""));
