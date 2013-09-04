@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../judgerlib/taskmanager/TaskManager.h"
 #include "../judgerlib/thread/Thread.h"

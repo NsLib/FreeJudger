@@ -1,4 +1,4 @@
-#ifndef IMUST_OJ_INIT_APP_H
+﻿#ifndef IMUST_OJ_INIT_APP_H
 #define IMUST_OJ_INIT_APP_H
 
 namespace IMUST

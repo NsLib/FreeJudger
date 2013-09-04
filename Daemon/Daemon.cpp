@@ -1,4 +1,4 @@
-#include "Daemon.h"
+﻿#include "Daemon.h"
 
 #include <cstdlib>
 

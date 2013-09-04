@@ -1,4 +1,4 @@
-
+﻿
 #ifndef IMUST_OJ_TASK_H
 #define IMUST_OJ_TASK_H
 

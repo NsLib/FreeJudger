@@ -1,4 +1,4 @@
-
+ï»¿
 #include "JudgeCore.h"
 
 #include "../judgerlib/logger/Logger.h"
@@ -33,7 +33,7 @@ bool JudgeCore::startService()
     if (!InitApp())
         return false;
 
-    //´´½¨¹¤×÷Ä¿Â¼
+    //åˆ›å»ºå·¥ä½œç›®å½•
     if(!FileTool::MakeDir(OJStr("work")))
     {
         return false;
@@ -41,7 +41,7 @@ bool JudgeCore::startService()
 
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
-    //µÇÂ¼WindowsÅĞÌâÓÃ»§
+    //ç™»å½•Windowsåˆ¤é¢˜ç”¨æˆ·
     if(AppConfig::WindowsUser::Enable)
     {
         windowsUser_ = WindowsUserPtr(new WindowsUser());
@@ -58,7 +58,7 @@ bool JudgeCore::startService()
         ProcessFactory::setWindowsUser(windowsUser_);
     }
 
-    //´´½¨sqlÉè±¸
+    //åˆ›å»ºsqlè®¾å¤‡
     mysql_ = SqlFactory::createDriver(SqlType::MySql);
     if(!mysql_->loadService())
     {
@@ -68,7 +68,7 @@ bool JudgeCore::startService()
         return false;
     }
 
-    //Á¬½ÓÊı¾İ¿â
+    //è¿æ¥æ•°æ®åº“
     if(!mysql_->connect(AppConfig::MySql::Ip, 
                     AppConfig::MySql::Port,
                     AppConfig::MySql::User,
@@ -82,15 +82,15 @@ bool JudgeCore::startService()
     }
     mysql_->setCharSet(OJStr("utf-8"));
     
-    //´´½¨Êı¾İ¿â¹ÜÀíÆ÷
+    //åˆ›å»ºæ•°æ®åº“ç®¡ç†å™¨
     dbManager_ = DBManagerPtr(new DBManager(mysql_, 
         workingTaskMgr_, finishedTaskMgr_, taskFactory_));
 
-    //TODO: ÒÆ³ı´Ë´¦µÄ²âÊÔ²Ù×÷
+    //TODO: ç§»é™¤æ­¤å¤„çš„æµ‹è¯•æ“ä½œ
     logger->logInfo(OJStr("clear db data."));
     dbManager_->doTestBeforeRun();
 
-    //hook²Ù×÷
+    //hookæ“ä½œ
     if(NULL == LoadLibrary(OJStr("windowsapihook.dll")))
     {
         OJString msg;
@@ -98,10 +98,10 @@ bool JudgeCore::startService()
         logger->logWarn(msg);
     }
 
-    //Æô¶¯Êı¾İ¿âÏß³Ì
+    //å¯åŠ¨æ•°æ®åº“çº¿ç¨‹
     dbThread_ = ThreadPtr(new Thread(JudgeDBRunThread(dbManager_)));
 
-    //Æô¶¯ÆÀÅĞÏß³Ì
+    //å¯åŠ¨è¯„åˆ¤çº¿ç¨‹
     for(IMUST::OJInt32_t i=0; i<AppConfig::CpuInfo::NumberOfCore; ++i)
     {
         ThreadPtr ptr(new IMUST::Thread(IMUST::JudgeThread(i, workingTaskMgr_, finishedTaskMgr_)));

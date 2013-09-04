@@ -1,4 +1,4 @@
-#include "Task.h"
+ï»¿#include "Task.h"
 
 #include "../judgerlib/taskmanager/TaskManager.h"
 #include "../judgerlib/config/AppConfig.h"
@@ -15,14 +15,14 @@ extern bool g_sigExit;
 
 namespace IMUST
 {
-/* ÑÓ³ÙÉ¾³ıÎÄ¼ş¡£
-µ±Ä³×Ó½ø³ÌÉĞÎ´ÍêÈ«ÍË³öÊ±£¬ËûÕ¼ÓÃµÄÎÄ¼şÔÙ´Î±»´ò¿ª»òÉ¾³ı£¬¶¼»áÊ§°Ü¡£¹Ê×÷ÑÓ³Ù£¬µÈ´ıÒ»¶ÎÊ±¼ä¡£
-Èç¹ûÎÄ¼şÊ¼ÖÕÎŞ·¨É¾³ı£¬½«±íÊ¾¸Ã×Ó½ø³ÌÎŞ·¨ÍË³ö£¬Õâ½«ÊÇÒ»¸öÖÂÃü´íÎó£¬ÆÀÅĞÏß³ÌÓ¦µ±½áÊø¡£ */
+/* å»¶è¿Ÿåˆ é™¤æ–‡ä»¶ã€‚
+å½“æŸå­è¿›ç¨‹å°šæœªå®Œå…¨é€€å‡ºæ—¶ï¼Œä»–å ç”¨çš„æ–‡ä»¶å†æ¬¡è¢«æ‰“å¼€æˆ–åˆ é™¤ï¼Œéƒ½ä¼šå¤±è´¥ã€‚æ•…ä½œå»¶è¿Ÿï¼Œç­‰å¾…ä¸€æ®µæ—¶é—´ã€‚
+å¦‚æœæ–‡ä»¶å§‹ç»ˆæ— æ³•åˆ é™¤ï¼Œå°†è¡¨ç¤ºè¯¥å­è¿›ç¨‹æ— æ³•é€€å‡ºï¼Œè¿™å°†æ˜¯ä¸€ä¸ªè‡´å‘½é”™è¯¯ï¼Œè¯„åˆ¤çº¿ç¨‹åº”å½“ç»“æŸã€‚ */
 bool safeRemoveFile(const OJString & file)
 {
     OJString infoBuffer;
 
-    for(OJInt32_t i=0; i<10; ++i)//³¢ÊÔÉ¾³ı10´Î
+    for(OJInt32_t i=0; i<10; ++i)//å°è¯•åˆ é™¤10æ¬¡
     {
         if(FileTool::RemoveFile(file))
         {
@@ -38,7 +38,7 @@ bool safeRemoveFile(const OJString & file)
     return false;
 }
 
-//»ñµÃÎÄ¼şÀ©Õ¹Ãû
+//è·å¾—æ–‡ä»¶æ‰©å±•å
 OJString getLanguageExt(OJInt32_t language)
 {
     if(language == AppConfig::Language::C)
@@ -106,7 +106,7 @@ bool JudgeTask::run()
 
     if(!doClean())
     {
-        return false;//ÖÂÃü´íÎó
+        return false;//è‡´å‘½é”™è¯¯
     }
 
     return true;
@@ -121,25 +121,25 @@ void JudgeTask::doRun()
     FormatString(infoBuffer, OJStr("[JudgeTask] task %d"), Input.SolutionID);
     logger->logInfo(infoBuffer);
 
-    //±àÒë
+    //ç¼–è¯‘
     if(!compile())
     {
         return;
     }
 
-    //ËÑË÷²âÊÔÊı¾İ
+    //æœç´¢æµ‹è¯•æ•°æ®
 
     OJString path;
     FormatString(path, OJStr("%s/%d"), AppConfig::Path::TestDataPath.c_str(), Input.ProblemID);
     
     DebugMessage(OJStr("[JudgeTask] %d search path: %s"), Input.SolutionID, path.c_str());
 
-    //TODO: ¸ù¾İÊÇ·ñspecialJudge£¬¾ö¶¨ËÑË÷.out»¹ÊÇ.inÎÄ¼ş¡£
+    //TODO: æ ¹æ®æ˜¯å¦specialJudgeï¼Œå†³å®šæœç´¢.outè¿˜æ˜¯.inæ–‡ä»¶ã€‚
     FileTool::FileNameList fileList;
     FileTool::GetSpecificExtFiles(fileList, path, OJStr(".out"), true);
 
     OJUInt32_t testCount = fileList.size();
-    if(testCount <= 0)//Ã»ÓĞ²âÊÔÊı¾İ
+    if(testCount <= 0)//æ²¡æœ‰æµ‹è¯•æ•°æ®
     {
         output_.Result = AppConfig::JudgeCode::SystemError;
 
@@ -149,7 +149,7 @@ void JudgeTask::doRun()
         return;
     }
 
-    //²âÊÔ¶à×éÊı¾İ
+    //æµ‹è¯•å¤šç»„æ•°æ®
     OJUInt32_t accepted = 0;
     for(OJUInt32_t i=0; i<testCount; ++i)
     {
@@ -346,7 +346,7 @@ void JudgeThread::operator()()
 
         IMUST::TaskPtr pTask;
 
-        //´ÓÈÎÎñ¶ÓÁĞÈ¡ÈÎÎñ
+        //ä»ä»»åŠ¡é˜Ÿåˆ—å–ä»»åŠ¡
         workingTaskMgr_->lock();
         if(workingTaskMgr_->hasTask())
         {
@@ -354,7 +354,7 @@ void JudgeThread::operator()()
         }
         workingTaskMgr_->unlock();
 
-        if(!pTask)//Ã»ÓĞÈÎÎñ
+        if(!pTask)//æ²¡æœ‰ä»»åŠ¡
         {
             OJSleep(1000);
             continue;
@@ -369,12 +369,12 @@ void JudgeThread::operator()()
             break;
         }
 
-        //Ìí¼Óµ½Íê³É¶ÓÁĞ
+        //æ·»åŠ åˆ°å®Œæˆé˜Ÿåˆ—
         finisheTaskMgr_->lock();
         finisheTaskMgr_->addTask(pTask);
         finisheTaskMgr_->unlock();
 
-        OJSleep(10);//·ÀÖ¹Ïß³Ì¹ı¶È·±Ã¦
+        OJSleep(10);//é˜²æ­¢çº¿ç¨‹è¿‡åº¦ç¹å¿™
     }
 
     FormatString(infoBuffer, OJStr("[JudgeThread][%d]end."), id_);

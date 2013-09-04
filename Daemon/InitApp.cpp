@@ -1,4 +1,4 @@
-#include "InitApp.h"
+ï»¿#include "InitApp.h"
 
 #include <Windows.h>
 
@@ -14,7 +14,7 @@ bool InitApp()
 {
     if (!details::InitAppInitLogger())
     {
-        MessageBoxW(NULL, L"³õÊ¼»¯ÈÕÖ¾ÏµÍ³Ê§°Ü", L"´íÎó", MB_OK);
+        MessageBoxW(NULL, L"åˆå§‹åŒ–æ—¥å¿—ç³»ç»Ÿå¤±è´¥", L"é”™è¯¯", MB_OK);
         return false;
     }
 
@@ -23,7 +23,7 @@ bool InitApp()
 
     if (!details::InitAppConfig())
     {
-        MessageBoxW(NULL, L"³õÊ¼»¯³ÌĞòÅäÖÃ¼¯Ê§°Ü£¬ÏêÇé¼ûÈÕÖ¾", L"´íÎó", MB_OK);
+        MessageBoxW(NULL, L"åˆå§‹åŒ–ç¨‹åºé…ç½®é›†å¤±è´¥ï¼Œè¯¦æƒ…è§æ—¥å¿—", L"é”™è¯¯", MB_OK);
         return false;
     }
 

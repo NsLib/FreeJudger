@@ -1,4 +1,4 @@
-//{{NO_DEPENDENCIES}}
+ï»¿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by Daemon.rc
 //
@@ -17,7 +17,7 @@
 #ifndef IDC_STATIC
 #define IDC_STATIC				-1
 #endif
-// ÐÂ¶ÔÏóµÄÏÂÒ»×éÄ¬ÈÏÖµ
+// æ–°å¯¹è±¡çš„ä¸‹ä¸€ç»„é»˜è®¤å€¼
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
