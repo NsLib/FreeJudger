@@ -1,4 +1,4 @@
-
+ï»¿
 #ifndef IMUST_OJ_TASK_MANAGER_H
 #define	IMUST_OJ_TASK_MANAGER_H
 
@@ -28,7 +28,7 @@ struct JUDGER_API TaskOutputData
     OJInt32_t   Result;
     OJInt32_t   RunTime;
     OJInt32_t   RunMemory;
-    OJFloat16_t PassRate;//²âÊÔÊı¾İÍ¨¹ıµÄ±ÈÀı
+    OJFloat16_t PassRate;//æµ‹è¯•æ•°æ®é€šè¿‡çš„æ¯”ä¾‹
     OJString    CompileError;
     OJString    RunTimeError;
 };

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Xml_RapidXml.h"
 
 namespace IMUST
@@ -120,7 +120,7 @@ RapidXmlImpl::XmlNodeType * RapidXmlImpl::findFirstNode(
     return pParent->first_node(tag.c_str());
 }
 
-//µÝ¹é²éÕÒµÚÒ»¸ö½áµã
+//é€’å½’æŸ¥æ‰¾ç¬¬ä¸€ä¸ªç»“ç‚¹
 RapidXmlImpl::XmlNodeType * RapidXmlImpl::findFirstNodeRecursive(
     XmlNodeType * pParent, const OJString & tag) const
 {

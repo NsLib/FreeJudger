@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <memory>
 #include "../platformlayer/PlatformLayer.h"
@@ -11,10 +11,10 @@ namespace StringConvert
 
     #define OJ_USE_WIDE_CHAR_SET
 
-    //¶à×Ö½Ú×Ö·û´®×ª»»³É¿í×Ö·û×Ö·û´®
+    //å¤šå­—èŠ‚å­—ç¬¦ä¸²è½¬æ¢æˆå®½å­—ç¬¦å­—ç¬¦ä¸²
     bool narrowStringToWide(std::wstring & dest, const std::string & src, DWORD code=0);
 
-    //¿í×Ö·û´®×ª»»³É¶à×Ö½Ú×Ö·û´®
+    //å®½å­—ç¬¦ä¸²è½¬æ¢æˆå¤šå­—èŠ‚å­—ç¬¦ä¸²
     bool wideStringToNarrow(std::string & dest, const std::wstring & wstr, DWORD code=0);
 
     JUDGER_API bool OJStringToNarrowString(std::string & dest, const OJString & src);
@@ -71,16 +71,16 @@ class JUDGER_API SqlResult
 {
 public:
    
-    //ĞĞÊı
+    //è¡Œæ•°
     virtual OJUInt64_t getNbRows() const = 0;
 
-    //ÁĞÊı
+    //åˆ—æ•°
     virtual OJUInt32_t getNbCols() const = 0;
 
-    //»ñµÃ±êÌâÓò
+    //è·å¾—æ ‡é¢˜åŸŸ
     virtual const OJString getFieldName(OJUInt32_t i) const = 0;
 
-    //Óò×ª»»³ÉË÷Òı
+    //åŸŸè½¬æ¢æˆç´¢å¼•
     virtual OJUInt32_t getFieldIndex(const OJString & fieldName) const = 0;
 
     virtual SqlRowPtr fetchRow() = 0;

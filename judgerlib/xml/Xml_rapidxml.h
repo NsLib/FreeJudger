@@ -1,4 +1,4 @@
-
+ï»¿
 #ifndef IMUST_OJ_XML_RAPIDXML_H
 #define IMUST_OJ_XML_RAPIDXML_H
 
@@ -47,7 +47,7 @@ public:
 private:
     XmlPtr makeNode(XmlNodeType* pNode) const;
     XmlNodeType * findFirstNode(XmlNodeType * pParent, const OJString & tag) const;
-    //µÝ¹é²éÕÒµÚÒ»¸ö½áµã
+    //é€’å½’æŸ¥æ‰¾ç¬¬ä¸€ä¸ªç»“ç‚¹
     XmlNodeType * findFirstNodeRecursive(XmlNodeType * pParent, const OJString & tag) const;
     XmlNodeType * addFirstNode(XmlNodeType * pParent, const OJString & tag);
     XmlNodeType * addFirstNodeRecursive(XmlNodeType * pParent, const OJString & tag);

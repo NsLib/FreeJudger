@@ -1,4 +1,4 @@
-#include "Sql.h"
+ï»¿#include "Sql.h"
 
 #pragma warning(push)
 #pragma warning(disable:4996)
@@ -10,7 +10,7 @@ namespace StringConvert
 {
 
 
-//¶à×Ö½Ú×Ö·û´®×ª»»³É¿í×Ö·û×Ö·û´®
+//å¤šå­—èŠ‚å­—ç¬¦ä¸²è½¬æ¢æˆå®½å­—ç¬¦å­—ç¬¦ä¸²
 bool narrowStringToWide(std::wstring & dest, const std::string & src, DWORD code/*=0*/)
 {
     long lLen = MultiByteToWideChar(code, 0, src.c_str(), -1, NULL, 0); 
@@ -26,7 +26,7 @@ bool narrowStringToWide(std::wstring & dest, const std::string & src, DWORD code
     return false;
 }
 
-//¿í×Ö·û´®×ª»»³É¶à×Ö½Ú×Ö·û´®
+//å®½å­—ç¬¦ä¸²è½¬æ¢æˆå¤šå­—èŠ‚å­—ç¬¦ä¸²
 bool wideStringToNarrow(std::string & dest, const std::wstring & src, DWORD code/*=0*/)
 {
     long lLen = WideCharToMultiByte(code, 0, src.c_str(), -1, NULL, 0, NULL, NULL);

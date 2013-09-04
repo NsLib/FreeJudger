@@ -1,7 +1,7 @@
-/** 
- *  ´ËÄ£¿éÓÃÓÚµÇÂ¼Ò»¸öµÍÈ¨ÏŞ¡¢¿É½»»¥µÄWindowsÓÃ»§£¬¼´´´½¨Ò»¸öÓÃ»§ÁîÅÆ¡£
- *  Ô­Àí²Î¿¼£º[Windows]ACMÔÚÏßÅĞÌâÏµÍ³µÄ°²È«ĞÔ½â¾ö·½°¸£¨http://www.cnblogs.com/zplutor/archive/2010/03/27/1698290.html£©
- *  ´úÂë²Î¿¼£ºStarting an Interactive Client Process in C++£¨http://msdn.microsoft.com/en-us/library/windows/desktop/aa379608(v=vs.85).aspx£©
+ï»¿/** 
+ *  æ­¤æ¨¡å—ç”¨äºç™»å½•ä¸€ä¸ªä½æƒé™ã€å¯äº¤äº’çš„Windowsç”¨æˆ·ï¼Œå³åˆ›å»ºä¸€ä¸ªç”¨æˆ·ä»¤ç‰Œã€‚
+ *  åŸç†å‚è€ƒï¼š[Windows]ACMåœ¨çº¿åˆ¤é¢˜ç³»ç»Ÿçš„å®‰å…¨æ€§è§£å†³æ–¹æ¡ˆï¼ˆhttp://www.cnblogs.com/zplutor/archive/2010/03/27/1698290.htmlï¼‰
+ *  ä»£ç å‚è€ƒï¼šStarting an Interactive Client Process in C++ï¼ˆhttp://msdn.microsoft.com/en-us/library/windows/desktop/aa379608(v=vs.85).aspxï¼‰
  */
 #pragma once
 

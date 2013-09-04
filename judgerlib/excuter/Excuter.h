@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../platformlayer/PlatformLayer.h"
 #include <memory>

@@ -1,4 +1,4 @@
-#include "FileTool.h"
+ï»¿#include "FileTool.h"
 
 #include <locale>
 
@@ -284,7 +284,7 @@ bool WriteFile(std::vector<OJChar_t> &buffer,
 {
     static std::locale old_locale;
     static std::locale utf8_locale(old_locale, new utf8_codecvt_facet);
-    // ¶ş½øÖÆĞ´Èë´ıÍê³É
+    // äºŒè¿›åˆ¶å†™å…¥å¾…å®Œæˆ
     OJOfstream file(filename);
     
     file.imbue(utf8_locale);

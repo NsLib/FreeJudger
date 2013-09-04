@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "sql.h"
 
@@ -64,16 +64,16 @@ public:
 
     ~MySqlResultImpl();
    
-    //ĞĞÊı
+    //è¡Œæ•°
     virtual OJUInt64_t getNbRows() const;
 
-    //ÁĞÊı
+    //åˆ—æ•°
     virtual OJUInt32_t getNbCols() const ;
 
-    //»ñµÃ±êÌâÓò
+    //è·å¾—æ ‡é¢˜åŸŸ
     virtual const OJString getFieldName(OJUInt32_t i) const;
 
-    //Óò×ª»»³ÉË÷Òı
+    //åŸŸè½¬æ¢æˆç´¢å¼•
     virtual OJUInt32_t getFieldIndex(const OJString & fieldName) const;
 
     virtual SqlRowPtr fetchRow();
@@ -81,7 +81,7 @@ public:
     
 private:
 
-    //½ûÖ¹¿½±´¹¹Ôì£¬¸´ÖÆ
+    //ç¦æ­¢æ‹·è´æ„é€ ï¼Œå¤åˆ¶
     MySqlResultImpl(const MySqlResultImpl & );
     const MySqlResultImpl & operator=(const MySqlResultImpl &);
 

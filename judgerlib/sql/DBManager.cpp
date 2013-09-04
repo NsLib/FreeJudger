@@ -1,4 +1,4 @@
-#include "DBManager.h"
+ï»¿#include "DBManager.h"
 
 #include "../taskmanager/TaskManager.h"
 
@@ -153,7 +153,7 @@ bool DBManager::readDB()
 {
     OJChar_t buffer[MaxBufferSize];
 
-    //¶ÁÈ¡½á¹ûÎª´ı¶¨ºÍµÈ´ıÖØÅĞµÄÌá½»
+    //è¯»å–ç»“æœä¸ºå¾…å®šå’Œç­‰å¾…é‡åˆ¤çš„æäº¤
     OJSprintf(buffer, Statement::SelectSolution2.c_str(), JudgeCode::Pending, JudgeCode::Rejudge);
 
     if(!sqlDriver_->query(buffer))
@@ -192,15 +192,15 @@ bool DBManager::readDB()
     return true;
 }
 
-//¶ÁÈ¡ÈÎÎñÊı¾İ¡£
-//·µ»ØÖµ=0£ºÎªÕıÈ·£» <0£ºÒì³££» >0£º´Ë´Î¶ÁÈ¡±»ºöÂÔ¡£
+//è¯»å–ä»»åŠ¡æ•°æ®ã€‚
+//è¿”å›å€¼=0ï¼šä¸ºæ­£ç¡®ï¼› <0ï¼šå¼‚å¸¸ï¼› >0ï¼šæ­¤æ¬¡è¯»å–è¢«å¿½ç•¥ã€‚
 OJInt32_t DBManager::readTaskData(TaskInputData & taskData)
 {
     OJChar_t buffer[MaxBufferSize];
     SqlRowPtr tempRow(NULL);
 
 #if 1
-    //ĞŞ¸Ä¼ÇÂ¼µÄ×´Ì¬Îª±àÒëÖĞ£¬·ÀÖ¹ÖØ¸´¶ÁÈ¡
+    //ä¿®æ”¹è®°å½•çš„çŠ¶æ€ä¸ºç¼–è¯‘ä¸­ï¼Œé˜²æ­¢é‡å¤è¯»å–
     OJSprintf(buffer, Statement::UpdateSolutionCompiling2.c_str(), 
         JudgeCode::Compiling, taskData.SolutionID);
     if(!sqlDriver_->query(buffer))
@@ -209,13 +209,13 @@ OJInt32_t DBManager::readTaskData(TaskInputData & taskData)
     }
 #endif
 
-    //¶ÁÈ¡ÌâÄ¿ÏŞÖÆÊ±¼äºÍÄÚ´æ
-    if(taskData.ProblemID == 0) //IDE²âÊÔ¹¦ÄÜ
+    //è¯»å–é¢˜ç›®é™åˆ¶æ—¶é—´å’Œå†…å­˜
+    if(taskData.ProblemID == 0) //IDEæµ‹è¯•åŠŸèƒ½
     {
         taskData.LimitTime = 5; //s
         taskData.LimitMemory = 20;//m
 
-        //¶ÁÈ¡ÓÃ»§ÊäÈëµÄ²âÊÔÊı¾İ
+        //è¯»å–ç”¨æˆ·è¾“å…¥çš„æµ‹è¯•æ•°æ®
         OJSprintf(buffer, Statement::SelectCustomInput1.c_str(), taskData.SolutionID);
         OJInt32_t r = readOneRow(tempRow, sqlDriver_, buffer);
         if(r != 0)
@@ -225,7 +225,7 @@ OJInt32_t DBManager::readTaskData(TaskInputData & taskData)
 
         taskData.UserInput = tempRow->getVar(0).getString();
 
-        //TODO: Ôö¼Ó¶ÔIDE²âÊÔ¹¦ÄÜµÄÖ§³Ö
+        //TODO: å¢åŠ å¯¹IDEæµ‹è¯•åŠŸèƒ½çš„æ”¯æŒ
         
         //return 1;
     }
@@ -250,7 +250,7 @@ OJInt32_t DBManager::readTaskData(TaskInputData & taskData)
         taskData.LimitMemory = 128*1024*1024;
     }
 
-    //¶ÁÈ¡´úÂë
+    //è¯»å–ä»£ç 
     OJSprintf(buffer, Statement::SelectCode1.c_str(), taskData.SolutionID);
     OJInt32_t r = readOneRow(tempRow, sqlDriver_, buffer);
     if(r != 0)
@@ -277,7 +277,7 @@ bool DBManager::writeFinishedTask()
         return true;
     }
 
-    if(pTask->input().ProblemID == 0)//IDE²âÊÔ¹¦ÄÜ£¬²»Ğ´Êı¾İ¿â
+    if(pTask->input().ProblemID == 0)//IDEæµ‹è¯•åŠŸèƒ½ï¼Œä¸å†™æ•°æ®åº“
     {
         return true;
     }
@@ -301,7 +301,7 @@ bool DBManager::writeToDB(TaskPtr pTask)
     const TaskOutputData & output = pTask->output();
 
 
-    //¸üĞÂ½á¹û
+    //æ›´æ–°ç»“æœ
     OJSprintf(buffer, Statement::UpdateSolutionResult5.c_str(), output.Result, output.RunTime, 
         output.RunMemory, output.PassRate, input.SolutionID);
     if(!sqlDriver_->query(buffer))
@@ -309,7 +309,7 @@ bool DBManager::writeToDB(TaskPtr pTask)
         return false;
     }
 
-    //¸üĞÂÓÃ»§Ìá½»ÊıÁ¿
+    //æ›´æ–°ç”¨æˆ·æäº¤æ•°é‡
     OJSprintf(buffer, Statement::UpdateUserSubmit2.c_str(), 
         input.UserName.c_str(), input.UserName.c_str());
     if(!sqlDriver_->query(buffer))
@@ -317,7 +317,7 @@ bool DBManager::writeToDB(TaskPtr pTask)
         return false;
     }
     
-    //ÓÃ»§ÒÑ½â¾öµÄ¡£²»¹Ü´ğ°¸ÊÇ·ñÕıÈ·¶¼Ö´ĞĞ´Ë²Ù×÷£¬·ÀÖ¹ÊÇÖØÅĞ£¬¶øµ¼ÖÂĞÅÏ¢²»¼°Ê±Ë¢ĞÂ¡£
+    //ç”¨æˆ·å·²è§£å†³çš„ã€‚ä¸ç®¡ç­”æ¡ˆæ˜¯å¦æ­£ç¡®éƒ½æ‰§è¡Œæ­¤æ“ä½œï¼Œé˜²æ­¢æ˜¯é‡åˆ¤ï¼Œè€Œå¯¼è‡´ä¿¡æ¯ä¸åŠæ—¶åˆ·æ–°ã€‚
     OJSprintf(buffer, Statement::UpdateUserSolved3.c_str(), 
         input.UserName.c_str(), JudgeCode::Accept, input.UserName.c_str());
     if(!sqlDriver_->query(buffer))
@@ -325,14 +325,14 @@ bool DBManager::writeToDB(TaskPtr pTask)
         return false;
     }
 
-    //ÌâÄ¿Ìá½»ÊıÁ¿
+    //é¢˜ç›®æäº¤æ•°é‡
     OJSprintf(buffer, Statement::UpdateProblemSubmit2.c_str(), input.ProblemID, input.ProblemID);
     if(!sqlDriver_->query(buffer))
     {
         return false;
     }
 
-    //ÌâÄ¿Í¨¹ıµÄÊıÁ¿
+    //é¢˜ç›®é€šè¿‡çš„æ•°é‡
     OJSprintf(buffer, Statement::UpdateProblemAccept3.c_str(), 
         input.ProblemID, JudgeCode::Accept, input.ProblemID);
     if(!sqlDriver_->query(buffer))
@@ -340,9 +340,9 @@ bool DBManager::writeToDB(TaskPtr pTask)
         return false;
     }
     
-    //Èç¹ûÎ´Í¨¹ı£¬Ğ´´íÎóÔ­Òò
+    //å¦‚æœæœªé€šè¿‡ï¼Œå†™é”™è¯¯åŸå› 
 
-    if(output.Result == JudgeCode::CompileError)//Èç¹û±àÒë´íÎó
+    if(output.Result == JudgeCode::CompileError)//å¦‚æœç¼–è¯‘é”™è¯¯
     {
         OJSprintf(buffer, Statement::DeleteCompile1.c_str(), input.SolutionID);
         if(!sqlDriver_->query(buffer))
@@ -359,7 +359,7 @@ bool DBManager::writeToDB(TaskPtr pTask)
             return false;
         }
     }
-    else if(output.Result == JudgeCode::RuntimeError)//ÔËĞĞÊ±´íÎó
+    else if(output.Result == JudgeCode::RuntimeError)//è¿è¡Œæ—¶é”™è¯¯
     {
         OJSprintf(buffer, Statement::DeleteRuntime1.c_str(), input.SolutionID);
         if(!sqlDriver_->query(buffer))

@@ -1,4 +1,4 @@
-#include <windows.h>
+﻿#include <windows.h>
 #include "detours.h"
 
 int (WINAPI *OriFun)(HWND hWnd,LPCSTR lpText,LPCSTR lpCaption,UINT uType) = MessageBoxA;

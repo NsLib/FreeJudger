@@ -1,4 +1,4 @@
-#include "AppConfig.h"
+﻿#include "AppConfig.h"
 
 #include "../logger/Logger.h"
 #include "../xml/Xml.h"

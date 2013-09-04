@@ -1,4 +1,4 @@
-#include "JavaCompiler.h"
+﻿#include "JavaCompiler.h"
 #include "../process/Process.h"
 #include "../util/Utility.h"
 

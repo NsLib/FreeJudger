@@ -1,4 +1,4 @@
-#include "Compiler.h"
+﻿#include "Compiler.h"
 
 #include "../process/Process.h"
 #include "../util/Utility.h"

@@ -1,4 +1,4 @@
-#ifndef IMUST_OJ_THREAD_H
+ï»¿#ifndef IMUST_OJ_THREAD_H
 #define IMUST_OJ_THREAD_H
 
 #include "../../thirdpartylib/boost/thread.hpp"
@@ -6,7 +6,7 @@
 namespace IMUST
 {
 
-// Ïß³Ì¿â²ÉÓÃBoost.Thread£¬Èç¹ûĞèÒª×ÔĞĞÉè¼Æ£¬½Ó¿ÚÒªÓëBoost¼æÈİ
+// çº¿ç¨‹åº“é‡‡ç”¨Boost.Threadï¼Œå¦‚æœéœ€è¦è‡ªè¡Œè®¾è®¡ï¼Œæ¥å£è¦ä¸Boostå…¼å®¹
 typedef             ::boost::thread                 Thread;
 typedef             ::boost::mutex                  Mutex;
 

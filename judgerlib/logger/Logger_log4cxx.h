@@ -1,4 +1,4 @@
-
+ï»¿
 #ifndef IMUST_OJ_LOGGER_LOG4CXX_H
 #define	IMUST_OJ_LOGGER_LOG4CXX_H
 
@@ -6,7 +6,7 @@
 
 namespace IMUST
 {
-// log4cxxµÄLoggerPtrÎŞ·¨Ê¹ÓÃÇ°ÖÃÉùÃ÷£¬Òò´ËÒª×ö°ü×°
+// log4cxxçš„LoggerPtræ— æ³•ä½¿ç”¨å‰ç½®å£°æ˜ï¼Œå› æ­¤è¦åšåŒ…è£…
 class LoggerPtrWrapper;
 
 class JUDGER_API Log4CxxLoggerImpl : public ILogger

@@ -1,4 +1,4 @@
-#include "Sql_mysql.h"
+ï»¿#include "Sql_mysql.h"
 
 
 namespace IMUST
@@ -165,19 +165,19 @@ MySqlResultImpl::~MySqlResultImpl()
     }
 }
 
-//ÐÐÊý
+//è¡Œæ•°
 OJUInt64_t MySqlResultImpl::getNbRows() const
 {
     return mysql_num_rows(pResult_);
 }
 
-//ÁÐÊý
+//åˆ—æ•°
 OJUInt32_t MySqlResultImpl::getNbCols() const 
 {
     return mysql_num_fields(pResult_);
 }
 
-//»ñµÃ±êÌâÓò
+//èŽ·å¾—æ ‡é¢˜åŸŸ
 const OJString MySqlResultImpl::getFieldName(OJUInt32_t i) const
 {
     assert(i>=0 && i<getNbCols() && "getFieldName out of range");
@@ -188,7 +188,7 @@ const OJString MySqlResultImpl::getFieldName(OJUInt32_t i) const
     return StringConvert::NarrowStringToOJString(tempStr);
 }
 
-//Óò×ª»»³ÉË÷Òý
+//åŸŸè½¬æ¢æˆç´¢å¼•
 OJUInt32_t MySqlResultImpl::getFieldIndex(const OJString & fieldName) const
 {
     OJUInt32_t cols = getNbCols();

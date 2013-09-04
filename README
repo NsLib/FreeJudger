@@ -1,1 +1,24 @@
 ﻿README
+
+FreeJudger项目简要概述
+
+Daemon:应用程序。
+Test:测试用。
+
+判题逻辑
+compiler:编译用户代码
+excuter:执行用户代码生成的程序
+matcher:匹配用户程序输出是否正确。
+taskmanager:判题任务管理器。
+sql:判题程序的数据库交互。
+
+程序配置：
+config:管理配置文件。
+plantformlayer:平台相关。为夸平台开发准备。
+
+其他项目，为上面项目用到的辅助库
+logger:日志
+process:进程
+thread:线程
+xml:xml配置文件操作
+windowsapihook:用于屏蔽windows MessageBox。

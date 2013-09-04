@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Process.h"
 #include "../logger/Logger.h"
 #include "../util/Utility.h"
@@ -31,7 +31,7 @@ bool WindowsProcessInOut::createInputFile()
 {
     SAFE_CLOSE_HANDLE_AND_RESET(inputFileHandle_);
 
-	if (inputFileName_.empty())//Èç¹ûÎÄ¼þÃûÎª¿Õ£¬±íÊ¾²»ÐèÒª´Ë¾ä±ú
+	if (inputFileName_.empty())//å¦‚æžœæ–‡ä»¶åä¸ºç©ºï¼Œè¡¨ç¤ºä¸éœ€è¦æ­¤å¥æŸ„
 		return true;
 
 	SECURITY_ATTRIBUTES saAttr = {0};
@@ -63,7 +63,7 @@ bool WindowsProcessInOut::createOutputFile()
 {
     SAFE_CLOSE_HANDLE_AND_RESET(outputFileHandle_);
 
-    if (outputFileName_.empty())//Èç¹ûÎÄ¼þÃûÎª¿Õ£¬±íÊ¾²»ÐèÒª´Ë¾ä±ú
+    if (outputFileName_.empty())//å¦‚æžœæ–‡ä»¶åä¸ºç©ºï¼Œè¡¨ç¤ºä¸éœ€è¦æ­¤å¥æŸ„
         return true;
 
     SECURITY_ATTRIBUTES saAttr = {0};
@@ -138,10 +138,10 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
     OJInt64_t   limitTime       = timeLimit * 10000;    // ms->100ns
     int         limitMemory     = memoryLimit;   //bytes
 
-    if (limitMemory <= 0)	                //³¬³öint·¶Î§ÁË
-        limitMemory = 128 * 1024 * 1024;    //Ä¬ÈÏ128M
+    if (limitMemory <= 0)	                //è¶…å‡ºintèŒƒå›´äº†
+        limitMemory = 128 * 1024 * 1024;    //é»˜è®¤128M
 
-    //ÉèÖÃ»ù±¾ÏÞÖÆÐÅÏ¢
+    //è®¾ç½®åŸºæœ¬é™åˆ¶ä¿¡æ¯
     JOBOBJECT_EXTENDED_LIMIT_INFORMATION subProcessLimitRes;
     ZeroMemory(&subProcessLimitRes, sizeof(subProcessLimitRes));
 
@@ -150,9 +150,9 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
         JOB_OBJECT_LIMIT_PRIORITY_CLASS| \
         JOB_OBJECT_LIMIT_JOB_MEMORY| \
         JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION;
-    basicInfo.PriorityClass = NORMAL_PRIORITY_CLASS;      //ÓÅÏÈ¼¶ÎªÄ¬ÈÏ
-    basicInfo.PerJobUserTimeLimit.QuadPart = limitTime; //×Ó½ø³ÌÖ´ÐÐÊ±¼äns(1s=10^9ns)
-    subProcessLimitRes.JobMemoryLimit = limitMemory;    //ÄÚ´æÏÞÖÆ
+    basicInfo.PriorityClass = NORMAL_PRIORITY_CLASS;      //ä¼˜å…ˆçº§ä¸ºé»˜è®¤
+    basicInfo.PerJobUserTimeLimit.QuadPart = limitTime; //å­è¿›ç¨‹æ‰§è¡Œæ—¶é—´ns(1s=10^9ns)
+    subProcessLimitRes.JobMemoryLimit = limitMemory;    //å†…å­˜é™åˆ¶
 
     if (!setInformation(JobObjectExtendedLimitInformation, &subProcessLimitRes, sizeof(subProcessLimitRes)))
     {
@@ -160,7 +160,7 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
         return false;
     }
         
-    //ÈÃÍê³É¶Ë¿Ú·¢³öÊ±¼äÏÞÖÆµÄÏûÏ¢
+    //è®©å®Œæˆç«¯å£å‘å‡ºæ—¶é—´é™åˆ¶çš„æ¶ˆæ¯
     JOBOBJECT_END_OF_JOB_TIME_INFORMATION timeReport;
     ZeroMemory(&timeReport, sizeof(timeReport));
     timeReport.EndOfJobTimeAction = JOB_OBJECT_POST_AT_END_OF_JOB;
@@ -171,7 +171,7 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
         return false;
     }
 
-    //UIÏÞÖÆ
+    //UIé™åˆ¶
     JOBOBJECT_BASIC_UI_RESTRICTIONS subProcessLimitUi;
     ZeroMemory(&subProcessLimitUi, sizeof(subProcessLimitUi));
     subProcessLimitUi.UIRestrictionsClass = JOB_OBJECT_UILIMIT_NONE| \
@@ -189,7 +189,7 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
         return false;
     }
 
-    //½«×÷Òµ¹ØÁªµ½Íê³É¶Ë¿Ú£¬ÒÔÈ·¶¨ÆäÔËÐÐÇé¿ö£¬¼°ÍË³öµÄÔ­Òò
+    //å°†ä½œä¸šå…³è”åˆ°å®Œæˆç«¯å£ï¼Œä»¥ç¡®å®šå…¶è¿è¡Œæƒ…å†µï¼ŒåŠé€€å‡ºçš„åŽŸå› 
     s_mutex_.lock();
     ULONG id = ++s_id_;
     s_mutex_.unlock();
@@ -487,7 +487,7 @@ OJInt32_t WindowsProcess::getRunTime()
 	jobHandle_.queryInformation(JobObjectBasicAndIoAccountingInformation,   
 		&jobai, sizeof(jobai), NULL);  
 
-	return jobai.BasicInfo.TotalUserTime.LowPart/10000;  //×ª»»³Éms
+	return jobai.BasicInfo.TotalUserTime.LowPart/10000;  //è½¬æ¢æˆms
 }
     
 OJInt32_t WindowsProcess::getRunMemory()
@@ -496,7 +496,7 @@ OJInt32_t WindowsProcess::getRunMemory()
 	ZeroMemory(&joeli, sizeof(joeli));  
 	jobHandle_.queryInformation(JobObjectExtendedLimitInformation,   
 		&joeli, sizeof(joeli), NULL);  
-    return joeli.PeakProcessMemoryUsed/1024;  //×ª»»³Ékb
+    return joeli.PeakProcessMemoryUsed/1024;  //è½¬æ¢æˆkb
 }
 
 bool WindowsProcess::isRunning()
@@ -557,7 +557,7 @@ bool WindowsUserProcess::createProcess(
         throw(std::runtime_error("windows user invalid!"));
     }
 
-    lpStartupInfo->lpDesktop = OJStr("winsta0\\default");//ÉèÖÃ½»»¥×ÀÃæ
+    lpStartupInfo->lpDesktop = OJStr("winsta0\\default");//è®¾ç½®äº¤äº’æ¡Œé¢
 
     return userPtr_->createProcess(
         lpApplicationName,

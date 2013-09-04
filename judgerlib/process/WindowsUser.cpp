@@ -1,4 +1,4 @@
-
+﻿
 #include "WindowsUser.h"
 
 #pragma comment(lib, "advapi32.lib")

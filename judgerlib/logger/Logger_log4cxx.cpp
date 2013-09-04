@@ -1,4 +1,4 @@
-#include "Logger_log4cxx.h"
+﻿#include "Logger_log4cxx.h"
 
 #include "../../thirdpartylib/log4cxx/log4cxx.h"
 #include "../../thirdpartylib/log4cxx/propertyconfigurator.h"
@@ -51,7 +51,7 @@ void Log4CxxLoggerImpl::logFatal(const OJString &msg) const
 
 void Log4CxxLoggerImpl::logError(const OJString &msg) const
 {
-    //TODO: �Ƴ�ERRORǰ׺��
+    //TODO: 移除ERROR前缀。
     OJString str = OJStr("ERROR: ");
     str += msg;
     (*logger_)->error(str);

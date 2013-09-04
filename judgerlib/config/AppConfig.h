@@ -1,4 +1,4 @@
-#ifndef IMUST_OJ_APP_CONFIG_H
+﻿#ifndef IMUST_OJ_APP_CONFIG_H
 #define IMUST_OJ_APP_CONFIG_H
 
 #include "../platformlayer/PlatformLayer.h"

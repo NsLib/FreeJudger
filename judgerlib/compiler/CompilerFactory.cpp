@@ -1,4 +1,4 @@
-#include "Compiler.h"
+﻿#include "Compiler.h"
 
 #include "../config/AppConfig.h"
 #include "CCompiler.h"

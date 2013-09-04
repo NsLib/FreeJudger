@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../util/Utility.h"
 #include "../platformlayer/PlatformLayer.h"
 #include "../thread/Thread.h"
@@ -134,7 +134,7 @@ public:
 protected:
 
     /**
-     * ÖØÔØ´Ëº¯Êı£¬ÒÔ´´½¨²»Í¬ÀàĞÍµÄ½ø³Ì¡£ 
+     * é‡è½½æ­¤å‡½æ•°ï¼Œä»¥åˆ›å»ºä¸åŒç±»å‹çš„è¿›ç¨‹ã€‚ 
      */
     virtual bool createProcess(
         LPCTSTR lpApplicationName,
@@ -161,7 +161,7 @@ private:
 };
 
 /**
- *  Ê¹ÓÃµÍÈ¨ÏŞµÄWindowsÓÃ»§´´½¨½ø³Ì
+ *  ä½¿ç”¨ä½æƒé™çš„Windowsç”¨æˆ·åˆ›å»ºè¿›ç¨‹
  */
 class JUDGER_API WindowsUserProcess : public WindowsProcess
 {

@@ -1,4 +1,4 @@
-#include "NormalMatcher.h"
+﻿#include "NormalMatcher.h"
 
 #include "../filetool/FileTool.h"
 
