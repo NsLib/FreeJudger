@@ -123,6 +123,7 @@ protected:
         LPPROCESS_INFORMATION lpProcessInformation);
 
 private:
+    bool        alive_;     ///< 进程是存活状态
     HANDLE		processHandle_;///<进程句柄
 	HANDLE		threadHandle_;///<主线程句柄
 	WindowsJob	jobHandle_;///<windows作业对象句柄

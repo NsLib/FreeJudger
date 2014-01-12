@@ -257,7 +257,8 @@ WindowsProcess::WindowsProcess(
 	WindowsProcessInOut(inputFileName, outputFileName),
     processHandle_(NULL),
 	threadHandle_(NULL),
-    exitCode_(ProcessExitCode::SystemError)
+    exitCode_(ProcessExitCode::SystemError),
+    alive_(false)
 {
 
 }
@@ -369,7 +370,7 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
         return -1;
     }
 		
-
+    alive_ = true;
 	processHandle_ = pi.hProcess;
 	threadHandle_ = pi.hThread;
 
@@ -473,6 +474,8 @@ OJInt32_t WindowsProcess::start()
         OJSleep(500);
     }
 
+    alive_ = false;//进程结束
+
     //正常退出。即不是超时等状况。
     if(ProcessExitCode::Success == exitCode_)
     {
@@ -509,7 +512,12 @@ OJInt32_t WindowsProcess::getRunMemory()
 
 bool WindowsProcess::isRunning()
 {
+    return alive_;
+
+/*  考虑到程序的异常返回值可能会是STILL_ACTIVE，不能用下面的方法判断进程是否正在运行。
+    感谢"成诺"发现此bug。
     return getExitCode() == STILL_ACTIVE;
+*/
 }
 
 OJInt32_t WindowsProcess::join(OJInt32_t time)
