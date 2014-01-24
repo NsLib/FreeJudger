@@ -12,3 +12,17 @@
 
 
 // TODO: reference additional headers your program requires here
+
+#include <memory>
+#include <vector>
+
+#include "../platformlayer/PlatformLayer.h"
+
+#include "../config/AppConfig.h"
+#include "../filetool/FileTool.h"
+#include "../util/StringTool.h"
+
+#include "../logger/Logger.h"
+#include "../taskmanager/TaskManager.h"
+#include "../sql/DBManager.h"
+#include "../thread/Thread.h"

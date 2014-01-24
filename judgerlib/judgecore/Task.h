@@ -2,9 +2,6 @@
 #ifndef IMUST_OJ_TASK_H
 #define IMUST_OJ_TASK_H
 
-#include "../judgerlib/logger/Logger.h"
-#include "../judgerlib/taskmanager/TaskManager.h"
-#include "../judgerlib/sql/DBManager.h"
 
 namespace IMUST
 {

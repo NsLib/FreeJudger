@@ -4,31 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logger", "judgerlib\logger\logger.vcxproj", "{3408ED8D-0190-4247-A811-1BC6A4490461}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xml", "judgerlib\xml\xml.vcxproj", "{4ACCA560-35FF-4D5C-A116-A22B163C21E5}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A97F3711-1FF2-412A-9F0B-D40AFC79E583} = {A97F3711-1FF2-412A-9F0B-D40AFC79E583}
-		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "platformlayer", "judgerlib\platformlayer\platformlayer.vcxproj", "{A97F3711-1FF2-412A-9F0B-D40AFC79E583}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C4B01F8C-45D3-4A2C-9D01-33EC0E6AE009} = {C4B01F8C-45D3-4A2C-9D01-33EC0E6AE009}
-		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
-	EndProjectSection
 EndProject
 Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "architecture", "doc\architecture\architecture.modelproj", "{7D111AD4-B276-4F06-9BCB-7EFDF482E73A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "thread", "judgerlib\thread\thread.vcxproj", "{A91D844A-92AD-4D8A-9FFF-B859D2576CA6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A97F3711-1FF2-412A-9F0B-D40AFC79E583} = {A97F3711-1FF2-412A-9F0B-D40AFC79E583}
-		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "config", "judgerlib\config\config.vcxproj", "{AC4DB720-DD25-4CD5-B91F-04A5AD5C213F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A97F3711-1FF2-412A-9F0B-D40AFC79E583} = {A97F3711-1FF2-412A-9F0B-D40AFC79E583}
-		{4ACCA560-35FF-4D5C-A116-A22B163C21E5} = {4ACCA560-35FF-4D5C-A116-A22B163C21E5}
-		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Daemon", "Daemon\Daemon.vcxproj", "{FFB70E2B-3BD7-4C21-9782-91A324E877BD}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -65,25 +48,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj",
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "process", "judgerlib\process\process.vcxproj", "{32F278DD-CCEB-432D-9DA2-CDF7F4BE9074}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A97F3711-1FF2-412A-9F0B-D40AFC79E583} = {A97F3711-1FF2-412A-9F0B-D40AFC79E583}
-		{0E2F904B-F674-4D30-BEF7-4FDEC1395631} = {0E2F904B-F674-4D30-BEF7-4FDEC1395631}
-		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sql", "judgerlib\sql\sql.vcxproj", "{EA669E91-E3FE-48F9-A158-22FB5E7AD28E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A97F3711-1FF2-412A-9F0B-D40AFC79E583} = {A97F3711-1FF2-412A-9F0B-D40AFC79E583}
-		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "filetool", "judgerlib\filetool\filetool.vcxproj", "{274EAEB5-8A9C-45FD-9C90-215961DB3AFF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "taskmanager", "judgerlib\taskmanager\taskmanager.vcxproj", "{3183776B-F929-4018-8EF3-649775A53273}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A97F3711-1FF2-412A-9F0B-D40AFC79E583} = {A97F3711-1FF2-412A-9F0B-D40AFC79E583}
-		{3408ED8D-0190-4247-A811-1BC6A4490461} = {3408ED8D-0190-4247-A811-1BC6A4490461}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "windowsapihook", "judgerlib\windowsapihook\windowsapihook.vcxproj", "{0E2F904B-F674-4D30-BEF7-4FDEC1395631}"
 	ProjectSection(ProjectDependencies) = postProject

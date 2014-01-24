@@ -56,7 +56,6 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>logger.lib;config.lib;xml.lib;taskmanager.lib;sql.lib;filetool.lib;process.lib;util.lib;compiler.lib;excuter.lib;matcher.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -73,7 +72,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>logger.lib;config.lib;xml.lib;taskmanager.lib;sql.lib;filetool.lib;process.lib;util.lib;compiler.lib;excuter.lib;matcher.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -83,18 +81,50 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Daemon.h" />
-    <ClInclude Include="InitApp.h" />
-    <ClInclude Include="JudgeCore.h" />
-    <ClInclude Include="Task.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Daemon.cpp" />
-    <ClCompile Include="InitApp.cpp" />
-    <ClCompile Include="JudgeCore.cpp" />
-    <ClCompile Include="Task.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Daemon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\judgerlib\compiler\compiler.vcxproj">
+      <Project>{8f23609a-3beb-493d-a5dd-8b1d24814320}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\judgerlib\config\config.vcxproj">
+      <Project>{ac4db720-dd25-4cd5-b91f-04a5ad5c213f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\judgerlib\excuter\excuter.vcxproj">
+      <Project>{80d38a6c-7a0c-4a7a-a9e8-6f74db61324f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\judgerlib\filetool\filetool.vcxproj">
+      <Project>{274eaeb5-8a9c-45fd-9c90-215961db3aff}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\judgerlib\judgecore\judgecore.vcxproj">
+      <Project>{8a294b69-584e-452c-92d9-442b9f346466}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\judgerlib\logger\logger.vcxproj">
+      <Project>{3408ed8d-0190-4247-a811-1bc6a4490461}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\judgerlib\matcher\matcher.vcxproj">
+      <Project>{2caacd2d-1a57-4610-b346-6841dcb56b2a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\judgerlib\process\process.vcxproj">
+      <Project>{32f278dd-cceb-432d-9da2-cdf7f4be9074}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\judgerlib\sql\sql.vcxproj">
+      <Project>{ea669e91-e3fe-48f9-a158-22fb5e7ad28e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\judgerlib\taskmanager\taskmanager.vcxproj">
+      <Project>{3183776b-f929-4018-8ef3-649775a53273}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\judgerlib\util\util.vcxproj">
+      <Project>{c4b01f8c-45d3-4a2c-9d01-33ec0e6ae009}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\judgerlib\xml\xml.vcxproj">
+      <Project>{4acca560-35ff-4d5c-a116-a22b163c21e5}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

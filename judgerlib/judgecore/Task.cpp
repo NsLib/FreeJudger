@@ -1,15 +1,10 @@
-﻿#include "Task.h"
-
-#include "../judgerlib/taskmanager/TaskManager.h"
-#include "../judgerlib/config/AppConfig.h"
-#include "../judgerlib/filetool/FileTool.h"
-#include "../judgerlib/util/Utility.h"
-#include "../judgerlib/util/StringTool.h"
+﻿#include "stdafx.h"
+#include "Task.h"
 
 
-#include "../judgerlib/compiler/Compiler.h"
-#include "../judgerlib/excuter/Excuter.h"
-#include "../judgerlib/matcher/Matcher.h"
+#include "../compiler/Compiler.h"
+#include "../excuter/Excuter.h"
+#include "../matcher/Matcher.h"
 
 extern bool g_sigExit;
 

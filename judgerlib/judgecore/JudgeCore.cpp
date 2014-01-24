@@ -1,12 +1,9 @@
-﻿
+﻿#include "stdafx.h"
 #include "JudgeCore.h"
 
-#include "../judgerlib/logger/Logger.h"
-#include "../judgerlib/logger/Logger_log4cxx.h"
-#include "../judgerlib/config/AppConfig.h"
-#include "../judgerlib/filetool/FileTool.h"
-#include "../judgerlib/process/Process.h"
-#include "../judgerlib/util/StringTool.h"
+#include "../logger/Logger_log4cxx.h"
+#include "../process/Process.h"
+#include "../process/WindowsUser.h"
 
 #include "Task.h"
 #include "InitApp.h"

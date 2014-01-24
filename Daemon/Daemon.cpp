@@ -2,7 +2,12 @@
 
 #include <cstdlib>
 
-#include "JudgeCore.h"
+#include "../judgerlib/platformlayer/PlatformLayer.h"
+
+#include "../judgerlib/taskmanager/TaskManager.h"
+#include "../judgerlib/sql/DBManager.h"
+#include "../judgerlib/thread/Thread.h"
+#include "../judgerlib/judgecore/JudgeCore.h"
 
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,

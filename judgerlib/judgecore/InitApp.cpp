@@ -1,11 +1,9 @@
-﻿#include "InitApp.h"
+﻿#include "stdafx.h"
+#include "InitApp.h"
 
 #include <Windows.h>
 
-#include "../judgerlib/logger/Logger.h"
-#include "../judgerlib/logger/Logger_log4cxx.h"
-#include "../judgerlib/config/AppConfig.h"
-#include "../judgerlib/platformlayer/PlatformLayer.h"
+#include "../logger/Logger_log4cxx.h"
 
 namespace IMUST
 {
