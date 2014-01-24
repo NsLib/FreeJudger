@@ -1,6 +1,5 @@
-﻿#include "JavaCompiler.h"
-#include "../process/Process.h"
-#include "../util/StringTool.h"
+﻿#include "stdafx.h"
+#include "JavaCompiler.h"
 
 
 namespace IMUST

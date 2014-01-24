@@ -1,7 +1,6 @@
 ﻿
+#include "stdafx.h"
 #include "CCompiler.h"
-#include "../process/Process.h"
-#include "../util/StringTool.h"
 
 namespace IMUST
 {

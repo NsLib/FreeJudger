@@ -1,7 +1,5 @@
-﻿#include "Compiler.h"
-
-#include "../process/Process.h"
-#include "../util/Utility.h"
+﻿#include "stdafx.h"
+#include "Compiler.h"
 
 
 namespace IMUST

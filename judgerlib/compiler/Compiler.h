@@ -1,8 +1,5 @@
 ﻿#pragma once
 
-#include "../platformlayer/PlatformLayer.h"
-#include <memory>
-
 namespace IMUST
 {
 
