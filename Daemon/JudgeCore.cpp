@@ -6,6 +6,8 @@
 #include "../judgerlib/config/AppConfig.h"
 #include "../judgerlib/filetool/FileTool.h"
 #include "../judgerlib/process/Process.h"
+#include "../judgerlib/util/StringTool.h"
+
 #include "Task.h"
 #include "InitApp.h"
 

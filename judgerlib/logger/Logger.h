@@ -27,6 +27,13 @@ public:
     virtual void logInfo(const OJString &msg) const = 0;
     virtual void logDebug(const OJString &msg) const = 0;
     virtual void logTrace(const OJString &msg) const = 0;
+
+    void logFatalX(const OJChar_t * pFormat, ...);
+    void logErrorX(const OJChar_t * pFormat, ...);
+    void logWarnX(const OJChar_t * pFormat, ...);
+    void logInfoX(const OJChar_t * pFormat, ...);
+    void logDebugX(const OJChar_t * pFormat, ...);
+    void logTraceX(const OJChar_t * pFormat, ...);
 };
 
 namespace LoggerId
@@ -42,7 +49,6 @@ const OJInt32_t Thread7LoggerId             = 7;
 const OJInt32_t Thread8LoggerId             = 8;
 
 // 通用ID从100以后开始编号，1-100留给线程
-
 
 }
 

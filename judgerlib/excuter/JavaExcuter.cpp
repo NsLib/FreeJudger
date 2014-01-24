@@ -1,7 +1,7 @@
 ﻿#include "JavaExcuter.h"
 #include "../process/Process.h"
 #include "../filetool/FileTool.h"
-#include "../util/Utility.h"
+#include "../util/StringTool.h"
 
 namespace IMUST
 {

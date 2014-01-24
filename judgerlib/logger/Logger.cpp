@@ -1,6 +1,6 @@
 ﻿
 #include "Logger.h"
-
+#include "../util/StringTool.h"
 
 
 namespace IMUST
@@ -33,6 +33,76 @@ ILogger::~ILogger()
 
 }
 
+void ILogger::logFatalX(const OJChar_t * pFormat, ...)
+{
+    OJString strDest;
 
+    va_list pArgList;
+    va_start (pArgList, pFormat);
+    FormatStringVS(strDest, pFormat, pArgList);
+    va_end(pArgList);
+
+    logFatal(strDest);
+}
+
+void ILogger::logErrorX(const OJChar_t * pFormat, ...)
+{
+    OJString strDest;
+
+    va_list pArgList;
+    va_start (pArgList, pFormat);
+    FormatStringVS(strDest, pFormat, pArgList);
+    va_end(pArgList);
+
+    logError(strDest);
+}
+
+void ILogger::logWarnX(const OJChar_t * pFormat, ...)
+{
+    OJString strDest;
+
+    va_list pArgList;
+    va_start (pArgList, pFormat);
+    FormatStringVS(strDest, pFormat, pArgList);
+    va_end(pArgList);
+
+    logWarn(strDest);
+}
+
+void ILogger::logInfoX(const OJChar_t * pFormat, ...)
+{
+    OJString strDest;
+
+    va_list pArgList;
+    va_start (pArgList, pFormat);
+    FormatStringVS(strDest, pFormat, pArgList);
+    va_end(pArgList);
+
+    logInfo(strDest);
+}
+
+void ILogger::logDebugX(const OJChar_t * pFormat, ...)
+{
+    OJString strDest;
+
+    va_list pArgList;
+    va_start (pArgList, pFormat);
+    FormatStringVS(strDest, pFormat, pArgList);
+    va_end(pArgList);
+
+    logDebug(strDest);
+}
+
+void ILogger::logTraceX(const OJChar_t * pFormat, ...)
+{
+    OJString strDest;
+
+    va_list pArgList;
+    va_start (pArgList, pFormat);
+    FormatStringVS(strDest, pFormat, pArgList);
+    va_end(pArgList);
+
+    logTrace(strDest);
+}
 
 }   // namespace IMUST

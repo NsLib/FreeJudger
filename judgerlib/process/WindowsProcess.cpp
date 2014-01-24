@@ -1,7 +1,7 @@
 ﻿
 #include "WindowsProcess.h"
 #include "../logger/Logger.h"
-#include "../util/Utility.h"
+#include "../util/StringTool.h"
 #include "../config/AppConfig.h"
 
 

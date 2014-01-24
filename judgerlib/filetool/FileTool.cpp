@@ -12,6 +12,7 @@
 
 #include "../logger/Logger.h"
 #include "../util/Utility.h"
+#include "../util/StringTool.h"
 
 namespace IMUST
 {
@@ -314,5 +315,42 @@ bool WriteFile(const OJString &buffer,
     return true;
 }
 
-}   // namespace IMUST
+
+bool ReadString(OJString & str, const OJString & filename)
+{
+    FILE *pFile = _wfopen(filename.c_str(), L"r");
+    if(pFile == NULL) return false;
+
+    int len = fseek(pFile, 0, SEEK_END);
+    fseek(pFile, 0, SEEK_SET);
+
+    std::string buffer(len, L'\0');
+
+    if(len > 0)
+    {
+        fread(&buffer[0], 1, len, pFile);
+    }
+
+    fclose(pFile);
+    return UTF82OJString(str, buffer);
+}
+
+bool WriteString(const OJString & str, const OJString & filename)
+{
+    if(str.empty()) return false;
+
+    std::string buffer;
+    if(!OJString2UTF8(buffer, str)) return false;
+
+    FILE *pFile = _wfopen(filename.c_str(), L"w");
+    if(pFile == NULL) return false;
+
+    fwrite(buffer.c_str(), 1, buffer.length(), pFile);
+
+    fclose(pFile);
+    return true;
+}
+
+
+}   // namespace FileTool
 }   // namespace IMUST

@@ -35,7 +35,11 @@ bool WriteFile(std::vector<OJChar_t> &buffer,
 bool WriteFile(const OJString &buffer,
     const OJString &filename);
 
-}   // namespace IMUST
+//以utf8无bom格式从文件中读写字符串
+bool ReadString(OJString & str, const OJString & filename);
+bool WriteString(const OJString & str, const OJString & filename);
+
+}   // namespace FileTool
 }   // namespace IMUST
 
 #endif  // IMUST_OJ_FILE_TOOL_H

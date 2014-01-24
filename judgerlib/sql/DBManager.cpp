@@ -350,7 +350,8 @@ bool DBManager::writeToDB(TaskPtr pTask)
             return false;
         }
 
-        OJString compileError = sqlDriver_->escapeString(output.CompileError);
+        OJString compileError = output.CompileError;
+        sqlDriver_->escapeString(compileError);
 
         OJSprintf(buffer, Statement::InsertCompile2.c_str(), 
             input.SolutionID, compileError.c_str());
@@ -367,7 +368,8 @@ bool DBManager::writeToDB(TaskPtr pTask)
             return false;
         }
 
-        OJString runtimeError = sqlDriver_->escapeString(output.RunTimeError);
+        OJString runtimeError = output.RunTimeError;
+        sqlDriver_->escapeString(runtimeError);
 
         OJSprintf(buffer, Statement::InsertRuntime2.c_str(), 
             input.SolutionID, runtimeError.c_str());

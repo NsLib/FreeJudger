@@ -36,7 +36,7 @@ public:
 
     virtual bool setCharSet(const OJString & charset);
 
-    virtual OJString escapeString(const OJString & str);
+    virtual void escapeString(OJString & str);
 
     virtual bool query(const OJString & sqlString);
 
@@ -71,7 +71,7 @@ public:
     virtual OJUInt32_t getNbCols() const ;
 
     //获得标题域
-    virtual const OJString getFieldName(OJUInt32_t i) const;
+    virtual OJString getFieldName(OJUInt32_t i) const;
 
     //域转换成索引
     virtual OJUInt32_t getFieldIndex(const OJString & fieldName) const;

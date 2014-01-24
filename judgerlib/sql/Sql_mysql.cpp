@@ -1,5 +1,7 @@
 ﻿#include "Sql_mysql.h"
 
+#include "../util/StringTool.h"
+
 
 namespace IMUST
 {
@@ -54,15 +56,18 @@ bool MySqlImpl::connect(const OJString & host,
         return false;
     }
 
-    std::string ojHost = StringConvert::OJStringToNarrowString(host);
-    std::string ojUser = StringConvert::OJStringToNarrowString(user);
-    std::string ojPassword = StringConvert::OJStringToNarrowString(password);
-    std::string ojDBName = StringConvert::OJStringToNarrowString(DBName);
+    std::string ojHost, ojUser, ojPwd, ojDBName;
+    
+    OJString2UTF8(ojHost, host);
+    OJString2UTF8(ojUser, user);
+    OJString2UTF8(ojPwd, password);
+    OJString2UTF8(ojDBName, DBName);
+
 
     valid_ = (NULL != mysql_real_connect(&mysql_, 
         ojHost.c_str(), 
         ojUser.c_str(), 
-        ojPassword.c_str(), 
+        ojPwd.c_str(), 
         ojDBName.c_str(),
         port,
         NULL, 0));
@@ -85,7 +90,8 @@ bool MySqlImpl::disconect()
 
 bool MySqlImpl::setOption(mysql_option option, const OJString & arg)
 {
-    std::string ojArg = StringConvert::OJStringToNarrowString(arg);
+    std::string ojArg;
+    OJString2UTF8(ojArg, arg);
 
     return 0 == mysql_options(&mysql_, option, ojArg.c_str());
 }
@@ -95,25 +101,26 @@ bool MySqlImpl::setCharSet(const OJString & charset)
     return setOption(MYSQL_SET_CHARSET_NAME, charset.c_str());
 }
 
-OJString MySqlImpl::escapeString(const OJString & str)
+//TODO: 优化此处的算法，去掉mysql_real_escape_string的调用。
+void MySqlImpl::escapeString(OJString & str)
 {
-    if(str.empty())
-    {
-        return str;
-    }
+    if(str.empty()) return;
 
-    std::string ansicStr = StringConvert::OJStringToNarrowString(str);
-    
-    std::string destStr(ansicStr.length()*2, '\0');
-    size_t pos = mysql_real_escape_string(&mysql_, &destStr[0], ansicStr.c_str(), ansicStr.length());
+    std::string utf8Str;
+    OJString2UTF8(utf8Str, str);
+
+
+    std::string destStr(utf8Str.length()*2, '\0');
+    size_t pos = mysql_real_escape_string(&mysql_, &destStr[0], utf8Str.c_str(), utf8Str.length());
     destStr.erase(pos);
 
-    return StringConvert::NarrowStringToOJString(destStr);
+    UTF82OJString(str, destStr);
 }
 
 bool MySqlImpl::query(const OJString & sqlString)
 {
-    std::string sql = StringConvert::OJStringToNarrowString(sqlString);
+    std::string sql;
+    OJString2UTF8(sql, sqlString);
 
     return 0 == mysql_real_query(&mysql_, sql.c_str(), sql.length());
 }
@@ -146,7 +153,9 @@ OJUInt32_t MySqlImpl::getErrorCode()
 
 OJString MySqlImpl::getErrorString()
 {
-    return StringConvert::NarrowStringToOJString(mysql_error(&mysql_));
+    OJString result;
+    UTF82OJString(result, mysql_error(&mysql_));
+    return result;
 }
 
 
@@ -178,14 +187,16 @@ OJUInt32_t MySqlResultImpl::getNbCols() const
 }
 
 //获得标题域
-const OJString MySqlResultImpl::getFieldName(OJUInt32_t i) const
+OJString MySqlResultImpl::getFieldName(OJUInt32_t i) const
 {
     assert(i>=0 && i<getNbCols() && "getFieldName out of range");
 
     MYSQL_FIELD* pField = mysql_fetch_field_direct(pResult_, i);
     std::string tempStr(pField->name, pField->name_length);
 
-    return StringConvert::NarrowStringToOJString(tempStr);
+    OJString result;
+    UTF82OJString(result, tempStr);
+    return result;
 }
 
 //域转换成索引
@@ -224,7 +235,7 @@ MySqlRowImpl::MySqlRowImpl(MYSQL_ROW rowData, OJUInt32_t numCols)
     {
         if(rowData[i])
         {
-            StringConvert::NarrowStringToOJString(tempStr, rowData[i]);
+            UTF82OJString(tempStr, rowData[i]);
             rowData_.push_back(SqlVar(tempStr));
         }
         else

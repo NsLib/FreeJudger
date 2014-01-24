@@ -1,4 +1,6 @@
 *.sdf
 *.suo
 *.opensdf
+*.log
+#.tlog
 ipch

@@ -1,83 +1,8 @@
 ﻿#include "Sql.h"
-
-#pragma warning(push)
-#pragma warning(disable:4996)
+#include "../util/StringTool.h"
 
 namespace IMUST
 {
-
-namespace StringConvert
-{
-
-
-//多字节字符串转换成宽字符字符串
-bool narrowStringToWide(std::wstring & dest, const std::string & src, DWORD code/*=0*/)
-{
-    long lLen = MultiByteToWideChar(code, 0, src.c_str(), -1, NULL, 0); 
-    dest.resize(lLen, 0);
-    MultiByteToWideChar(code, 0, src.c_str(), -1, &dest[0], lLen);
-    
-    size_t pos = dest.find(L'\0');
-    if(pos != dest.npos)
-    {
-        dest.erase(pos);
-    }
-
-    return false;
-}
-
-//宽字符串转换成多字节字符串
-bool wideStringToNarrow(std::string & dest, const std::wstring & src, DWORD code/*=0*/)
-{
-    long lLen = WideCharToMultiByte(code, 0, src.c_str(), -1, NULL, 0, NULL, NULL);
-    dest.resize(lLen, 0);
-    WideCharToMultiByte(code, 0, src.c_str(), -1, &dest[0], lLen, NULL, NULL);
-
-    size_t pos = dest.find('\0');
-    if(pos != dest.npos)
-    {
-        dest.erase(pos);
-    }
-
-    return false;
-}
-
-JUDGER_API bool OJStringToNarrowString(std::string & dest, const OJString & src)
-{
-#ifndef OJ_USE_WIDE_CHAR_SET
-    dest = src;
-    return true;
-#else
-    return wideStringToNarrow(dest, src);
-#endif
-}
-
-JUDGER_API bool NarrowStringToOJString(OJString & dest, const std::string & src)
-{
-#ifndef OJ_USE_WIDE_CHAR_SET
-    dest = src;
-    return true;
-#else
-    return narrowStringToWide(dest, src);
-#endif
-}
-
-JUDGER_API std::string OJStringToNarrowString(const OJString & src)
-{
-    std::string tempString;
-    OJStringToNarrowString(tempString, src);
-    return tempString;
-}
-
-JUDGER_API OJString NarrowStringToOJString(const std::string & src)
-{
-    OJString tempString;
-    NarrowStringToOJString(tempString, src);
-    return tempString;
-}
-
-} //namespace StringConvert
-
 
 
 SqlVar::SqlVar(const OJString & v)
@@ -86,7 +11,7 @@ SqlVar::SqlVar(const OJString & v)
 
 bool SqlVar::getBool() const
 {
-    if(value_ == OJStr("true"))
+    if(value_ == StrTrue)
     {
         return true;
     }
@@ -121,5 +46,3 @@ const SqlVar & SqlRow::operator[](OJUInt32_t index) const
 }
 
 } // namespace IMUST
-
-#pragma warning(pop)

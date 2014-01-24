@@ -4,6 +4,7 @@
 #include "../judgerlib/config/AppConfig.h"
 #include "../judgerlib/filetool/FileTool.h"
 #include "../judgerlib/util/Utility.h"
+#include "../judgerlib/util/StringTool.h"
 
 
 #include "../judgerlib/compiler/Compiler.h"
