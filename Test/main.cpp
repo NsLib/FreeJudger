@@ -7,8 +7,6 @@
 #include "../judgerlib/thread/Thread.h"
 #include "../judgerlib/xml/Xml.h"
 
-#include "../judgerlib/process/Process.h"
-
 #include "../judgerlib/sql/Sql.h"
 
 #include "../judgerlib/filetool/FileTool.h"
@@ -21,6 +19,8 @@
 
 #include "../judgerlib/util/Utility.h"
 #include "../judgerlib/util/StringTool.h"
+
+#include "../judgerlib/process/Process.h"
 
 #include <vector>
 

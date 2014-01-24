@@ -11,7 +11,7 @@ public:
     CCompiler(void);
     virtual ~CCompiler(void);
 
-    bool CCompiler::run(
+    void CCompiler::run(
         const OJString & codeFile,
         const OJString & exeFile,
         const OJString & compileFile);

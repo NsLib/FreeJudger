@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include "../platformlayer/PlatformLayer.h"
-#include <memory>
 
 namespace IMUST
 {
@@ -12,7 +10,7 @@ public:
     IExcuter();
     virtual ~IExcuter();
 
-    virtual bool run(
+    virtual void run(
         const OJString & exeFile,
         const OJString & intputFile,
         const OJString & outputFile,
@@ -20,15 +18,9 @@ public:
         OJInt32_t limitMemory
         ) = 0;
 
-    bool isAccept();
-    bool isTimeOutOfLimited();
-    bool isMemoryOutOfLimited();
-    bool isOutputOutOfLimited();
-    bool isRuntimeError();
-    bool isSystemError();
-
-    OJInt32_t getRunMemory(){ return runMemory_ ; }
-    OJInt32_t getRunTime(){ return runTime_; }
+    OJInt32_t getResult() const { return result_;}
+    OJInt32_t getRunMemory() const { return runMemory_ ; }
+    OJInt32_t getRunTime() const { return runTime_; }
 
 protected:
 

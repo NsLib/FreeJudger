@@ -10,7 +10,7 @@ public:
     SpecailMatcher(const OJString & specialCode);
     virtual ~SpecailMatcher(void);
 
-    virtual bool run(const OJString & answerOutputFile, 
+    virtual void run(const OJString & answerOutputFile, 
         const OJString & userOutputFile);
 };
 

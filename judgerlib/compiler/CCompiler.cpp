@@ -21,7 +21,7 @@ CCompiler::~CCompiler(void)
 {
 }
 
-bool CCompiler::run(
+void CCompiler::run(
     const OJString & codeFile,
     const OJString & exeFile,
     const OJString & compileFile)
@@ -32,8 +32,6 @@ bool CCompiler::run(
     ProcessPtr wp = ProcessFactory::create(ProcessType::WithJob, OJStr(""), compileFile);
     wp->create(cmdLine, CompileArg::limitTime, CompileArg::limitMemory);
     result_ = wp->getExitCodeEx();
-
-    return isAccept();
 }
 
 }//namespace IMUST

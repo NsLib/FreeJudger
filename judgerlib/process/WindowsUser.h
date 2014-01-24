@@ -5,11 +5,6 @@
  */
 #pragma once
 
-#include "../util/Utility.h"
-#include "../platformlayer/PlatformLayer.h"
-
-#include <Windows.h>
-#include <memory>
 
 namespace IMUST
 {
@@ -58,8 +53,5 @@ private:
     HWINSTA     winstaHandle_;
     PSID        pSid_;
 };
-
-typedef std::shared_ptr<WindowsUser> WindowsUserPtr;
-
 
 }//namespace IMUST

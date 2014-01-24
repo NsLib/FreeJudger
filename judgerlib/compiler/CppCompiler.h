@@ -10,7 +10,7 @@ public:
 
     virtual ~CppCompiler(void);
 
-    virtual bool CppCompiler::run(
+    virtual void CppCompiler::run(
         const OJString & codeFile,
         const OJString & exeFile,
         const OJString & compileFile);

@@ -1,8 +1,7 @@
-﻿#include "Excuter.h"
+﻿#include "stdafx.h"
+#include "Excuter.h"
 #include "ExeExcuter.h"
 #include "JavaExcuter.h"
-
-#include "../config/AppConfig.h"
 
 
 namespace IMUST

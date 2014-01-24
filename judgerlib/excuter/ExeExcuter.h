@@ -12,7 +12,7 @@ public:
     ExeExcuter(void);
     virtual ~ExeExcuter(void);
 
-    virtual bool run(
+    virtual void run(
         const OJString & exeFile,
         const OJString & inputFile,
         const OJString & outputFile,

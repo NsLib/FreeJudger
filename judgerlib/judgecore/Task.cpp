@@ -217,16 +217,9 @@ bool JudgeTask::compile()
     
     CompilerPtr compiler = CompilerFactory::create(Input.Language);
     compiler->run(codeFile_, exeFile_, compileFile_);
+    output_.Result = compiler->getResult();
 
-    if(compiler->isAccept())
-    {
-        output_.Result = AppConfig::JudgeCode::Accept;
-    }
-    else if(compiler->isSystemError())
-    {
-        output_.Result = AppConfig::JudgeCode::SystemError;
-    }
-    else if(compiler->isCompileError())
+    if(output_.Result == AppConfig::JudgeCode::CompileError)
     {
         output_.Result = AppConfig::JudgeCode::CompileError;
         
@@ -237,7 +230,7 @@ bool JudgeTask::compile()
         }
     }
 
-    return compiler->isAccept();
+    return output_.Result == AppConfig::JudgeCode::Accept;
 }
 
 bool JudgeTask::excute()
@@ -257,36 +250,12 @@ bool JudgeTask::excute()
 
     ExcuterPtr excuter = ExcuterFactory::create(Input.Language);
     excuter->run(exeFile_, answerInputFile_, userOutputFile_, Input.LimitTime, Input.LimitMemory);
-    
-    if(excuter->isAccept())
-    {
-        output_.Result = AppConfig::JudgeCode::Accept;
-    }
-    else if(excuter->isSystemError())
-    {
-        output_.Result = AppConfig::JudgeCode::SystemError;
-    }
-    else if(excuter->isOutputOutOfLimited())
-    {
-        output_.Result = AppConfig::JudgeCode::OutputLimited;
-    }
-    else if(excuter->isTimeOutOfLimited())
-    {
-        output_.Result = AppConfig::JudgeCode::TimeLimitExceed;
-    }
-    else if(excuter->isMemoryOutOfLimited())
-    {
-        output_.Result = AppConfig::JudgeCode::MemoryLimitExceed;
-    }
-    else if(excuter->isRuntimeError())
-    {
-        output_.Result = AppConfig::JudgeCode::RuntimeError;
-    }
+    output_.Result = excuter->getResult();
 
     output_.RunTime = excuter->getRunTime();
     output_.RunMemory = excuter->getRunMemory();
 
-    return excuter->isAccept();
+    return output_.Result == AppConfig::JudgeCode::Accept;
 }
 
 bool JudgeTask::match()
@@ -296,25 +265,9 @@ bool JudgeTask::match()
 
     MatcherPtr matcher = MatcherFactory::create(false, OJStr(""));
     matcher->run(answerOutputFile_, userOutputFile_);
+    output_.Result = matcher->getResult();
 
-    if(matcher->isAccept())
-    {
-        output_.Result = AppConfig::JudgeCode::Accept;
-    }
-    else if(matcher->isPresentError())
-    {
-        output_.Result = AppConfig::JudgeCode::PresentError;
-    }
-    else if(matcher->isWrongAnswer())
-    {
-        output_.Result = AppConfig::JudgeCode::WrongAnswer;
-    }
-    else if(matcher->isSystemError())
-    {
-        output_.Result = AppConfig::JudgeCode::SystemError;
-    }
-
-    return matcher->isAccept();
+    return output_.Result == AppConfig::JudgeCode::Accept;
 }
 
 

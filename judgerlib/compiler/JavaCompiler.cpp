@@ -23,7 +23,7 @@ JavaCompiler::~JavaCompiler(void)
 {
 }
 
-bool JavaCompiler::run(
+void JavaCompiler::run(
     const OJString & codeFile,
     const OJString & exeFile,
     const OJString & compileFile)
@@ -34,8 +34,6 @@ bool JavaCompiler::run(
     ProcessPtr wp = ProcessFactory::create(ProcessType::WithJob, GetOJString(""), compileFile);
     wp->create(cmdLine, CompileArg::LimitTime, CompileArg::LimitMemory);
     result_ = wp->getExitCodeEx();
-
-    return isAccept();
 }
 
 }//namespace IMUST

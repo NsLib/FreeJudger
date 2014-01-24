@@ -11,7 +11,7 @@ public:
     JavaCompiler(void);
     virtual ~JavaCompiler(void);
 
-    virtual bool run(
+    virtual void run(
         const OJString & codeFile,
         const OJString & exeFile,
         const OJString & compileFile);

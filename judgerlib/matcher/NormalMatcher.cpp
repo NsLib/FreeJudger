@@ -1,6 +1,5 @@
-﻿#include "NormalMatcher.h"
-
-#include "../filetool/FileTool.h"
+﻿#include "stdafx.h"
+#include "NormalMatcher.h"
 
 namespace IMUST
 {
@@ -27,33 +26,31 @@ NormalMatcher::~NormalMatcher(void)
 {
 }
 
-bool NormalMatcher::run(
+void NormalMatcher::run(
     const OJString & answerOutputFile, 
     const OJString & userOutputFile)
 {
-    result_ = compare(answerOutputFile, userOutputFile);
-
-    return isAccept();
+    result_ = compareFile(answerOutputFile, userOutputFile);
 }
 
-OJInt32_t NormalMatcher::compare(const OJString & srcFile, const OJString & destFile)
+OJInt32_t NormalMatcher::compareFile(const OJString & srcFile, const OJString & destFile)
 {
-    std::vector<OJChar_t> srcBuffer;
-    if (!FileTool::ReadFile(srcBuffer, srcFile, false))
+    OJString srcBuffer;
+    if (!FileTool::ReadString(srcBuffer, srcFile))
     {
-        return MatcherCode::SystemError;
+        return AppConfig::JudgeCode::SystemError;
     }
 
-    std::vector<OJChar_t> dstBuffer;
-    if (!FileTool::ReadFile(dstBuffer, destFile, false))
+    OJString dstBuffer;
+    if (!FileTool::ReadString(dstBuffer, destFile))
     {
-        return MatcherCode::SystemError;
+        return AppConfig::JudgeCode::SystemError;
     }
 
-    return compare(srcBuffer, dstBuffer);
+    return compareString(srcBuffer, dstBuffer);
 }
 
-OJInt32_t NormalMatcher::compare(std::vector<OJChar_t> & srcBuffer, std::vector<OJChar_t> & dstBuffer)
+OJInt32_t NormalMatcher::compareString(const OJString & srcBuffer, const OJString & dstBuffer)
 {
     bool presentError = false;
 
@@ -97,7 +94,7 @@ OJInt32_t NormalMatcher::compare(std::vector<OJChar_t> & srcBuffer, std::vector<
         }
         else
         {
-            return MatcherCode::WrongAnswer;
+            return AppConfig::JudgeCode::WrongAnswer;
         }
     }
 
@@ -105,7 +102,7 @@ OJInt32_t NormalMatcher::compare(std::vector<OJChar_t> & srcBuffer, std::vector<
     {
         if (!isWhiteSpace(srcBuffer[i]))
         {
-            return MatcherCode::WrongAnswer;
+            return AppConfig::JudgeCode::WrongAnswer;
         }
         presentError = true;
         ++i;
@@ -115,7 +112,7 @@ OJInt32_t NormalMatcher::compare(std::vector<OJChar_t> & srcBuffer, std::vector<
     {
         if (!isWhiteSpace(dstBuffer[k]))
         {
-            return MatcherCode::WrongAnswer;
+            return AppConfig::JudgeCode::WrongAnswer;
         }
         presentError = true;
         ++k;
@@ -123,10 +120,10 @@ OJInt32_t NormalMatcher::compare(std::vector<OJChar_t> & srcBuffer, std::vector<
 
     if(presentError)
     {
-        return MatcherCode::PressentError;
+        return AppConfig::JudgeCode::PresentError;
     }
 
-    return MatcherCode::Success;
+    return AppConfig::JudgeCode::Accept;
 }
 
 

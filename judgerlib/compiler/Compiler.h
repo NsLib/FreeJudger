@@ -9,14 +9,13 @@ public:
     ICompiler();
     virtual ~ICompiler();
 
-    virtual bool run(
+    virtual void run(
         const OJString & codeFile,
         const OJString & exeFile,
         const OJString & compileFile) = 0;
 
-    bool isAccept();
-    bool isSystemError();
-    bool isCompileError();
+    OJInt32_t getResult() const { return result_; }
+
 protected:
     OJInt32_t result_;
 };

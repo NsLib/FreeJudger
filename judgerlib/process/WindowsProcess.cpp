@@ -1,8 +1,7 @@
-﻿
+﻿#include "stdafx.h"
+#include "WindowsUser.h"
+
 #include "WindowsProcess.h"
-#include "../logger/Logger.h"
-#include "../util/StringTool.h"
-#include "../config/AppConfig.h"
 
 
 namespace IMUST
@@ -257,7 +256,7 @@ WindowsProcess::WindowsProcess(
 	WindowsProcessInOut(inputFileName, outputFileName),
     processHandle_(NULL),
 	threadHandle_(NULL),
-    exitCode_(ProcessExitCode::SystemError),
+    exitCode_(AppConfig::JudgeCode::SystemError),
     alive_(false)
 {
 
@@ -398,7 +397,7 @@ OJInt32_t WindowsProcess::start()
     SAFE_CLOSE_HANDLE_AND_RESET(outputFileHandle_)
     SAFE_CLOSE_HANDLE_AND_RESET(threadHandle_)
 
-    exitCode_ = ProcessExitCode::Success;
+    exitCode_ = AppConfig::JudgeCode::Accept;
 
 	DWORD ExecuteResult = -1;  
 	ULONG completeKey;  
@@ -421,24 +420,24 @@ OJInt32_t WindowsProcess::start()
 			break;
 		case JOB_OBJECT_MSG_END_OF_JOB_TIME: //job超时
             DEBUG_MSG(OJStr("[WindowsProcess]Job time limit reached")); 
-            exitCode_ = ProcessExitCode::TimeLimited;  
+            exitCode_ = AppConfig::JudgeCode::TimeLimitExceed;  
 			done = true;  
 			break;  
 		case JOB_OBJECT_MSG_END_OF_PROCESS_TIME:   //线程超时
 			DEBUG_MSG(OJStr("[WindowsProcess]process time limit reached"));
-			exitCode_ = ProcessExitCode::TimeLimited;  
+            exitCode_ = AppConfig::JudgeCode::TimeLimitExceed;
 			done = true;  
 			break;  
 		case JOB_OBJECT_MSG_PROCESS_MEMORY_LIMIT:   //进程内存超限
             DEBUG_MSG(OJStr("[WindowsProcess]Process exceeded memory limit"));  
-			exitCode_ = ProcessExitCode::MemoryLimited;  
+            exitCode_ = AppConfig::JudgeCode::MemoryLimitExceed;  
 			done = true;  
 			break;  
         case JOB_OBJECT_MSG_JOB_MEMORY_LIMIT: //job内存超限
             {
                 OJInt32_t mem = getRunMemory();  
                 DebugMessage(OJStr("[WindowsProcess]exceeded job memory limit with %dkb"), mem);
-                exitCode_ = ProcessExitCode::MemoryLimited; 
+                exitCode_ = AppConfig::JudgeCode::MemoryLimitExceed; 
                 done = true;  
             }
 			break;  
@@ -458,12 +457,12 @@ OJInt32_t WindowsProcess::start()
 			break;  
 		case JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS: //进程异常结束
             DEBUG_MSG(OJStr("[WindowsProcess]Process terminated abnormally"));
-            exitCode_ = ProcessExitCode::RuntimeError;  
+            exitCode_ = AppConfig::JudgeCode::RuntimeError;  
 			done = true;  
 			break;  
 		default:  
             DEBUG_MSG(OJStr("[WindowsProcess]Unknown notification"));
-			exitCode_ = ProcessExitCode::UnknowCode;  
+            exitCode_ = AppConfig::JudgeCode::UnknownError;  
 			break;  
 		}  
 	}  
@@ -477,12 +476,12 @@ OJInt32_t WindowsProcess::start()
     alive_ = false;//进程结束
 
     //正常退出。即不是超时等状况。
-    if(ProcessExitCode::Success == exitCode_)
+    if(AppConfig::JudgeCode::Accept == exitCode_)
     {
         DWORD code = getExitCode();//获取进程返回值，以判断进程是否执行成功。
         if(code != 0)
         {
-            exitCode_ = ProcessExitCode::RuntimeError;
+            exitCode_ = AppConfig::JudgeCode::RuntimeError;
             DEBUG_MSG_VS(OJStr("process exit with code : %u, last error: %u"), 
                 code, GetLastError());
         }

@@ -11,7 +11,7 @@ public:
     JavaExcuter(void);
     virtual ~JavaExcuter(void);
 
-    virtual bool run(
+    virtual void run(
         const OJString & exeFile,
         const OJString & intputFile,
         const OJString & outputFile,

@@ -1,8 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Compiler.h"
 
-#include "../config/AppConfig.h"
-
 #include "CCompiler.h"
 #include "CppCompiler.h"
 #include "JavaCompiler.h"

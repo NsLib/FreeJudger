@@ -1,4 +1,5 @@
-﻿#include "Process.h"
+﻿#include "stdafx.h"
+#include "Process.h"
 
 namespace IMUST
 {

@@ -1,24 +1,10 @@
 ﻿
-#include "../util/Utility.h"
-#include "../platformlayer/PlatformLayer.h"
-#include "../thread/Thread.h"
-
-#include "WindowsUser.h"
-#include <Windows.h>
-
 namespace IMUST
 {
 
-///进程退出码
-namespace ProcessExitCode
-{
-    const OJInt32_t Success         = 0;
-    const OJInt32_t SystemError     = 1;
-    const OJInt32_t RuntimeError    = 2;
-    const OJInt32_t TimeLimited     = 3;
-    const OJInt32_t MemoryLimited   = 4;
-    const OJInt32_t UnknowCode      = 99;
-}
+typedef std::shared_ptr<class WindowsUser> WindowsUserPtr;
+typedef std::shared_ptr<class IProcess> ProcessPtr;
+
 
 ///进程类型
 namespace ProcessType
@@ -27,6 +13,7 @@ namespace ProcessType
     const OJInt32_t WithJob     = 1;///<在作业对象中启动进程
     const OJInt32_t WithUser    = 2;///<使用一个windows用户来启动进程
 }
+
 
 ///进程基类
 class JUDGER_API IProcess
@@ -73,7 +60,6 @@ public:
     virtual OJInt32_t getRunMemory() = 0;
 };
 
-typedef std::shared_ptr<IProcess> ProcessPtr;
 
 ///进程工厂
 class JUDGER_API ProcessFactory

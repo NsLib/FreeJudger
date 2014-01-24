@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include "matcher.h"
 
-#include <vector>
-
 namespace IMUST
 {
 
@@ -12,12 +10,11 @@ public:
     NormalMatcher(void);
     virtual ~NormalMatcher(void);
 
-    virtual bool run(const OJString & answerOutputFile, 
+    virtual void run(const OJString & answerOutputFile, 
         const OJString & userOutputFile);
 
-    OJInt32_t compare(const OJString & srcFile, const OJString & destFile);
-
-    OJInt32_t compare(std::vector<OJChar_t> & srcBuffer, std::vector<OJChar_t> & dstBuffer);
+    OJInt32_t compareFile(const OJString & srcFile, const OJString & destFile);
+    OJInt32_t compareString(const OJString & srcBuffer, const OJString & dstBuffer);
 
 };
 

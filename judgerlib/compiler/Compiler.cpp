@@ -19,24 +19,11 @@ namespace CompileArg
 }
 
 ICompiler::ICompiler()
-    : result_(ProcessExitCode::SystemError)
+    : result_(AppConfig::JudgeCode::SystemError)
 {
 }
 ICompiler::~ICompiler()
 {
-}
-
-bool ICompiler::isAccept()
-{
-    return result_ == ProcessExitCode::Success;
-}
-bool ICompiler::isSystemError()
-{
-    return result_ == ProcessExitCode::SystemError;
-}
-bool ICompiler::isCompileError()
-{
-    return result_ == ProcessExitCode::RuntimeError;
 }
 
 

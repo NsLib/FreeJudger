@@ -1,4 +1,4 @@
-﻿
+﻿#include "stdafx.h"
 #include "Matcher.h"
 #include "NormalMatcher.h"
 #include "SpecailMatcher.h"

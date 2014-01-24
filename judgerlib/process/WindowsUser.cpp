@@ -1,6 +1,5 @@
-﻿
+﻿#include "stdafx.h"
 #include "WindowsUser.h"
-#include "../util/StringTool.h"
 
 #pragma comment(lib, "advapi32.lib")
 

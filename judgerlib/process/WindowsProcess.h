@@ -1,9 +1,6 @@
 ﻿
 #include "Process.h"
 
-#include "WindowsUser.h"
-#include <Windows.h>
-
 namespace IMUST
 {
 

@@ -1,4 +1,5 @@
-﻿#include "SpecailMatcher.h"
+﻿#include "stdafx.h"
+#include "SpecailMatcher.h"
 
 namespace IMUST
 {
@@ -12,12 +13,10 @@ SpecailMatcher::~SpecailMatcher(void)
 {
 }
 
-bool SpecailMatcher::run(const OJString & answerOutputFile, 
+void SpecailMatcher::run(const OJString & answerOutputFile, 
         const OJString & userOutputFile)
 {
-    result_ = MatcherCode::SystemError;
-
-    return isAccept();
+    result_ = AppConfig::JudgeCode::SystemError;
 }
 
 }//namespace IMUST

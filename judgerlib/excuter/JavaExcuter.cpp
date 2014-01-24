@@ -1,7 +1,5 @@
-﻿#include "JavaExcuter.h"
-#include "../process/Process.h"
-#include "../filetool/FileTool.h"
-#include "../util/StringTool.h"
+﻿#include "stdafx.h"
+#include "JavaExcuter.h"
 
 namespace IMUST
 {
@@ -16,7 +14,7 @@ JavaExcuter::~JavaExcuter(void)
 }
 
 
-bool JavaExcuter::run(
+void JavaExcuter::run(
     const OJString & exeFile,
     const OJString & inputFile,
     const OJString & outputFile,
@@ -36,7 +34,5 @@ bool JavaExcuter::run(
 
     runTime_ = wp->getRunTime();
     runMemory_ = wp->getRunMemory();
-
-    return isAccept();
 }
 }//namespace IMUST

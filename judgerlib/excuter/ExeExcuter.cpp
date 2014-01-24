@@ -1,7 +1,5 @@
-﻿
+﻿#include "stdafx.h"
 #include "ExeExcuter.h"
-#include "../process/Process.h"
-#include "../filetool/FileTool.h"
 
 namespace IMUST
 {
@@ -15,7 +13,7 @@ ExeExcuter::~ExeExcuter(void)
 {
 }
 
-bool ExeExcuter::run(
+void ExeExcuter::run(
     const OJString & exeFile,
     const OJString & inputFile,
     const OJString & outputFile,
@@ -29,8 +27,6 @@ bool ExeExcuter::run(
 
     runTime_ = wp->getRunTime();
     runMemory_ = wp->getRunMemory();
-
-    return isAccept();
 }
 
 }//namespace IMUST
