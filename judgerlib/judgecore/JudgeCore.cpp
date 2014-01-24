@@ -94,14 +94,6 @@ bool JudgeCore::startService()
     logger->logInfo(OJStr("clear db data."));
     dbManager_->doTestBeforeRun();
 
-    //hook操作
-    if(NULL == LoadLibrary(OJStr("windowsapihook.dll")))
-    {
-        OJString msg;
-        FormatString(msg, OJStr("[Daemon] - WinMain - load hook dll faild! - %d"), GetLastError());
-        logger->logWarn(msg);
-    }
-
     //启动数据库线程
     dbThread_ = ThreadPtr(new Thread(JudgeDBRunThread(dbManager_)));
 

@@ -10,9 +10,16 @@ namespace IMUST
 
 bool InitApp()
 {
+    OJString path = FileTool::GetModulePath();
+    if(!FileTool::SetCurPath(path))
+    {
+        MessageBoxW(NULL, L"设置当前路径失败！", L"错误", MB_ICONSTOP);
+        return false;
+    }
+
     if (!details::InitAppInitLogger())
     {
-        MessageBoxW(NULL, L"初始化日志系统失败", L"错误", MB_OK);
+        MessageBoxW(NULL, L"初始化日志系统失败", L"错误", MB_ICONSTOP);
         return false;
     }
 
@@ -21,7 +28,7 @@ bool InitApp()
 
     if (!details::InitAppConfig())
     {
-        MessageBoxW(NULL, L"初始化程序配置集失败，详情见日志", L"错误", MB_OK);
+        MessageBoxW(NULL, L"初始化程序配置集失败，详情见日志", L"错误", MB_ICONSTOP);
         return false;
     }
 
@@ -39,6 +46,19 @@ bool InitApp()
 #undef REG_LOGGER
 
     logger->logInfo(GetOJString("[Daemon] - IMUST::InitApp - Initialize application succeed"));
+
+    
+    //hook操作
+    if(NULL == LoadLibraryW(L"windowsapihook.dll"))
+    {
+        OJString msg;
+        FormatString(msg, OJStr("Load windowsapihook.dll faild! - error code:%u"), GetLastError());
+        logger->logWarn(msg);
+
+        ::MessageBoxW(NULL, msg.c_str(), L"ERROR", MB_ICONSTOP);
+        return false;
+    }
+
 
     return true;
 }

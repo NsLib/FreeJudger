@@ -351,6 +351,33 @@ bool WriteString(const OJString & str, const OJString & filename)
     return true;
 }
 
+OJString GetModulePath()
+{
+    OJString buffer(MAX_PATH, L'\0');
+
+    ::GetModuleFileName(NULL, &buffer[0], MAX_PATH);
+    
+    return GetFilePath(buffer.c_str());
+}
+
+OJString getCurPath()
+{
+    OJString buffer(MAX_PATH, 0);
+    ::GetCurrentDirectory(MAX_PATH, &buffer[0]);
+
+    size_t pos = buffer.find(L'\0');
+    if(pos != buffer.npos) buffer.erase(pos);
+
+    return buffer;
+}
+
+bool SetCurPath(const OJString & path)
+{
+    bool ret = !!::SetCurrentDirectory(path.c_str());
+    
+    DEBUG_MSG_VS(OJStr("Current Work Directory: %s"), getCurPath().c_str());
+    return ret;
+}
 
 }   // namespace FileTool
 }   // namespace IMUST

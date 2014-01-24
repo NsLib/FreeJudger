@@ -17,6 +17,11 @@ bool IsFileExist(const OJString &filename);
 bool RemoveFile(const OJString &filename);
 bool IsDirExist(const OJString &path);
 bool MakeDir(const OJString &path);
+
+OJString GetModulePath();
+bool SetCurPath(const OJString & path);
+OJString getCurPath();
+
 OJString GetFullFileName(const OJString &path);
 OJString GetFilePath(const OJString &path);
 OJString GetFileName(const OJString &path);
@@ -26,6 +31,7 @@ bool GetSpecificExtFiles(FileNameList &files,
     const OJString &path,
     const OJString &ext,
     const bool withPath);
+
 bool ReadFile(std::vector<OJChar_t> &buffer,
     const OJString &filename,
     const bool isBinary = false);
@@ -38,6 +44,7 @@ bool WriteFile(const OJString &buffer,
 //以utf8无bom格式从文件中读写字符串
 bool ReadString(OJString & str, const OJString & filename);
 bool WriteString(const OJString & str, const OJString & filename);
+
 
 }   // namespace FileTool
 }   // namespace IMUST
