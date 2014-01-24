@@ -32,22 +32,15 @@ bool InitApp()
         return false;
     }
 
-#define REG_LOGGER  LoggerFactory::registerLogger(new Log4CxxLoggerImpl(GetOJString("log.cfg") 
+    for(OJInt32_t i=0; i<AppConfig::CpuInfo::NumberOfCore; ++i)
+    {
+        OJInt32_t threadLogId = i + 1;
+        OJString strTag;
+        FormatString(strTag, OJStr("logger%d"), threadLogId);
 
-    REG_LOGGER ,GetOJString("logger1")), LoggerId::Thread1LoggerId);
-    REG_LOGGER ,GetOJString("logger2")), LoggerId::Thread2LoggerId);
-    REG_LOGGER ,GetOJString("logger3")), LoggerId::Thread3LoggerId);
-    REG_LOGGER ,GetOJString("logger4")), LoggerId::Thread4LoggerId);
-    REG_LOGGER ,GetOJString("logger5")), LoggerId::Thread5LoggerId);
-    REG_LOGGER ,GetOJString("logger6")), LoggerId::Thread6LoggerId);
-    REG_LOGGER ,GetOJString("logger7")), LoggerId::Thread7LoggerId);
-    REG_LOGGER ,GetOJString("logger8")), LoggerId::Thread8LoggerId);
+        LoggerFactory::registerLogger(new Log4CxxLoggerImpl(OJStr("log.cfg"), strTag), threadLogId);
+    }
 
-#undef REG_LOGGER
-
-    logger->logInfo(GetOJString("[Daemon] - IMUST::InitApp - Initialize application succeed"));
-
-    
     //hook操作
     if(NULL == LoadLibraryW(L"windowsapihook.dll"))
     {
@@ -59,7 +52,10 @@ bool InitApp()
         return false;
     }
 
+    ::MessageBoxW(NULL, L"你不应该看到这个MessageBox", L"ERROR", MB_ICONSTOP);
+    ::MessageBoxA(NULL, "你不应该看到这个MessageBox", "ERROR", MB_ICONSTOP);
 
+    logger->logInfo(GetOJString("[Daemon] - IMUST::InitApp - Initialize application succeed"));
     return true;
 }
 

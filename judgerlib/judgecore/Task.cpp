@@ -14,7 +14,7 @@ namespace IMUST
 /* 延迟删除文件。
 当某子进程尚未完全退出时，他占用的文件再次被打开或删除，都会失败。故作延迟，等待一段时间。
 如果文件始终无法删除，将表示该子进程无法退出，这将是一个致命错误，评判线程应当结束。 */
-bool safeRemoveFile(const OJString & file)
+bool safeRemoveFile(const OJString & file, ILogger *pLogger)
 {
     OJString infoBuffer;
 
@@ -26,9 +26,8 @@ bool safeRemoveFile(const OJString & file)
         }
         OJSleep(1000);
 
-        FormatString(infoBuffer, OJStr("safeRemoveFile '%s' faild with %d times. code:%d"), 
+        pLogger->logWarnX( OJStr("safeRemoveFile '%s' faild with %d times. code:%d"), 
             file.c_str(), i+1, GetLastError());
-        LoggerFactory::getLogger(LoggerId::AppInitLoggerId)->logError(infoBuffer);
     }
 
     return false;
@@ -73,7 +72,7 @@ OJString getExcuterExt(OJInt32_t language)
 
 JudgeTask::JudgeTask(const TaskInputData & inputData) 
     : Input(inputData)
-    , judgeID_(0)
+    , threadId_(0)
 {
     output_.Result = AppConfig::JudgeCode::SystemError;
     output_.PassRate = 0.0f;
@@ -81,17 +80,17 @@ JudgeTask::JudgeTask(const TaskInputData & inputData)
     output_.RunMemory = 0;
 }
 
-void JudgeTask::init(OJInt32_t judgeID)
+void JudgeTask::init(OJInt32_t threadId)
 {
-    judgeID_ = judgeID;
+    threadId_ = threadId;
 
     OJString codeExt = getLanguageExt(Input.Language);
     OJString exeExt = getExcuterExt(Input.Language);
 
-    FormatString(codeFile_, OJStr("work/%d/Main.%s"), judgeID_, codeExt.c_str());
-    FormatString(exeFile_, OJStr("work/%d/Main.%s"), judgeID_, exeExt.c_str());
-    FormatString(compileFile_, OJStr("work/%d/compile.txt"), judgeID_);
-    FormatString(userOutputFile_, OJStr("work/%d/output.txt"), judgeID_);
+    FormatString(codeFile_, OJStr("work/%d/Main.%s"), threadId_, codeExt.c_str());
+    FormatString(exeFile_, OJStr("work/%d/Main.%s"), threadId_, exeExt.c_str());
+    FormatString(compileFile_, OJStr("work/%d/compile.txt"), threadId_);
+    FormatString(userOutputFile_, OJStr("work/%d/output.txt"), threadId_);
 
     FileTool::WriteFile(Input.UserCode, codeFile_);
 }
@@ -110,7 +109,7 @@ bool JudgeTask::run()
 
 void JudgeTask::doRun()
 {
-    ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    ILogger *logger = LoggerFactory::getJudgeThreadLogger(threadId_);
 
     OJString infoBuffer;
 
@@ -158,7 +157,7 @@ void JudgeTask::doRun()
         DebugMessage(OJStr("[JudgeTask] %d output file: %s"), 
             Input.SolutionID, answerOutputFile_.c_str());
 
-        if(!safeRemoveFile(userOutputFile_))
+        if(!safeRemoveFile(userOutputFile_, logger))
         {
             output_.Result = AppConfig::JudgeCode::SystemError;
             break;
@@ -184,19 +183,21 @@ bool JudgeTask::doClean()
 {
     bool faild = false;
 
-    if(!safeRemoveFile(codeFile_))
+    ILogger *pLogger = LoggerFactory::getJudgeThreadLogger(threadId_);
+
+    if(!safeRemoveFile(codeFile_, pLogger))
     {
         faild = true;
     }
-    if(!safeRemoveFile(exeFile_))
+    if(!safeRemoveFile(exeFile_, pLogger))
     {
         faild = true;
     }
-    if(!safeRemoveFile(userOutputFile_))
+    if(!safeRemoveFile(userOutputFile_, pLogger))
     {
         faild = true;
     }
-    if(!safeRemoveFile(compileFile_))
+    if(!safeRemoveFile(compileFile_, pLogger))
     {
         faild = true;
     }
@@ -211,7 +212,7 @@ bool JudgeTask::doClean()
 
 bool JudgeTask::compile()
 {
-    ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    ILogger *logger = LoggerFactory::getJudgeThreadLogger(threadId_);
     logger->logTrace(OJStr("[JudgeTask] start compile..."));
     
     CompilerPtr compiler = CompilerFactory::create(Input.Language);
@@ -241,7 +242,7 @@ bool JudgeTask::compile()
 
 bool JudgeTask::excute()
 {
-    ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    ILogger *logger = LoggerFactory::getJudgeThreadLogger(threadId_);
     logger->logTrace(OJStr("[JudgeTask] start excute..."));
     
     OJString infoBuffer;
@@ -290,7 +291,7 @@ bool JudgeTask::excute()
 
 bool JudgeTask::match()
 {
-    ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    ILogger *logger = LoggerFactory::getJudgeThreadLogger(threadId_);
     logger->logTrace(OJStr("[JudgeTask] start match..."));
 
     MatcherPtr matcher = MatcherFactory::create(false, OJStr(""));
@@ -328,14 +329,13 @@ JudgeThread::JudgeThread(int id, IMUST::TaskManagerPtr working, IMUST::TaskManag
 
 void JudgeThread::operator()()
 {
-    ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    ILogger *logger = LoggerFactory::getJudgeThreadLogger(id_);
 
     OJString infoBuffer;
     FormatString(infoBuffer, OJStr("work/%d"), id_);
     FileTool::MakeDir(infoBuffer);
 
-    FormatString(infoBuffer, OJStr("[JudgeThread][%d]start..."), id_);
-    logger->logTrace(infoBuffer);
+    logger->logTraceX(OJStr("[JudgeThread][%d]start..."), id_);
 
     while (!g_sigExit)
     {
@@ -359,9 +359,7 @@ void JudgeThread::operator()()
         pTask->init(id_);
         if(!pTask->run())
         {
-            FormatString(infoBuffer, 
-                OJStr("[JudgeThread][%d]System Error!Judge thread will exit!"), id_);
-            logger->logError(infoBuffer);
+            logger->logErrorX(OJStr("[JudgeThread][%d]System Error!Judge thread will exit!"), id_);
             break;
         }
 
@@ -373,9 +371,7 @@ void JudgeThread::operator()()
         OJSleep(10);//防止线程过度繁忙
     }
 
-    FormatString(infoBuffer, OJStr("[JudgeThread][%d]end."), id_);
-    logger->logTrace(infoBuffer);
-
+    logger->logTraceX(OJStr("[JudgeThread][%d]end."), id_);
 }
 
 TaskPtr JudgeTaskFactory::create(const TaskInputData & input)

@@ -16,6 +16,11 @@ ILogger* LoggerFactory::getLogger(const OJInt32_t loggerId)
     return (*loggers_)[loggerId];
 }
 
+ILogger* LoggerFactory::getJudgeThreadLogger(OJInt32_t threadId)
+{
+    return getLogger(threadId + 1);
+}
+
 bool LoggerFactory::registerLogger(ILogger *logger, const OJInt32_t loggerId)
 {
     assert(loggerId >= 0 && "Invalid loggerId.");

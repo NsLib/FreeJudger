@@ -11,7 +11,7 @@ class JudgeTask : public ITask
 public:
     JudgeTask(const TaskInputData & inputData);
     
-    virtual void init(OJInt32_t judgeID);
+    virtual void init(OJInt32_t threadId);
 
     virtual bool run();
 
@@ -41,7 +41,7 @@ public:
     const TaskInputData Input;
 
 private:
-    OJInt32_t       judgeID_;
+    OJInt32_t       threadId_;
     TaskOutputData  output_;
     OJString        codeFile_;
     OJString        exeFile_;
