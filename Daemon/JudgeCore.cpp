@@ -43,6 +43,8 @@ bool JudgeCore::startService()
 
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
+#if 0//暂时不要使用windows判题用户，功能不稳定。
+
     //登录Windows判题用户
     if(AppConfig::WindowsUser::Enable)
     {
@@ -60,6 +62,8 @@ bool JudgeCore::startService()
         logger->logInfo(OJStr("login windows succed."));
         ProcessFactory::setWindowsUser(windowsUser_);
     }
+
+#endif
 
     //创建sql设备
     mysql_ = SqlFactory::createDriver(SqlType::MySql);
