@@ -33,8 +33,8 @@
         <RuntimeError>10</RuntimeError>
         <CompileError>11</CompileError>
         <CompileOK>12</CompileOK>
-        <SystemError>13</SystemError>
-		<CompileTimeError>14</CompileTimeError>
+        <SystemError>14</SystemError>
+		<CompileTimeError>15</CompileTimeError>
         <UnknownError>99</UnknownError>
     </JudgeCode>
 	<Language>
@@ -43,6 +43,11 @@
 		<Pascal>2</Pascal>
 		<Java>3</Java>
 	</Language>
+	<WindowsUser>
+		<Enable>false</Enable>
+		<Name>acmer</Name>
+		<Password>imustacm</Password>
+	</WindowsUser>
     <Path>
         <TestDataPath>D:\imustoj\testdata</TestDataPath>
     </Path>

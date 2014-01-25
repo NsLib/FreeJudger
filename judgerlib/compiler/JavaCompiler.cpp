@@ -31,9 +31,9 @@ void JavaCompiler::run(
     OJString cmdLine;
     FormatString(cmdLine, CompileArg::Cmd.c_str(), codeFile.c_str());
 
-    ProcessPtr wp = ProcessFactory::create(ProcessType::WithJob, GetOJString(""), compileFile);
+    ProcessPtr wp = ProcessFactory::create(ProcessType::Compiler, GetOJString(""), compileFile);
     wp->create(cmdLine, CompileArg::LimitTime, CompileArg::LimitMemory);
-    result_ = wp->getExitCodeEx();
+    result_ = wp->getResult();
 }
 
 }//namespace IMUST

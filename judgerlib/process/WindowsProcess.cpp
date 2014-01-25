@@ -2,6 +2,7 @@
 #include "WindowsUser.h"
 
 #include "WindowsProcess.h"
+#include <Psapi.h>
 
 
 namespace IMUST
@@ -46,7 +47,7 @@ bool WindowsProcessInOut::createInputFile()
 	if (INVALID_HANDLE_VALUE == inputFileHandle_)
 	{
         ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
-        OJString msg(GetOJString("[process] - IMUST::WindowsProcessInOut::createInputFile - can't open input file: "));
+        OJString msg(GetOJString("[process] - createInputFile - can't open input file: "));
         msg += inputFileName_;
         logger->logError(msg);
         inputFileHandle_ = NULL;
@@ -78,7 +79,7 @@ bool WindowsProcessInOut::createOutputFile()
 	if (INVALID_HANDLE_VALUE == outputFileHandle_)
 	{
         ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
-        OJString msg(GetOJString("[process] - IMUST::WindowsProcessInOut::createOutputFile - can't create output file: "));
+        OJString msg(GetOJString("[process] - createOutputFile - can't create output file: "));
         msg += outputFileName_;
         logger->logError(msg);
         outputFileHandle_ = NULL;
@@ -92,7 +93,7 @@ bool WindowsProcessInOut::createOutputFile()
 ///////////////////////////////////////////////////////////////////////
 
 WindowsJob::WindowsJob() :
-	jobHandle_(NULL), iocpHandle_(NULL)
+	jobHandle_(NULL), iocpHandle_(NULL), useToExcuter_(false)
 {
 
 }
@@ -103,11 +104,12 @@ WindowsJob::~WindowsJob()
     SAFE_CLOSE_HANDLE_AND_RESET(jobHandle_)
 }
 
-bool WindowsJob::create(LPSECURITY_ATTRIBUTES lpJobAttributes)
+bool WindowsJob::create(bool useToExcuter, LPSECURITY_ATTRIBUTES lpJobAttributes)
 {
 	if (jobHandle_)
 		return false;
 	
+    useToExcuter_ = useToExcuter;
 	jobHandle_ = CreateJobObjectW(lpJobAttributes, NULL);
 
 	return NULL != jobHandle_;
@@ -148,17 +150,27 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
 
     JOBOBJECT_BASIC_LIMIT_INFORMATION & basicInfo = subProcessLimitRes.BasicLimitInformation;
     basicInfo.LimitFlags = \
-        JOB_OBJECT_LIMIT_JOB_TIME | /*限制job时间*/ \
         JOB_OBJECT_LIMIT_PRIORITY_CLASS | /*限制job优先级*/  \
-        JOB_OBJECT_LIMIT_JOB_MEMORY | /*限制job内存*/   \
-        JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION /*遇到异常，让进程直接死掉。*/;
+        JOB_OBJECT_LIMIT_PROCESS_TIME | /*限制job时间*/ \
+        JOB_OBJECT_LIMIT_PROCESS_MEMORY | /*限制job内存*/   \
+        JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION | /*遇到异常，让进程直接死掉。*/\
+        JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | /*进程跟随job一起关闭*/\
+        JOB_OBJECT_LIMIT_BREAKAWAY_OK;
+
+    if(useToExcuter_)
+    {
+        basicInfo.LimitFlags |= JOB_OBJECT_LIMIT_ACTIVE_PROCESS;
+        basicInfo.ActiveProcessLimit = 1;
+    }
+
     basicInfo.PriorityClass = NORMAL_PRIORITY_CLASS;      //优先级为默认
-    basicInfo.PerJobUserTimeLimit.QuadPart = limitTime; //子进程执行时间ns(1s=10^9ns)
-    subProcessLimitRes.JobMemoryLimit = limitMemory;    //内存限制
+    basicInfo.PerProcessUserTimeLimit.QuadPart = limitTime;
+    subProcessLimitRes.ProcessMemoryLimit = limitMemory;
 
     if (!setInformation(JobObjectExtendedLimitInformation, &subProcessLimitRes, sizeof(subProcessLimitRes)))
     {
-        logger->logError(GetOJString("[process] - IMUST::WindowsJob::setLimit - can't set job JobObjectExtendedLimitInformation info"));
+        logger->logErrorX(OJStr("[process] - setLimit - can't set job extend info! error:%u"),
+            GetLastError());
         return false;
     }
         
@@ -169,25 +181,18 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
 
     if (!setInformation(JobObjectEndOfJobTimeInformation, &timeReport, sizeof(JOBOBJECT_END_OF_JOB_TIME_INFORMATION)))
     {
-        logger->logError(GetOJString("[process] - IMUST::WindowsJob::setLimit - can't set job JobObjectEndOfJobTimeInformation info"));
+        logger->logErrorX(OJStr("[process] - setLimit - can't set job end info! error:%u"), GetLastError());
         return false;
     }
 
     //UI限制。禁止访问一些资源。
     JOBOBJECT_BASIC_UI_RESTRICTIONS subProcessLimitUi;
     ZeroMemory(&subProcessLimitUi, sizeof(subProcessLimitUi));
-    subProcessLimitUi.UIRestrictionsClass = JOB_OBJECT_UILIMIT_NONE | \
-        JOB_OBJECT_UILIMIT_DESKTOP| \
-        JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS| \
-        JOB_OBJECT_UILIMIT_DISPLAYSETTINGS| \
-        JOB_OBJECT_UILIMIT_EXITWINDOWS| /*关机*/    \
-        JOB_OBJECT_UILIMIT_GLOBALATOMS| \
-        JOB_OBJECT_UILIMIT_HANDLES| \
-        JOB_OBJECT_UILIMIT_READCLIPBOARD;
+    subProcessLimitUi.UIRestrictionsClass = JOB_OBJECT_UILIMIT_ALL;
 
     if (!setInformation(JobObjectBasicUIRestrictions, &subProcessLimitUi, sizeof(subProcessLimitUi)))
     {
-        logger->logError(GetOJString("[process] - IMUST::WindowsJob::setLimit - can't set job JobObjectBasicUIRestrictions info"));
+        logger->logErrorX(OJStr("[process] - setLimit - can't set job limit info! error:%u"), GetLastError());
         return false;
     }
 
@@ -201,7 +206,8 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
     iocpHandle_ = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, id, 0);
     if (NULL == iocpHandle_)
     {
-        logger->logError(GetOJString("[process] - IMUST::WindowsJob::setLimit - create IOCP failed"));
+        logger->logErrorX(OJStr("[process] - setLimit - create IOCP failed! error:%u"),
+            GetLastError());
         return false;
     }
     JOBOBJECT_ASSOCIATE_COMPLETION_PORT jobCP;
@@ -210,7 +216,8 @@ bool WindowsJob::setLimit(const OJInt32_t timeLimit,
     jobCP.CompletionPort = iocpHandle_;
     if (!setInformation(JobObjectAssociateCompletionPortInformation, &jobCP, sizeof(jobCP)))
     {
-        logger->logError(GetOJString("[process] - IMUST::WindowsJob::setLimit - can't set job JobObjectAssociateCompletionPortInformation info"));
+        logger->logErrorX(OJStr("[process] - setLimit - can't set job CompletionPort info! error:%d"),
+            GetLastError());
         return false;
     }
 
@@ -251,13 +258,17 @@ Mutex   WindowsJob::s_mutex_;
 ///////////////////////////////////////////////////////////////////////
 
 WindowsProcess::WindowsProcess(
+    bool useToExcuter,
 	const OJString &inputFileName,
 	const OJString &outputFileName) :
 	WindowsProcessInOut(inputFileName, outputFileName),
+    useToExcuter_(useToExcuter),
     processHandle_(NULL),
 	threadHandle_(NULL),
-    exitCode_(AppConfig::JudgeCode::SystemError),
-    alive_(false)
+    result_(AppConfig::JudgeCode::SystemError),
+    alive_(false),
+    runTime_(0),
+    runMemory_(0)
 {
 
 }
@@ -301,39 +312,36 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
 
     {
-        OJChar_t buffer[1024];
-        OJSprintf(buffer, OJStr("[process] - IMUST::WindowsProcess::create CMD='%s' T=%dms, M=%dbytes"),
+        logger->logTraceX(OJStr("[process] - create - CMD='%s' T=%dms, M=%dbytes"),
             cmd.c_str(), timeLimit, memoryLimit);
-        logger->logTrace(buffer);
     }
 
     if(!createInputFile())
     {
-        logger->logError(GetOJString("[process] - IMUST::WindowsProcess::create - can't creat inputFile"));
+        logger->logError(OJStr("[process] - create - can't creat inputFile"));
         return -1;
     }
 
     if(!createOutputFile())
     {
-        logger->logError(GetOJString("[process] - IMUST::WindowsProcess::create - can't creat outputFile"));
+        logger->logError(OJStr("[process] - create - can't creat outputFile"));
         return -1;
     }
 
-    if (!jobHandle_.create())
+    if (!jobHandle_.create(useToExcuter_))
     {
-        logger->logError(GetOJString("[process] - IMUST::WindowsProcess::create - can't creat job"));
+        logger->logError(OJStr("[process] - create - can't creat job"));
         return -1;
     }
+
     if (!jobHandle_.setLimit(timeLimit, memoryLimit))
     {
-        logger->logError(GetOJString("[process] - IMUST::WindowsProcess::create - set job limit failed"));
+        logger->logError(OJStr("[process] - create - set job limit failed"));
         return -1;
     }
     
-#define CMDLINE_BUFFER_SIZE 1024
-	OJChar_t cmdline[CMDLINE_BUFFER_SIZE];
+	OJChar_t cmdline[1024];
 	wcscpy_s(cmdline, cmd.c_str());
-#undef CMDLINE_BUFFER_SIZE
 
 	STARTUPINFO   si;
 	PROCESS_INFORMATION   pi;
@@ -345,14 +353,16 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
     si.hStdInput = inputFileHandle_;
     si.hStdOutput = si.hStdError = outputFileHandle_;
     si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW; //使用handel项和wShowWindow项。
-	
+
+    DWORD createFlag = CREATE_SUSPENDED | CREATE_NO_WINDOW | CREATE_BREAKAWAY_FROM_JOB;
+
 	bool res =  createProcess(
         NULL,    //   No module name (use command line).   
 		cmdline, //   Command line.   
 		NULL,    //   Process handle not inheritable.   
 		NULL,    //   Thread handle not inheritable.   
 		TRUE,   //   Set handle inheritance to ...
-		CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB, //   No creation  flags.  
+		createFlag, // creation  flags.  
 		NULL,    //   Use parent 's environment block.   
 		NULL,    //   Use parent 's starting  directory.   
 		&si,     //   Pointer to STARTUPINFO structure. 
@@ -361,11 +371,8 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
     
 	if (!res)
     {
-        OJChar_t buffer[256];
-        OJSprintf(buffer, 
-            OJStr("[process] - IMUST::WindowsProcess::create - can't creat process. last error: %u"), 
+        logger->logErrorX(OJStr("[process] - can't creat process. last error: %u"), 
             GetLastError());
-        logger->logError(buffer);
         return -1;
     }
 		
@@ -373,7 +380,8 @@ OJInt32_t WindowsProcess::create(const OJString &cmd,
 	processHandle_ = pi.hProcess;
 	threadHandle_ = pi.hThread;
 
-	if(startImmediately) start();
+	if(startImmediately)
+        return start();
 
 	return 1;
 }
@@ -385,19 +393,20 @@ OJInt32_t WindowsProcess::start()
     //加到作业中
 	if (!jobHandle_.assinProcess(processHandle_))
     {
-        logger->logError(GetOJString("[process] - IMUST::WindowsProcess::start - can't assign process to job"));
+        logger->logErrorX(OJStr("[process] - can't assign process to job! error:%u"), GetLastError());
+        kill();
         return -1;
     }
 
-    //起点线程
+    //启动线程
     ResumeThread(threadHandle_);
     
     //关闭不使用的句柄。让进程执行完毕后立即退出。
+    SAFE_CLOSE_HANDLE_AND_RESET(threadHandle_);
     SAFE_CLOSE_HANDLE_AND_RESET(inputFileHandle_)
     SAFE_CLOSE_HANDLE_AND_RESET(outputFileHandle_)
-    SAFE_CLOSE_HANDLE_AND_RESET(threadHandle_)
 
-    exitCode_ = AppConfig::JudgeCode::Accept;
+    result_ = AppConfig::JudgeCode::Accept;
 
 	DWORD ExecuteResult = -1;  
 	ULONG completeKey;  
@@ -408,9 +417,10 @@ OJInt32_t WindowsProcess::start()
         if(!jobHandle_.getState(ExecuteResult, completeKey, processInfo))
         {
             DEBUG_MSG(OJStr("get job State faild!"));
-            OJSleep(10);
+            OJSleep(1);
             continue;
         }
+
         DWORD dwCode = (DWORD)processInfo;
 
 		switch (ExecuteResult)   
@@ -418,36 +428,45 @@ OJInt32_t WindowsProcess::start()
 		case JOB_OBJECT_MSG_NEW_PROCESS:    
             //DEBUG_MSG_VS(OJStr("[WindowsProcess]new process: %u"), dwCode);
 			break;
+
 		case JOB_OBJECT_MSG_END_OF_JOB_TIME: //job超时
             DEBUG_MSG(OJStr("[WindowsProcess]Job time limit reached")); 
-            exitCode_ = AppConfig::JudgeCode::TimeLimitExceed;  
+            result_ = AppConfig::JudgeCode::TimeLimitExceed;  
 			done = true;  
-			break;  
+			break;
+
 		case JOB_OBJECT_MSG_END_OF_PROCESS_TIME:   //线程超时
 			DEBUG_MSG(OJStr("[WindowsProcess]process time limit reached"));
-            exitCode_ = AppConfig::JudgeCode::TimeLimitExceed;
+            result_ = AppConfig::JudgeCode::TimeLimitExceed;
 			done = true;  
-			break;  
+			break;
+
 		case JOB_OBJECT_MSG_PROCESS_MEMORY_LIMIT:   //进程内存超限
             DEBUG_MSG(OJStr("[WindowsProcess]Process exceeded memory limit"));  
-            exitCode_ = AppConfig::JudgeCode::MemoryLimitExceed;  
+            result_ = AppConfig::JudgeCode::MemoryLimitExceed;  
 			done = true;  
-			break;  
+			break;
+
         case JOB_OBJECT_MSG_JOB_MEMORY_LIMIT: //job内存超限
             {
                 OJInt32_t mem = getRunMemory();  
                 DebugMessage(OJStr("[WindowsProcess]exceeded job memory limit with %dkb"), mem);
-                exitCode_ = AppConfig::JudgeCode::MemoryLimitExceed; 
+                result_ = AppConfig::JudgeCode::MemoryLimitExceed; 
                 done = true;  
             }
 			break;  
+
 		case JOB_OBJECT_MSG_ACTIVE_PROCESS_LIMIT:  //超出运行的进程数量
             DEBUG_MSG(OJStr("[WindowsProcess]Too many active processes in job"));
-			break;  
+            result_ = AppConfig::JudgeCode::RuntimeError;
+            done = true;
+			break;
+
 		case JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO:  
             DEBUG_MSG(OJStr("[WindowsProcess]Job contains no active processes")); 
 			done = true;  
 			break;
+
 		case JOB_OBJECT_MSG_EXIT_PROCESS: //进程退出
             //DEBUG_MSG_VS(OJStr("[WindowsProcess]Process %u exit."), dwCode);
             if(::GetProcessId(processHandle_) == dwCode)
@@ -455,58 +474,60 @@ OJInt32_t WindowsProcess::start()
                 done = true;
             }
 			break;  
+
 		case JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS: //进程异常结束
             DEBUG_MSG(OJStr("[WindowsProcess]Process terminated abnormally"));
-            exitCode_ = AppConfig::JudgeCode::RuntimeError;  
+            result_ = AppConfig::JudgeCode::RuntimeError;  
 			done = true;  
 			break;  
+
 		default:  
             DEBUG_MSG(OJStr("[WindowsProcess]Unknown notification"));
-            exitCode_ = AppConfig::JudgeCode::UnknownError;  
-			break;  
-		}  
+            result_ = AppConfig::JudgeCode::UnknownError; 
+			break;
+		}
 	}  
+    
+    {
+        FILETIME ftime, temp;
+        ::GetProcessTimes(processHandle_, &temp, &temp, &temp, &ftime);
 
+        ULARGE_INTEGER time2;
+        time2.LowPart = ftime.dwLowDateTime;
+        time2.HighPart = ftime.dwHighDateTime;
+
+        runTime_ = time2.QuadPart / 10000;
+    }
+    
+    {
+        PROCESS_MEMORY_COUNTERS info;
+        ::GetProcessMemoryInfo(processHandle_, &info, sizeof(info));
+
+        runMemory_ = info.PeakPagefileUsage;
+    }
+
+    SAFE_CLOSE_HANDLE_AND_RESET(processHandle_);
     while(!jobHandle_.terminate())//强制关闭作业
     {
         DEBUG_MSG(OJStr("Terminate job faild!"));
-        OJSleep(500);
+        OJSleep(10);
     }
 
     alive_ = false;//进程结束
 
     //正常退出。即不是超时等状况。
-    if(AppConfig::JudgeCode::Accept == exitCode_)
+    if(result_ == AppConfig::JudgeCode::Accept)
     {
         DWORD code = getExitCode();//获取进程返回值，以判断进程是否执行成功。
         if(code != 0)
         {
-            exitCode_ = AppConfig::JudgeCode::RuntimeError;
+            result_ = AppConfig::JudgeCode::RuntimeError;
             DEBUG_MSG_VS(OJStr("process exit with code : %u, last error: %u"), 
                 code, GetLastError());
         }
     }
 
 	return 0;  
-}
-
-OJInt32_t WindowsProcess::getRunTime()
-{
-    JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION jobai;  
-	ZeroMemory(&jobai, sizeof(jobai));  
-	jobHandle_.queryInformation(JobObjectBasicAndIoAccountingInformation,   
-		&jobai, sizeof(jobai), NULL);  
-
-	return jobai.BasicInfo.TotalUserTime.LowPart/10000;  //转换成ms
-}
-    
-OJInt32_t WindowsProcess::getRunMemory()
-{
-	JOBOBJECT_EXTENDED_LIMIT_INFORMATION joeli;  
-	ZeroMemory(&joeli, sizeof(joeli));  
-	jobHandle_.queryInformation(JobObjectExtendedLimitInformation,   
-		&joeli, sizeof(joeli), NULL);  
-    return joeli.PeakProcessMemoryUsed/1024;  //转换成kb
 }
 
 bool WindowsProcess::isRunning()
@@ -543,10 +564,10 @@ void WindowsProcess::kill()
 ///
 ///////////////////////////////////////////////////////////////////////
 
-WindowsUserProcess::WindowsUserProcess(WindowsUserPtr user,
+WindowsUserProcess::WindowsUserProcess(bool useToExcuter, WindowsUserPtr user,
     const OJString &inputFileName,
     const OJString &outputFileName)
-    : WindowsProcess(inputFileName, outputFileName)
+    : WindowsProcess(useToExcuter, inputFileName, outputFileName)
     , userPtr_(user)
 {
 
@@ -603,29 +624,25 @@ ProcessFactory::~ProcessFactory()
 
 }
 
-/*static*/ ProcessPtr ProcessFactory::create(int type,
+/*static*/ ProcessPtr ProcessFactory::create(OJInt32_t type,
     const OJString &inputFileName,
     const OJString &outputFileName)
 {
     IProcess* pProcess = NULL;
 
-    if (type == ProcessType::Normal)
+    if (type == ProcessType::Compiler)
     {
-        pProcess = new WindowsProcess(inputFileName, outputFileName);
+        pProcess = new WindowsProcess(false, inputFileName, outputFileName);
     }
-    else if (type == ProcessType::WithJob)
-    {
-        pProcess = new WindowsProcess(inputFileName, outputFileName);
-    }
-    else if (type == ProcessType::WithUser)
+    else if (type == ProcessType::Excuter)
     {
         if (AppConfig::WindowsUser::Enable)
         {
-            pProcess = new WindowsUserProcess(s_userPtr_, inputFileName, outputFileName);
+            pProcess = new WindowsUserProcess(true, s_userPtr_, inputFileName, outputFileName);
         }
         else
         {
-            pProcess = new WindowsProcess(inputFileName, outputFileName);
+            pProcess = new WindowsProcess(true, inputFileName, outputFileName);
         }
     }
     else

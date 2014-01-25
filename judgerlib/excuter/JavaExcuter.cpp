@@ -28,10 +28,9 @@ void JavaExcuter::run(
     OJString cmdBuffer;
     FormatString(cmdBuffer, OJStr("java -cp %s %s"), exePath.c_str(), exeFileName.c_str());
 
-    ProcessPtr wp = ProcessFactory::create(ProcessType::WithUser, inputFile, outputFile);
+    ProcessPtr wp = ProcessFactory::create(ProcessType::Excuter, inputFile, outputFile);
     wp->create(cmdBuffer, limitTime*30, limitMemory*10);
-    result_ = wp->getExitCodeEx();
-
+    result_ = wp->getResult();
     runTime_ = wp->getRunTime();
     runMemory_ = wp->getRunMemory();
 }

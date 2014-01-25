@@ -35,7 +35,7 @@ public:
 	~WindowsJob();
 
     ///创建windows作业对象
-	bool create(LPSECURITY_ATTRIBUTES lpJobAttributes = NULL);
+	bool create(bool useToExcuter, LPSECURITY_ATTRIBUTES lpJobAttributes = NULL);
 
     ///等待一段时间。或者一直等待直到作业对象结束。
 	DWORD wait(DWORD time = INFINITE);
@@ -72,8 +72,9 @@ private:
         DWORD cbInfoLength);
 
 private:
-	HANDLE      jobHandle_;///<作业对象句柄
-    HANDLE		iocpHandle_;///<完成端口句柄
+    bool        useToExcuter_;  ///<用于执行判题程序，job的限制较为严格。
+	HANDLE      jobHandle_;     ///<作业对象句柄
+    HANDLE		iocpHandle_;    ///<完成端口句柄
 
 private:
     static	Mutex		s_mutex_;///<分配id锁
@@ -85,7 +86,7 @@ private:
 class JUDGER_API WindowsProcess : public WindowsProcessInOut
 {
 public:
-	WindowsProcess(const OJString &inputFileName = GetOJString(""),
+	WindowsProcess(bool useToExcuter, const OJString &inputFileName = GetOJString(""),
 					const OJString &outputFileName = GetOJString(""));
     virtual ~WindowsProcess();
 
@@ -93,14 +94,16 @@ public:
 							const OJInt32_t timeLimit,
 							const OJInt32_t memoryLimit,
 							bool startImmediately = true);
+    
     virtual OJInt32_t start();
-    virtual bool isRunning();
     virtual OJInt32_t join(OJInt32_t time);
     virtual OJInt32_t getExitCode();
     virtual void kill();
-    OJInt32_t getExitCodeEx(){ return exitCode_; }
-    OJInt32_t getRunTime();
-    OJInt32_t getRunMemory();
+
+    virtual bool isRunning();
+    virtual OJInt32_t getResult(){ return result_; }
+    virtual OJInt32_t getRunTime(){ return runTime_;}
+    virtual OJInt32_t getRunMemory(){ return runMemory_;}
 
 protected:
 
@@ -120,11 +123,14 @@ protected:
         LPPROCESS_INFORMATION lpProcessInformation);
 
 private:
-    bool        alive_;     ///< 进程是存活状态
-    HANDLE		processHandle_;///<进程句柄
-	HANDLE		threadHandle_;///<主线程句柄
-	WindowsJob	jobHandle_;///<windows作业对象句柄
-	OJInt32_t	exitCode_;///<进程退出原因
+    bool        alive_;         ///< 进程是存活状态
+    bool        useToExcuter_;  ///<用于执行解题程序
+    HANDLE		processHandle_; ///<进程句柄
+	HANDLE		threadHandle_;  ///<主线程句柄
+	WindowsJob	jobHandle_;     ///<windows作业对象句柄
+	OJInt32_t	result_;        ///<进程退出原因
+    OJInt32_t   runTime_;       ///<进程使用时间
+    OJInt32_t   runMemory_;     ///<进程使用内存
 
 
 private:
@@ -136,7 +142,7 @@ private:
 class JUDGER_API WindowsUserProcess : public WindowsProcess
 {
 public:
-    WindowsUserProcess(WindowsUserPtr user,
+    WindowsUserProcess(bool useToExcuter, WindowsUserPtr user,
         const OJString &inputFileName = GetOJString(""),
         const OJString &outputFileName = GetOJString(""));
 

@@ -21,10 +21,9 @@ void ExeExcuter::run(
     OJInt32_t limitMemory
     )
 {
-    ProcessPtr wp = ProcessFactory::create(ProcessType::WithUser, inputFile, outputFile);
+    ProcessPtr wp = ProcessFactory::create(ProcessType::Excuter, inputFile, outputFile);
     wp->create(exeFile, limitTime, limitMemory);
-    result_ = wp->getExitCodeEx();
-
+    result_ = wp->getResult();
     runTime_ = wp->getRunTime();
     runMemory_ = wp->getRunMemory();
 }

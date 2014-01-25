@@ -40,6 +40,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>..\thirdpartylib;$(IncludePath)</IncludePath>
     <LibraryPath>..\thirdpartylib\bin\Debug\win32;..\Debug;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -56,6 +57,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -72,6 +74,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

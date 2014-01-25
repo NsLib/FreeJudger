@@ -9,9 +9,8 @@ typedef std::shared_ptr<class IProcess> ProcessPtr;
 ///进程类型
 namespace ProcessType
 {
-    const OJInt32_t Normal      = 0;///<最普通的进程
-    const OJInt32_t WithJob     = 1;///<在作业对象中启动进程
-    const OJInt32_t WithUser    = 2;///<使用一个windows用户来启动进程
+    const OJInt32_t Compiler    = 0;///<编译用的进程
+    const OJInt32_t Excuter     = 1;///<执行解题程序用的进程
 }
 
 
@@ -51,7 +50,7 @@ public:
     virtual void kill() = 0;
 
     ///获取转义之后的退出码。为ProcessExitCode中的一个。
-    virtual OJInt32_t getExitCodeEx() = 0;
+    virtual OJInt32_t getResult() = 0;
 
     ///获取运行时间
     virtual OJInt32_t getRunTime() = 0;
@@ -71,7 +70,7 @@ public:
     ~ProcessFactory();
 
     ///根据类型创建进程
-    static ProcessPtr create(int type,
+    static ProcessPtr create(OJInt32_t type,
         const OJString &inputFileName = GetOJString(""),
         const OJString &outputFileName = GetOJString(""));
 
