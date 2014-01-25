@@ -321,9 +321,10 @@ bool ReadString(OJString & str, const OJString & filename)
     FILE *pFile = _wfopen(filename.c_str(), L"r");
     if(pFile == NULL) return false;
 
-    int len = fseek(pFile, 0, SEEK_END);
+    fseek(pFile, 0, SEEK_END);
+    long len = ftell(pFile);
     fseek(pFile, 0, SEEK_SET);
-
+    
     std::string buffer(len, L'\0');
 
     if(len > 0)
