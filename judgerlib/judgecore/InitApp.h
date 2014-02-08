@@ -4,6 +4,7 @@
 namespace IMUST
 {
 
+bool IsAppValid();
 bool InitApp();
 
 namespace details

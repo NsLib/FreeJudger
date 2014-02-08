@@ -8,6 +8,7 @@
 #include "../judgerlib/sql/DBManager.h"
 #include "../judgerlib/thread/Thread.h"
 #include "../judgerlib/judgecore/JudgeCore.h"
+#include "../judgerlib/judgecore/InitApp.h"
 
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -17,6 +18,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
+
+    if(!IMUST::InitApp())
+    {
+        ::MessageBoxW(NULL, L"InitAppConfig failed!", L"ERROR", MB_ICONSTOP);
+        return EXIT_FAILURE;
+    }
 
     IMUST::JudgeCore judgeCore;
     if(!judgeCore.startService())

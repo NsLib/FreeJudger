@@ -17,7 +17,14 @@ public:
 
     void stopService();
 
+    bool isRunning() const { return running_; }
+
+    TaskManagerPtr getWorkingTaskMgr(){ return workingTaskMgr_; }
+    TaskManagerPtr getFinishedTaskMgr(){ return finishedTaskMgr_; }
+    DBManagerPtr getDBManager(){ return dbManager_; }
+
 private:
+    bool                running_;
     SqlDriverPtr        mysql_;
     DBManagerPtr        dbManager_;
     TaskManagerPtr      workingTaskMgr_;

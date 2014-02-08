@@ -6,6 +6,8 @@
 namespace IMUST
 {
 
+class JudgeCore;
+
 class JudgeTask : public ITask
 {
 public:
@@ -54,13 +56,12 @@ private:
 class JudgeThread
 {
 public:
-    JudgeThread(int id, IMUST::TaskManagerPtr working, IMUST::TaskManagerPtr finish);
+    JudgeThread(int id, JudgeCore * pJudgeCore);
     void operator()();
 
 private:
     int id_;
-    IMUST::TaskManagerPtr workingTaskMgr_;
-    IMUST::TaskManagerPtr finisheTaskMgr_;
+    JudgeCore *pJudgeCore_;
 };
 
 
@@ -78,12 +79,12 @@ class JudgeDBRunThread
 {
 public:
 
-    JudgeDBRunThread(IMUST::DBManagerPtr dbm);
+    JudgeDBRunThread(JudgeCore * pJudgeCore);
 
     void operator()();
 
 private:
-    IMUST::DBManagerPtr dbm_;
+    JudgeCore * pJudgeCore_;
 };
 
 

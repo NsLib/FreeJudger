@@ -5,11 +5,23 @@
 
 #include "../logger/Logger_log4cxx.h"
 
+namespace
+{
+    bool g_AppValid = false;
+}
+
 namespace IMUST
 {
 
+bool IsAppValid()
+{
+    return g_AppValid;
+}
+
 bool InitApp()
 {
+    if(g_AppValid) return false;
+
     OJString path = FileTool::GetModulePath();
     if(!FileTool::SetCurPath(path))
     {
@@ -56,6 +68,8 @@ bool InitApp()
     ::MessageBoxA(NULL, "你不应该看到这个MessageBox", "ERROR", MB_ICONSTOP);
 
     logger->logInfo(GetOJString("[Daemon] - IMUST::InitApp - Initialize application succeed"));
+
+    g_AppValid = true;
     return true;
 }
 

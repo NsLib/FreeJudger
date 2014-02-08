@@ -56,3 +56,18 @@
 #endif
 
 
+#include <cassert>
+#include <memory>
+#include <vector>
+#include <string>
+
+#include "../judgerlib/platformlayer/PlatformLayer.h"
+
+#include "../judgerlib/config/AppConfig.h"
+#include "../judgerlib/filetool/FileTool.h"
+#include "../judgerlib/util/StringTool.h"
+
+#include "../judgerlib/logger/Logger.h"
+#include "../judgerlib/taskmanager/TaskManager.h"
+#include "../judgerlib/sql/DBManager.h"
+#include "../judgerlib/thread/Thread.h"

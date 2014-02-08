@@ -8,13 +8,13 @@
 #include "Task.h"
 #include "InitApp.h"
 
-bool g_sigExit = false;
 
 namespace IMUST
 {
 
 JudgeCore::JudgeCore()
-    : mysql_(0)
+    : running_(false)
+    , mysql_(0)
     , dbManager_(0)
     , dbThread_(0)
     , workingTaskMgr_(new TaskManager())
@@ -25,12 +25,22 @@ JudgeCore::JudgeCore()
 
 JudgeCore::~JudgeCore()
 {
+
 }
 
 bool JudgeCore::startService()
 {
-    if (!InitApp())
+    if(running_)
+    {
+        LoggerFactory::getLogger(LoggerId::AppInitLoggerId)->logError(OJStr("JudgeCore is already running!"));
         return false;
+    }
+
+    if (!IsAppValid())
+    {
+        MessageBoxW(NULL, L"启动JudgeCore之前，必须先初始化App！", L"ERROR", MB_ICONSTOP);
+        return false;
+    }
 
     //创建工作目录
     if(!FileTool::MakeDir(OJStr("work")))
@@ -39,6 +49,7 @@ bool JudgeCore::startService()
     }
 
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    logger->logTrace(OJStr("[JudgeCore] - startService"));
 
     //登录Windows判题用户
     if(AppConfig::WindowsUser::Enable)
@@ -90,13 +101,15 @@ bool JudgeCore::startService()
     logger->logInfo(OJStr("clear db data."));
     dbManager_->doTestBeforeRun();
 
+    running_ = true;
+
     //启动数据库线程
-    dbThread_ = ThreadPtr(new Thread(JudgeDBRunThread(dbManager_)));
+    dbThread_ = ThreadPtr(new Thread(JudgeDBRunThread(this)));
 
     //启动评判线程
     for(IMUST::OJInt32_t i=0; i<AppConfig::CpuInfo::NumberOfCore; ++i)
     {
-        ThreadPtr ptr(new IMUST::Thread(IMUST::JudgeThread(i, workingTaskMgr_, finishedTaskMgr_)));
+        ThreadPtr ptr(new IMUST::Thread(IMUST::JudgeThread(i, this)));
         judgeThreadPool_.push_back(ptr);
     }
     
@@ -105,7 +118,12 @@ bool JudgeCore::startService()
 
 void JudgeCore::stopService()
 {
-    g_sigExit = true;
+    if(!running_) return;
+
+    running_ = false;
+
+    ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
+    logger->logTrace(OJStr("[JudgeCore] - stopService"));
 
     if (dbThread_)
     {

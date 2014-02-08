@@ -83,6 +83,11 @@
     <ClCompile Include="image.cpp" />
     <ClCompile Include="modules.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\util\util.vcxproj">
+      <Project>{c4b01f8c-45d3-4a2c-9d01-33ec0e6ae009}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

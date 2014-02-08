@@ -6,7 +6,7 @@
 #include "../excuter/Excuter.h"
 #include "../matcher/Matcher.h"
 
-extern bool g_sigExit;
+#include "JudgeCore.h"
 
 
 namespace IMUST
@@ -272,10 +272,9 @@ bool JudgeTask::match()
 
 
 
-JudgeThread::JudgeThread(int id, IMUST::TaskManagerPtr working, IMUST::TaskManagerPtr finish)
+JudgeThread::JudgeThread(int id, JudgeCore * pJudgeCore)
     : id_(id)
-    , workingTaskMgr_(working)
-    , finisheTaskMgr_(finish)
+    , pJudgeCore_(pJudgeCore)
 {
 
 }
@@ -290,18 +289,21 @@ void JudgeThread::operator()()
 
     logger->logTraceX(OJStr("[JudgeThread][%d]start..."), id_);
 
-    while (!g_sigExit)
+    TaskManagerPtr workingTaskMgr = pJudgeCore_->getWorkingTaskMgr();
+    TaskManagerPtr finishedTaskMgr = pJudgeCore_->getFinishedTaskMgr();
+
+    while (pJudgeCore_->isRunning())
     {
 
         IMUST::TaskPtr pTask;
 
         //从任务队列取任务
-        workingTaskMgr_->lock();
-        if(workingTaskMgr_->hasTask())
+        workingTaskMgr->lock();
+        if(workingTaskMgr->hasTask())
         {
-            pTask = workingTaskMgr_->popTask();
+            pTask = workingTaskMgr->popTask();
         }
-        workingTaskMgr_->unlock();
+        workingTaskMgr->unlock();
 
         if(!pTask)//没有任务
         {
@@ -317,9 +319,9 @@ void JudgeThread::operator()()
         }
 
         //添加到完成队列
-        finisheTaskMgr_->lock();
-        finisheTaskMgr_->addTask(pTask);
-        finisheTaskMgr_->unlock();
+        finishedTaskMgr->lock();
+        finishedTaskMgr->addTask(pTask);
+        finishedTaskMgr->unlock();
 
         OJSleep(10);//防止线程过度繁忙
     }
@@ -333,8 +335,8 @@ TaskPtr JudgeTaskFactory::create(const TaskInputData & input)
 }
 
 
-JudgeDBRunThread::JudgeDBRunThread(IMUST::DBManagerPtr dbm)
-    : dbm_(dbm)
+JudgeDBRunThread::JudgeDBRunThread(JudgeCore * pJudgeCore)
+    : pJudgeCore_(pJudgeCore)
 {
 }
 
@@ -343,9 +345,11 @@ void JudgeDBRunThread::operator()()
     IMUST::ILogger *logger = IMUST::LoggerFactory::getLogger(IMUST::LoggerId::AppInitLoggerId);
     logger->logTrace(GetOJString("[DBThread] thread start..."));
 
-    while(!g_sigExit)
+    DBManagerPtr dbm = pJudgeCore_->getDBManager();
+
+    while(pJudgeCore_->isRunning())
     {
-        if(!dbm_->run())
+        if(!dbm->run())
         {
             logger->logError(GetOJString("[DBThread] db manager was dead!"));
             break;

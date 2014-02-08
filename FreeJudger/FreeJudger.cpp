@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "FreeJudger.h"
 #include "FreeJudgerDlg.h"
+#include "../judgerlib/judgecore/InitApp.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -66,6 +67,12 @@ BOOL CFreeJudgerApp::InitInstance()
 	// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
+
+    if(!IMUST::InitApp())
+    {
+        ::MessageBoxW(NULL, L"InitAppConfig failed!", L"ERROR", MB_ICONSTOP);
+        return FALSE;
+    }
 
 	CFreeJudgerDlg dlg;
 	m_pMainWnd = &dlg;

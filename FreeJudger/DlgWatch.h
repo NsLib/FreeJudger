@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-
 // CDlgWatch dialog
 
 class CDlgWatch : public CDialogEx

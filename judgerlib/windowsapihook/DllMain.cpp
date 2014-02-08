@@ -5,7 +5,9 @@ int (WINAPI *OriFun)(HWND hWnd,LPCSTR lpText,LPCSTR lpCaption,UINT uType) = Mess
 
 int WINAPI ZwNHookFun(HWND hWnd,LPCSTR lpText,LPCSTR lpCaption,UINT uType)  
 {  
-    OutputDebugStringW(L"hook message box A.");
+    OutputDebugStringW(L"hook message box A:");
+    if(lpText != NULL)
+        OutputDebugStringA(lpText);
     return 0;  
 }  
 
@@ -13,7 +15,9 @@ int (WINAPI *OriFunMsgW)(HWND hWnd,LPCWSTR lpText,LPCWSTR lpCaption,UINT uType) 
 
 int WINAPI ZwNHookFunMsgW(HWND hWnd,LPCWSTR lpText,LPCWSTR lpCaption,UINT uType)  
 {  
-    OutputDebugStringW(L"hook message box W.");
+    OutputDebugStringW(L"hook message box W:");
+    if(lpText != NULL)
+        OutputDebugStringW(lpText);
     return 0;  
 } 
 
