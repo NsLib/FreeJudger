@@ -3,7 +3,6 @@
 namespace IMUST
 {
 
-typedef std::shared_ptr<IMUST::Thread> ThreadPtr;
 typedef std::vector<ThreadPtr> JudgeThreadVector;
 typedef std::shared_ptr<class WindowsUser> WindowsUserPtr;
 

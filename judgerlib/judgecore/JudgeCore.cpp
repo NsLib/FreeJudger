@@ -129,11 +129,6 @@ void JudgeCore::stopService()
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
     logger->logTrace(OJStr("[JudgeCore] - stopService"));
 
-    if (dbThread_)
-    {
-        dbThread_->join();
-    }
-
     for(JudgeThreadVector::iterator it = judgeThreadPool_.begin();
         it != judgeThreadPool_.end(); ++it)
     {
@@ -141,6 +136,11 @@ void JudgeCore::stopService()
         {
             (*it)->join();
         }
+    }
+
+    if (dbThread_)
+    {
+        dbThread_->join();
     }
 
     if (mysql_)

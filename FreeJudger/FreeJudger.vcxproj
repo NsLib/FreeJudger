@@ -51,7 +51,6 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\thirdpartylib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -160,6 +159,9 @@
     </ProjectReference>
     <ProjectReference Include="..\judgerlib\taskmanager\taskmanager.vcxproj">
       <Project>{3183776b-f929-4018-8ef3-649775a53273}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\judgerlib\thread\thread.vcxproj">
+      <Project>{a91d844a-92ad-4d8a-9fff-b859d2576ca6}</Project>
     </ProjectReference>
     <ProjectReference Include="..\judgerlib\util\util.vcxproj">
       <Project>{c4b01f8c-45d3-4a2c-9d01-33ec0e6ae009}</Project>

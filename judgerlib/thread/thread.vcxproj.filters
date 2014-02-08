@@ -21,5 +21,16 @@
     <ClInclude Include="Thread.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ThreadLock.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ThreadLock.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Thread.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

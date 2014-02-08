@@ -21,6 +21,7 @@
 #include "../config/AppConfig.h"
 #include "../filetool/FileTool.h"
 #include "../util/StringTool.h"
+#include "../util/Watch.h"
 
 #include "../logger/Logger.h"
 #include "../taskmanager/TaskManager.h"

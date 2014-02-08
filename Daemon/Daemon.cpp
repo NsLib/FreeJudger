@@ -1,6 +1,7 @@
 ﻿#include "Daemon.h"
 
 #include <cstdlib>
+#include <vector>
 
 #include "../judgerlib/platformlayer/PlatformLayer.h"
 
