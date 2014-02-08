@@ -36,7 +36,7 @@ bool InitApp()
     }
 
     ILogger *logger = LoggerFactory::getLogger(LoggerId::AppInitLoggerId);
-    logger->logTrace(GetOJString("[Daemon] - IMUST::InitApp"));
+    logger->logTrace(GetOJString("IMUST::InitApp"));
 
     if (!details::InitAppConfig())
     {
@@ -67,7 +67,7 @@ bool InitApp()
     ::MessageBoxW(NULL, L"你不应该看到这个MessageBox", L"ERROR", MB_ICONSTOP);
     ::MessageBoxA(NULL, "你不应该看到这个MessageBox", "ERROR", MB_ICONSTOP);
 
-    logger->logInfo(GetOJString("[Daemon] - IMUST::InitApp - Initialize application succeed"));
+    logger->logInfo(GetOJString("IMUST::InitApp - Initialize application succeed"));
 
     g_AppValid = true;
     return true;
@@ -95,7 +95,7 @@ bool InitAppInitLogger()
 bool InitAppConfig()
 {
     ::IMUST::LoggerFactory::getLogger(LoggerId::AppInitLoggerId)->logTrace(
-        GetOJString("[Daemon] - IMUST::details::InitAppConfig"));
+        GetOJString("IMUST::details::InitAppConfig"));
     return ::IMUST::AppConfig::InitAppConfig();
 }
 

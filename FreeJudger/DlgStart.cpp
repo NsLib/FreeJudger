@@ -39,6 +39,7 @@ END_MESSAGE_MAP()
 void CDlgStart::OnBnClickedBtnStart()
 {
     // TODO: Add your control notification handler code here
+    GetDlgItem(IDC_BTN_START)->EnableWindow(FALSE);
 
     JudgeCorePtr core( new IMUST::JudgeCore() );
     if(!core->startService())
@@ -48,8 +49,6 @@ void CDlgStart::OnBnClickedBtnStart()
     }
 
     setJudgeCore(core);
-
-    GetDlgItem(IDC_BTN_START)->EnableWindow(FALSE);
     GetDlgItem(IDC_BTN_STOP)->EnableWindow(TRUE);
 }
 
@@ -57,13 +56,12 @@ void CDlgStart::OnBnClickedBtnStart()
 void CDlgStart::OnBnClickedBtnStop()
 {
     // TODO: Add your control notification handler code here
+    GetDlgItem(IDC_BTN_STOP)->EnableWindow(FALSE);
 
     JudgeCorePtr core = getJudgeCore();
     assert(core && "CDlgStart::OnBnClickedBtnStop");
 
     core->stopService();
     setJudgeCore(nullptr);
-
     GetDlgItem(IDC_BTN_START)->EnableWindow(TRUE);
-    GetDlgItem(IDC_BTN_STOP)->EnableWindow(FALSE);
 }

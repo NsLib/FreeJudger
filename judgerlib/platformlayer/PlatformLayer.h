@@ -58,6 +58,9 @@ typedef             unsigned long long              OJUInt64_t;
 
 #define DEBUG_MSG   OutputDebugStringW
 
+
+const OJString EmptyString;
+
 }
 
 

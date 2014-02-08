@@ -25,7 +25,11 @@ JudgeCore::JudgeCore()
 
 JudgeCore::~JudgeCore()
 {
-
+    if(running_)
+    {
+        DebugMessage(L"Warn: The judge core is already running!");
+        stopService();
+    }
 }
 
 bool JudgeCore::startService()
@@ -73,7 +77,7 @@ bool JudgeCore::startService()
     mysql_ = SqlFactory::createDriver(SqlType::MySql);
     if(!mysql_->loadService())
     {
-        OJString msg(OJStr("[Daemon] - WinMain - mysql->loadService failed - "));
+        OJString msg(OJStr("[JudgeCore] - WinMain - mysql->loadService failed - "));
         msg += mysql_->getErrorString();
         logger->logError(msg);
         return false;
@@ -86,7 +90,7 @@ bool JudgeCore::startService()
                     AppConfig::MySql::Password,
                     AppConfig::MySql::DBName))
     {
-        OJString msg(OJStr("[Daemon] - WinMain - connect mysql faild - "));
+        OJString msg(OJStr("[JudgeCore] - WinMain - connect mysql faild - "));
         msg += mysql_->getErrorString();
         logger->logError(msg);
         return false;

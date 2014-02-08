@@ -75,10 +75,12 @@
   <ItemGroup>
     <ClInclude Include="StringTool.h" />
     <ClInclude Include="Utility.h" />
+    <ClInclude Include="Watch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StringConvert.cpp" />
     <ClCompile Include="StringTool.cpp" />
+    <ClCompile Include="Watch.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

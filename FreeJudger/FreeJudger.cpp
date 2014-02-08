@@ -6,6 +6,8 @@
 #include "FreeJudger.h"
 #include "FreeJudgerDlg.h"
 #include "../judgerlib/judgecore/InitApp.h"
+#include "../judgerlib/util/Watch.h"
+#include "Common.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -40,6 +42,8 @@ CFreeJudgerApp theApp;
 
 BOOL CFreeJudgerApp::InitInstance()
 {
+    IMUST::doWatchTest();
+
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
 	// visual styles.  Otherwise, any window creation will fail.
@@ -68,6 +72,7 @@ BOOL CFreeJudgerApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
+    //初始化应用程序
     if(!IMUST::InitApp())
     {
         ::MessageBoxW(NULL, L"InitAppConfig failed!", L"ERROR", MB_ICONSTOP);
@@ -77,16 +82,11 @@ BOOL CFreeJudgerApp::InitInstance()
 	CFreeJudgerDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
-	if (nResponse == IDOK)
-	{
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with OK
-	}
-	else if (nResponse == IDCANCEL)
-	{
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with Cancel
-	}
+
+    //安全释放评判内核
+    JudgeCorePtr core = getJudgeCore();
+    if(core && core->isRunning())
+        core->stopService();
 
 	// Delete the shell manager created above.
 	if (pShellManager != NULL)
