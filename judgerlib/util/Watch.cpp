@@ -1,4 +1,4 @@
-#include "Watch.h"
+﻿#include "Watch.h"
 #include "StringTool.h"
 #include <algorithm>
 

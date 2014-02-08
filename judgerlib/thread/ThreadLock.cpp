@@ -1,4 +1,4 @@
-#include "ThreadLock.h"
+﻿#include "ThreadLock.h"
 #include "../../thirdpartylib/boost/thread.hpp"
 
 namespace IMUST

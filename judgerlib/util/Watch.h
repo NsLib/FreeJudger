@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <memory>
 #include <map>
@@ -20,7 +20,7 @@ namespace IMUST
         const OJInt32_t UserType = 0xff;
     }
 
-    ///¿É±»¼àÊÓµÄÖµ
+    ///å¯è¢«ç›‘è§†çš„å€¼
     class IValueProxy
     {
     public:
@@ -59,26 +59,26 @@ namespace IMUST
         virtual void listen(ValueProxyPtr v) = 0;
     };
 
-    ///¼àÊÓÆ÷¡£Ò»¸ö¼àÊÓÆ÷¿ÉÒÔÓÃÓÚÈô¸É×Ó¼àÊÓÆ÷¡£
+    ///ç›‘è§†å™¨ã€‚ä¸€ä¸ªç›‘è§†å™¨å¯ä»¥ç”¨äºè‹¥å¹²å­ç›‘è§†å™¨ã€‚
     class Watch
     {
     public:
         typedef std::map<OJString, Watch*> WatchMap;
 
-        ///¹¹Ôìº¯Êı¡£nameÖĞ²»¿Éº¬·ûºÅ'/'¡£
+        ///æ„é€ å‡½æ•°ã€‚nameä¸­ä¸å¯å«ç¬¦å·'/'ã€‚
         explicit Watch(const OJString & name);
         ~Watch();
 
-        ///»ñÈ¡Ò»¸ö×Ó¼àÊÓÆ÷
+        ///è·å–ä¸€ä¸ªå­ç›‘è§†å™¨
         Watch * getChild(const OJString & name, bool createIfMiss = true);
 
-        ///µİ¹éµÄ»ñÈ¡Ò»¸ö×Ó¼àÊÓÆ÷¡£nameµÄ¸ñÊ½¿ÉÒÔÊÇa/b/c
+        ///é€’å½’çš„è·å–ä¸€ä¸ªå­ç›‘è§†å™¨ã€‚nameçš„æ ¼å¼å¯ä»¥æ˜¯a/b/c
         Watch * getWatch(const OJString & name, bool createIfMiss = true);
 
-        ///É¾³ıÒ»Ò¶½Úµã¼àÊÓÆ÷¡£nameµÄ¸ñÊ½¿ÉÒÔÊÇa/b/c£¬´ËÊ±c»á±»É¾³ı¡£
+        ///åˆ é™¤ä¸€å¶èŠ‚ç‚¹ç›‘è§†å™¨ã€‚nameçš„æ ¼å¼å¯ä»¥æ˜¯a/b/cï¼Œæ­¤æ—¶cä¼šè¢«åˆ é™¤ã€‚
         void delWatch(const OJString & name);
 
-        ///¼àÊÓµÄÊı¾İ
+        ///ç›‘è§†çš„æ•°æ®
         template<typename T>
         void watch(const OJString & name, const T & v)
         {
@@ -99,18 +99,18 @@ namespace IMUST
 
     protected:
 
-        ///Í¨ÖªËùÓĞµÄlistener
+        ///é€šçŸ¥æ‰€æœ‰çš„listener
         void doNotify();
 
-        ///½ûÖ¹¿½±´¹¹Ôì
+        ///ç¦æ­¢æ‹·è´æ„é€ 
         Watch(const Watch &);
         const Watch & operator=(const Watch &);
 
 
-        OJString name_;         ///<¼àÊÓÆ÷µÄÃû³Æ
-        ValueProxyPtr value_;   ///<±»¼àÊÓµÄÖµ
-        std::list<IWatchListener*> listeners_;///<µ±±»¼àÊÓµÄÖµ·¢Éú±ä»¯Ê±£¬»áÍ¨Öª¸øÃ¿¸ölistener
-        WatchMap children_; ///<×Ó¼àÊÓÆ÷
+        OJString name_;         ///<ç›‘è§†å™¨çš„åç§°
+        ValueProxyPtr value_;   ///<è¢«ç›‘è§†çš„å€¼
+        std::list<IWatchListener*> listeners_;///<å½“è¢«ç›‘è§†çš„å€¼å‘ç”Ÿå˜åŒ–æ—¶ï¼Œä¼šé€šçŸ¥ç»™æ¯ä¸ªlistener
+        WatchMap children_; ///<å­ç›‘è§†å™¨
         
     };
 
