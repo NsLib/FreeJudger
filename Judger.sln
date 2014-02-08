@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C++ Express 2010
+# Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logger", "judgerlib\logger\logger.vcxproj", "{3408ED8D-0190-4247-A811-1BC6A4490461}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xml", "judgerlib\xml\xml.vcxproj", "{4ACCA560-35FF-4D5C-A116-A22B163C21E5}"
@@ -70,6 +70,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "matcher", "judgerlib\matcher\matcher.vcxproj", "{2CAACD2D-1A57-4610-B346-6841DCB56B2A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "judgecore", "judgerlib\judgecore\judgecore.vcxproj", "{8A294B69-584E-452C-92D9-442B9F346466}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeJudger", "FreeJudger\FreeJudger.vcxproj", "{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0E2F904B-F674-4D30-BEF7-4FDEC1395631} = {0E2F904B-F674-4D30-BEF7-4FDEC1395631}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -354,6 +359,21 @@ Global
 		{8A294B69-584E-452C-92D9-442B9F346466}.Template|Mixed Platforms.Build.0 = Release|Win32
 		{8A294B69-584E-452C-92D9-442B9F346466}.Template|Win32.ActiveCfg = Release|Win32
 		{8A294B69-584E-452C-92D9-442B9F346466}.Template|Win32.Build.0 = Release|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Debug|Win32.Build.0 = Debug|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Release|Any CPU.ActiveCfg = Release|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Release|Win32.ActiveCfg = Release|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Release|Win32.Build.0 = Release|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Template|Any CPU.ActiveCfg = Release|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Template|Mixed Platforms.ActiveCfg = Release|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Template|Mixed Platforms.Build.0 = Release|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Template|Win32.ActiveCfg = Release|Win32
+		{CB86A1BA-6EDC-4CA0-8B7A-5BF81109A42D}.Template|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
