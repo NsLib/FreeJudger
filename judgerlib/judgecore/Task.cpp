@@ -237,7 +237,8 @@ bool JudgeTask::compile()
     compiler->run(codeFile_, exeFile_, compileFile_);
     output_.Result = compiler->getResult();
 
-    if(output_.Result != AppConfig::JudgeCode::Accept)
+    if(output_.Result != AppConfig::JudgeCode::Accept
+        && output_.Result != AppConfig::JudgeCode::SystemError)
     {
         output_.Result = AppConfig::JudgeCode::CompileError;
         FileTool::ReadString(output_.CompileError, compileFile_);
