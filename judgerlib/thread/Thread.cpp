@@ -1,5 +1,6 @@
 ﻿#include "Thread.h"
 
+#include "../platformlayer/PlatformLayer.h"
 #include "../../thirdpartylib/boost/thread.hpp"
 
 namespace IMUST
@@ -12,6 +13,60 @@ namespace IMUST
 
     ////////////////////////////////////////////////////////////////////
 
+#ifdef TARGET_PLATFORM_WINDOWS
+
+#include <process.h>
+    
+    class ThreadProxy
+    {
+    public:
+
+        ThreadProxy(IThreadFun * fun)
+            : pFun_(fun)
+        {
+            assert(fun && "ThreadProxy construct");
+
+            threadHandle_ = (HANDLE)_beginthreadex(NULL, 0, _callback, this, 0, 0);
+        }
+
+        ~ThreadProxy()
+        {
+            join();
+
+            if(threadHandle_ != 0)
+                ::CloseHandle(threadHandle_);
+        }
+
+        void run()
+        {
+            pFun_->run();
+        }
+        
+
+        void join()
+        {
+            if(threadHandle_ != 0)
+                ::WaitForSingleObject(threadHandle_, INFINITE);
+        }
+
+        static unsigned __stdcall _callback(void * param)
+        {
+            ThreadProxy * proxy = (ThreadProxy*)param;
+            proxy->run();
+            return 0;
+        }
+
+    private:
+        
+        ThreadProxy(const ThreadProxy &);
+        const ThreadProxy & operator = (const ThreadProxy &);
+
+        HANDLE threadHandle_;
+        IThreadFun * pFun_;
+
+    };
+
+#else
     class BoostThreadFun
     {
         IThreadFun * pFun_;
@@ -29,6 +84,8 @@ namespace IMUST
 
     class ThreadProxy
     {
+        boost::thread thread_;
+
     public:
         ThreadProxy(IThreadFun * fun)
             : thread_(BoostThreadFun(fun))
@@ -39,9 +96,14 @@ namespace IMUST
         {
         }
 
-        boost::thread thread_;
+        void join()
+        {
+            thread_.join();
+        }
+
     };
 
+#endif
 
 
     Thread::~Thread()
@@ -56,7 +118,7 @@ namespace IMUST
 
     void Thread::join()
     {
-        threadProxy_->thread_.join();
+        threadProxy_->join();
     }
 
 

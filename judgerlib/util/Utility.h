@@ -73,6 +73,7 @@ typedef Uncopyable_::IUncopyable IUncopyable;
 
 OJString String2OJString(const std::string & str);
 
+OJFloat32_t GetTickTime();
 
 }   // namespace IMUST
 

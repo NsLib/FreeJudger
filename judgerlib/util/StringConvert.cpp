@@ -1,4 +1,5 @@
 ﻿#include "Utility.h"
+#include <Windows.h>
 
 namespace IMUST
 {
@@ -35,6 +36,10 @@ OJString String2OJString(const std::string & str)
     return String2OJStringImpl(str.c_str());
 }
 
+OJFloat32_t GetTickTime()
+{
+    return GetTickCount64() * 0.001;
+}
 
 
 }   // namespace IMUST

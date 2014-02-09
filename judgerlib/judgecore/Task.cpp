@@ -5,12 +5,18 @@
 #include "../compiler/Compiler.h"
 #include "../excuter/Excuter.h"
 #include "../matcher/Matcher.h"
+#include "../util/Watch.h"
 
 #include "JudgeCore.h"
 
-
 namespace IMUST
 {
+
+namespace
+{
+    OJInt32_t NumJudgeTask = 0;
+}
+
 /* 延迟删除文件。
 当某子进程尚未完全退出时，他占用的文件再次被打开或删除，都会失败。故作延迟，等待一段时间。
 如果文件始终无法删除，将表示该子进程无法退出，这将是一个致命错误，评判线程应当结束。 */
@@ -78,6 +84,19 @@ JudgeTask::JudgeTask(const TaskInputData & inputData)
     output_.PassRate = 0.0f;
     output_.RunTime = 0;
     output_.RunMemory = 0;
+
+    IMUST::WatchTool::LockRoot();
+    ++NumJudgeTask;
+    IMUST::WatchTool::Root()->watch(OJStr("core/numJudgeTask"), NumJudgeTask);
+    IMUST::WatchTool::UnlockRoot();
+}
+
+JudgeTask::~JudgeTask()
+{
+    IMUST::WatchTool::LockRoot();
+    --NumJudgeTask;
+    IMUST::WatchTool::Root()->watch(OJStr("core/numJudgeTask"), NumJudgeTask);
+    IMUST::WatchTool::UnlockRoot();
 }
 
 void JudgeTask::init(OJInt32_t threadId)
@@ -289,6 +308,13 @@ void JudgeThread::operator()()
 
     logger->logTraceX(OJStr("[JudgeThread][%d]start..."), id_);
 
+    static OJInt32_t s_numThread = 0;
+
+    IMUST::WatchTool::LockRoot();
+    ++s_numThread;
+    IMUST::WatchTool::Root()->watch(OJStr("core/numThread"), s_numThread);
+    IMUST::WatchTool::UnlockRoot();
+
     TaskManagerPtr workingTaskMgr = pJudgeCore_->getWorkingTaskMgr();
     TaskManagerPtr finishedTaskMgr = pJudgeCore_->getFinishedTaskMgr();
 
@@ -327,6 +353,11 @@ void JudgeThread::operator()()
     }
 
     logger->logTraceX(OJStr("[JudgeThread][%d]end."), id_);
+
+    IMUST::WatchTool::LockRoot();
+    --s_numThread;
+    IMUST::WatchTool::Root()->watch(OJStr("core/numThread"), s_numThread);
+    IMUST::WatchTool::UnlockRoot();
 }
 
 TaskPtr JudgeTaskFactory::create(const TaskInputData & input)

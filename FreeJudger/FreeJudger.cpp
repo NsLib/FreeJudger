@@ -42,7 +42,7 @@ CFreeJudgerApp theApp;
 
 BOOL CFreeJudgerApp::InitInstance()
 {
-    IMUST::doWatchTest();
+    IMUST::WatchTool::DoWatchTest();
 
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable

@@ -50,6 +50,8 @@ namespace IMUST
     ValueProxyPtr buildWatchValue(const OJString & v);
     ValueProxyPtr buildWatchValue(const OJChar_t *& v);
 
+    class Watch;
+
     class IWatchListener
     {
     public:
@@ -78,12 +80,21 @@ namespace IMUST
         ///删除一叶节点监视器。name的格式可以是a/b/c，此时c会被删除。
         void delWatch(const OJString & name);
 
+        ///添加一个监视
+        void addWatch(const OJString & name, ValueProxyPtr v);
+
+        ///用于监视时间段
+        void startWatch();
+        void endWatch();
+        void startWatch(const OJString & name);
+        void endWatch(const OJString & name);
+        
+
         ///监视的数据
         template<typename T>
         void watch(const OJString & name, const T & v)
         {
-            Watch * w = getWatch(name);
-            w->update( buildWatchValue(v) );
+            addWatch(name, buildWatchValue(v) );
         }
 
         void update(ValueProxyPtr v);
@@ -111,11 +122,60 @@ namespace IMUST
         ValueProxyPtr value_;   ///<被监视的值
         std::list<IWatchListener*> listeners_;///<当被监视的值发生变化时，会通知给每个listener
         WatchMap children_; ///<子监视器
+        OJFloat32_t startTime_;
         
     };
 
+    template<typename T, typename FUN>
+    class MethodWatchListener : public IWatchListener
+    {
+        T   *pTarget_;
+        FUN pFun_;
+    public:
 
-    Watch * rootWatch();
+        MethodWatchListener(T *pTarget, FUN pFun)
+            : pTarget_(pTarget)
+            , pFun_(pFun)
+        {
+            assert(pTarget && pFun && "MethodWatchListener construct");
+        }
 
-    void doWatchTest();
+        ~MethodWatchListener()
+        {
+        }
+
+        virtual void listen(ValueProxyPtr v)
+        {
+            (pTarget_->*pFun_)(v);
+        }
+    };
+
+    namespace WatchTool
+    {
+
+        void DoWatchTest();
+
+        Watch * Root();
+
+        void LockRoot();
+        void UnlockRoot();
+
+        template<typename T>
+        void AddWatch(const OJString & name, const T & v)
+        {
+            LockRoot();
+            Root()->addWatch(name, buildWatchValue(v) );
+            UnlockRoot();
+        }
+
+        void StartWatch(const OJString & name);
+        void EndWatch(const OJString & name);
+
+        template<typename T, typename FUN>
+        IWatchListener * MakeWatchListener(T *pTarget, FUN pFun)
+        {
+            return new MethodWatchListener<T, FUN>(pTarget, pFun);
+        }
+
+    }
 }

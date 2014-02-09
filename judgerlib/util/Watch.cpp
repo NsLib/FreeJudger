@@ -2,6 +2,9 @@
 #include "StringTool.h"
 #include <algorithm>
 
+#include "Utility.h"
+#include "../thread/ThreadLock.h"
+
 namespace IMUST
 {
     IValueProxy::IValueProxy()
@@ -13,12 +16,16 @@ namespace IMUST
     }
 
     ////////////////////////////////////////////////////////////////////
-    Watch * rootWatch()
+
+    IWatchListener::IWatchListener()
     {
-        static Watch s_watch(OJStr("root"));
-        return &s_watch;
     }
 
+    IWatchListener::~IWatchListener()
+    {
+    }
+    
+    ////////////////////////////////////////////////////////////////////
 
     Watch::Watch(const OJString & name)
         : name_(name)
@@ -55,6 +62,8 @@ namespace IMUST
 
     Watch * Watch::getWatch(const OJString & name, bool createIfMiss)
     {
+        if(name.empty()) return NULL;
+
         size_t i = name.find(OJStr('/'));
         if(i == name.npos)
         {
@@ -91,8 +100,39 @@ namespace IMUST
         }
     }
 
+
+    void Watch::addWatch(const OJString & name, ValueProxyPtr v)
+    {
+        getWatch(name, true)->update(v);
+    }
+
+    void Watch::startWatch()
+    {
+        startTime_ = GetTickTime();
+    }
+
+    void Watch::endWatch()
+    {
+        OJFloat32_t dt = GetTickTime() - startTime_;
+        update( buildWatchValue(dt) );
+    }
+
+    void Watch::startWatch(const OJString & name)
+    {
+        getWatch(name, true)->startWatch();
+    }
+
+    void Watch::endWatch(const OJString & name)
+    {
+        Watch * child = getWatch(name, false);
+        if(child) child->endWatch();
+    }
+
     void Watch::update(ValueProxyPtr v)
     {
+        if(value_ && v && value_->isEqual(v.get()))
+            return;
+
         value_ = v;
 
         doNotify();
@@ -100,8 +140,8 @@ namespace IMUST
 
     void Watch::doNotify()
     {
-        std::list<IWatchListener*>::iterator it = listeners_.begin();
-        while(it != listeners_.end())
+        std::list<IWatchListener*>::iterator it;
+        for(it = listeners_.begin(); it != listeners_.end(); ++it)
         {
             (*it)->listen(value_);
         }
@@ -165,26 +205,66 @@ namespace IMUST
         }
     }
 
-    void doWatchTest()
+    namespace WatchTool
     {
-        rootWatch()->watch(OJStr("core/totalTime"), 99.0);
-        rootWatch()->watch(OJStr("core/running"), true);
-        rootWatch()->watch(OJStr("core/name"), GetOJString("judgecore"));
-        rootWatch()->watch(OJStr("core/numThread"), 3);
+        Mutex & _rootLocker()
+        {
+            static Mutex s_mutex;
+            return s_mutex;
+        }
 
-        Watch *p;
+        Watch * Root()
+        {
+            static Watch s_watch(OJStr("root"));
+            return &s_watch;
+        }
 
-        p = rootWatch()->getWatch(OJStr("core/totalTime"));
-        _doTest(p && p->getValue()->asFloat32() == 99.0, "core/totalTime");
 
-        p = rootWatch()->getWatch(OJStr("core/running"));
-        _doTest(p && p->getValue()->asBool() == true, "core/running");
+        void DoWatchTest()
+        {
+            Root()->watch(OJStr("core/totalTime"), 99.0);
+            Root()->watch(OJStr("core/running"), true);
+            Root()->watch(OJStr("core/name"), GetOJString("judgecore"));
+            Root()->watch(OJStr("core/numThread"), 3);
 
-        p = rootWatch()->getWatch(OJStr("core/name"));
-        _doTest(p && p->getValue()->asString() == OJStr("judgecore"), "core/name");
+            Watch *p;
 
-        p = rootWatch()->getWatch(OJStr("core/numThread"));
-        _doTest(p && p->getValue()->asInt32() == 3, "core/numThread");
-    }
+            p = Root()->getWatch(OJStr("core/totalTime"));
+            _doTest(p && p->getValue()->asFloat32() == 99.0, "core/totalTime");
 
+            p = Root()->getWatch(OJStr("core/running"));
+            _doTest(p && p->getValue()->asBool() == true, "core/running");
+
+            p = Root()->getWatch(OJStr("core/name"));
+            _doTest(p && p->getValue()->asString() == OJStr("judgecore"), "core/name");
+
+            p = Root()->getWatch(OJStr("core/numThread"));
+            _doTest(p && p->getValue()->asInt32() == 3, "core/numThread");
+        }
+
+        void LockRoot()
+        {
+            _rootLocker().lock();
+        }
+
+        void UnlockRoot()
+        {
+            _rootLocker().unlock();
+        }
+
+        void StartWatch(const OJString & name)
+        {
+            LockRoot();
+            Root()->startWatch(name);
+            UnlockRoot();
+        }
+
+        void EndWatch(const OJString & name)
+        {
+            LockRoot();
+            Root()->endWatch(name);
+            UnlockRoot();
+        }
+
+    }//end namespace WatchTool
 }//end namespace IMUST

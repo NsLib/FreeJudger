@@ -12,6 +12,7 @@ class JudgeTask : public ITask
 {
 public:
     JudgeTask(const TaskInputData & inputData);
+    ~JudgeTask();
     
     virtual void init(OJInt32_t threadId);
 
