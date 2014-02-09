@@ -116,20 +116,14 @@ namespace IMUST
     {
         delete threadProxy_;
 
-        WatchTool::LockRoot();
-        --NumThread;
-        WatchTool::Root()->watch(OJStr("core/numThread"), NumThread);
-        WatchTool::UnlockRoot();
+        WatchTool::WatchCount(OJStr("core/numThread"), NumThread, -1);
     }
 
     void Thread::start_thread()
     {
         threadProxy_ = new ThreadProxy(fun_.get());
 
-        WatchTool::LockRoot();
-        ++NumThread;
-        WatchTool::Root()->watch(OJStr("core/numThread"), NumThread);
-        WatchTool::UnlockRoot();
+        WatchTool::WatchCount(OJStr("core/numThread"), NumThread, +1);
     }
 
     void Thread::join()
