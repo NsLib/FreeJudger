@@ -506,7 +506,6 @@ OJInt32_t WindowsProcess::start()
         runMemory_ = info.PeakPagefileUsage;
     }
 
-    SAFE_CLOSE_HANDLE_AND_RESET(processHandle_);
     while(!jobHandle_.terminate())//强制关闭作业
     {
         DEBUG_MSG(OJStr("Terminate job faild!"));
@@ -526,6 +525,8 @@ OJInt32_t WindowsProcess::start()
                 code, GetLastError());
         }
     }
+
+    SAFE_CLOSE_HANDLE_AND_RESET(processHandle_);
 
 	return 0;  
 }

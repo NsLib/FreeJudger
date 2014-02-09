@@ -2,9 +2,15 @@
 
 #include "../platformlayer/PlatformLayer.h"
 #include "../../thirdpartylib/boost/thread.hpp"
+#include "../util/Watch.h"
 
 namespace IMUST
 {
+    namespace
+    {
+        OJInt32_t NumThread = 0;
+    }
+
     IThreadFun::IThreadFun()
     {}
 
@@ -109,11 +115,21 @@ namespace IMUST
     Thread::~Thread()
     {
         delete threadProxy_;
+
+        WatchTool::LockRoot();
+        --NumThread;
+        WatchTool::Root()->watch(OJStr("core/numThread"), NumThread);
+        WatchTool::UnlockRoot();
     }
 
     void Thread::start_thread()
     {
         threadProxy_ = new ThreadProxy(fun_.get());
+
+        WatchTool::LockRoot();
+        ++NumThread;
+        WatchTool::Root()->watch(OJStr("core/numThread"), NumThread);
+        WatchTool::UnlockRoot();
     }
 
     void Thread::join()

@@ -17,6 +17,7 @@ CDlgWatch::CDlgWatch(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CDlgWatch::IDD, pParent)
     , m_nThread(0)
     , m_numJudgeTask(0)
+    , m_nProcess(0)
 {
 
 }
@@ -30,6 +31,8 @@ void CDlgWatch::DoDataExchange(CDataExchange* pDX)
     CDialogEx::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_TXT_NUM_THREAD, m_nThread);
     DDX_Text(pDX, IDC_TXT_NUM_TASK, m_numJudgeTask);
+    DDX_Text(pDX, IDC_TXT_NUM_PROCESS, m_nProcess);
+    DDX_Control(pDX, IDC_LST_WATCH, m_lstWatch);
 }
 
 
@@ -45,6 +48,13 @@ LRESULT CDlgWatch::OnDlgUpate(WPARAM wParam, LPARAM lParam)
     if(wParam != 0) UpdateData(TRUE);
     else UpdateData(FALSE);
     return 0;
+}
+
+void CDlgWatch::onWatchNumProcess(IMUST::ValueProxyPtr value)
+{
+    m_nProcess = value->asInt32();
+
+    PostMessage(WM_DLG_UPDATE, 0, 0);
 }
 
 void CDlgWatch::onWatchNumThread(IMUST::ValueProxyPtr value)
@@ -67,11 +77,18 @@ BOOL CDlgWatch::OnInitDialog()
 
     // TODO:  Add extra initialization here
 
+    m_lstWatch.InsertColumn(0, L"id");
+    m_lstWatch.InsertColumn(1, L"id");
+    m_lstWatch.InsertColumn(2, L"id");
+
     using namespace IMUST::WatchTool;
 
     LockRoot();
 
     IMUST::IWatchListener * p;
+
+    p = MakeWatchListener(this, &CDlgWatch::onWatchNumProcess);
+    Root()->getWatch(OJStr("core/numProcess"))->addListener(p);
 
     p = MakeWatchListener(this, &CDlgWatch::onWatchNumThread);
     Root()->getWatch(OJStr("core/numThread"))->addListener(p);

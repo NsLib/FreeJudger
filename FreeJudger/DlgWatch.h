@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "afxcmn.h"
 
 namespace IMUST
 {
@@ -28,9 +29,12 @@ protected:
 public:
     int m_nThread;
 
+    void onWatchNumProcess(IMUST::ValueProxyPtr value);
     void onWatchNumThread(IMUST::ValueProxyPtr value);
     void onWatchNumJudgeTask(IMUST::ValueProxyPtr value);
 
     virtual BOOL OnInitDialog();
     int m_numJudgeTask;
+    int m_nProcess;
+    CListCtrl m_lstWatch;
 };

@@ -85,18 +85,18 @@ JudgeTask::JudgeTask(const TaskInputData & inputData)
     output_.RunTime = 0;
     output_.RunMemory = 0;
 
-    IMUST::WatchTool::LockRoot();
+    WatchTool::LockRoot();
     ++NumJudgeTask;
-    IMUST::WatchTool::Root()->watch(OJStr("core/numJudgeTask"), NumJudgeTask);
-    IMUST::WatchTool::UnlockRoot();
+    WatchTool::Root()->watch(OJStr("core/numJudgeTask"), NumJudgeTask);
+    WatchTool::UnlockRoot();
 }
 
 JudgeTask::~JudgeTask()
 {
-    IMUST::WatchTool::LockRoot();
+    WatchTool::LockRoot();
     --NumJudgeTask;
-    IMUST::WatchTool::Root()->watch(OJStr("core/numJudgeTask"), NumJudgeTask);
-    IMUST::WatchTool::UnlockRoot();
+    WatchTool::Root()->watch(OJStr("core/numJudgeTask"), NumJudgeTask);
+    WatchTool::UnlockRoot();
 }
 
 void JudgeTask::init(OJInt32_t threadId)
@@ -157,9 +157,8 @@ void JudgeTask::doRun()
     {
         output_.Result = AppConfig::JudgeCode::SystemError;
 
-        FormatString(infoBuffer, OJStr("[JudgeTask] not found test data for solution %d problem %d."),
+        logger->logErrorX(OJStr("[JudgeTask] %d not found test data for problem %d."),
             Input.SolutionID, Input.ProblemID);
-        logger->logError(infoBuffer);
         return;
     }
 
@@ -232,21 +231,16 @@ bool JudgeTask::doClean()
 bool JudgeTask::compile()
 {
     ILogger *logger = LoggerFactory::getJudgeThreadLogger(threadId_);
-    logger->logTrace(OJStr("[JudgeTask] start compile..."));
+    logger->logTraceX(OJStr("[JudgeTask] %d start compile..."), Input.SolutionID);
     
     CompilerPtr compiler = CompilerFactory::create(Input.Language);
     compiler->run(codeFile_, exeFile_, compileFile_);
     output_.Result = compiler->getResult();
 
-    if(output_.Result == AppConfig::JudgeCode::CompileError)
+    if(output_.Result != AppConfig::JudgeCode::Accept)
     {
         output_.Result = AppConfig::JudgeCode::CompileError;
-        
-        std::vector<OJChar_t> buffer;
-        if(FileTool::ReadFile(buffer, compileFile_) && !buffer.empty())
-        {
-            output_.CompileError = &buffer[0];
-        }
+        FileTool::ReadString(output_.CompileError, compileFile_);
     }
 
     return output_.Result == AppConfig::JudgeCode::Accept;
@@ -255,14 +249,12 @@ bool JudgeTask::compile()
 bool JudgeTask::excute()
 {
     ILogger *logger = LoggerFactory::getJudgeThreadLogger(threadId_);
-    logger->logTrace(OJStr("[JudgeTask] start excute..."));
+    logger->logTraceX(OJStr("[JudgeTask] %d start excute..."), Input.SolutionID);
     
-    OJString infoBuffer;
-
     if(!FileTool::IsFileExist(exeFile_))
     {
-        FormatString(infoBuffer, OJStr("[JudgeTask] not found exe file! %s."), exeFile_);
-        logger->logError(infoBuffer);
+        logger->logErrorX(OJStr("[JudgeTask] %d not found exe file! %s."),
+            Input.SolutionID, exeFile_);
         output_.Result = AppConfig::JudgeCode::SystemError;
         return false;
     }
@@ -272,7 +264,7 @@ bool JudgeTask::excute()
     output_.Result = excuter->getResult();
 
     output_.RunTime = excuter->getRunTime();
-    output_.RunMemory = excuter->getRunMemory();
+    output_.RunMemory = excuter->getRunMemory() / 1024;
 
     return output_.Result == AppConfig::JudgeCode::Accept;
 }
@@ -280,7 +272,7 @@ bool JudgeTask::excute()
 bool JudgeTask::match()
 {
     ILogger *logger = LoggerFactory::getJudgeThreadLogger(threadId_);
-    logger->logTrace(OJStr("[JudgeTask] start match..."));
+    logger->logTraceX(OJStr("[JudgeTask] %d start match..."), Input.SolutionID);
 
     MatcherPtr matcher = MatcherFactory::create(false, OJStr(""));
     matcher->run(answerOutputFile_, userOutputFile_);
@@ -310,10 +302,10 @@ void JudgeThread::operator()()
 
     static OJInt32_t s_numThread = 0;
 
-    IMUST::WatchTool::LockRoot();
+    WatchTool::LockRoot();
     ++s_numThread;
-    IMUST::WatchTool::Root()->watch(OJStr("core/numThread"), s_numThread);
-    IMUST::WatchTool::UnlockRoot();
+    WatchTool::Root()->watch(OJStr("core/numJudgeThread"), s_numThread);
+    WatchTool::UnlockRoot();
 
     TaskManagerPtr workingTaskMgr = pJudgeCore_->getWorkingTaskMgr();
     TaskManagerPtr finishedTaskMgr = pJudgeCore_->getFinishedTaskMgr();
@@ -354,10 +346,10 @@ void JudgeThread::operator()()
 
     logger->logTraceX(OJStr("[JudgeThread][%d]end."), id_);
 
-    IMUST::WatchTool::LockRoot();
+    WatchTool::LockRoot();
     --s_numThread;
-    IMUST::WatchTool::Root()->watch(OJStr("core/numThread"), s_numThread);
-    IMUST::WatchTool::UnlockRoot();
+    WatchTool::Root()->watch(OJStr("core/numJudgeThread"), s_numThread);
+    WatchTool::UnlockRoot();
 }
 
 TaskPtr JudgeTaskFactory::create(const TaskInputData & input)
