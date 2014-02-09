@@ -85,18 +85,12 @@ JudgeTask::JudgeTask(const TaskInputData & inputData)
     output_.RunTime = 0;
     output_.RunMemory = 0;
 
-    WatchTool::LockRoot();
-    ++NumJudgeTask;
-    WatchTool::Root()->watch(OJStr("core/numJudgeTask"), NumJudgeTask);
-    WatchTool::UnlockRoot();
+    WatchTool::WatchCount(OJStr("core/numJudgeTask"), NumJudgeTask, +1);
 }
 
 JudgeTask::~JudgeTask()
 {
-    WatchTool::LockRoot();
-    --NumJudgeTask;
-    WatchTool::Root()->watch(OJStr("core/numJudgeTask"), NumJudgeTask);
-    WatchTool::UnlockRoot();
+    WatchTool::WatchCount(OJStr("core/numJudgeTask"), NumJudgeTask, -1);
 }
 
 void JudgeTask::init(OJInt32_t threadId)
@@ -303,10 +297,7 @@ void JudgeThread::operator()()
 
     static OJInt32_t s_numThread = 0;
 
-    WatchTool::LockRoot();
-    ++s_numThread;
-    WatchTool::Root()->watch(OJStr("core/numJudgeThread"), s_numThread);
-    WatchTool::UnlockRoot();
+    WatchTool::WatchCount(OJStr("core/numJudgeThread"), s_numThread, +1);
 
     TaskManagerPtr workingTaskMgr = pJudgeCore_->getWorkingTaskMgr();
     TaskManagerPtr finishedTaskMgr = pJudgeCore_->getFinishedTaskMgr();
@@ -347,10 +338,7 @@ void JudgeThread::operator()()
 
     logger->logTraceX(OJStr("[JudgeThread][%d]end."), id_);
 
-    WatchTool::LockRoot();
-    --s_numThread;
-    WatchTool::Root()->watch(OJStr("core/numJudgeThread"), s_numThread);
-    WatchTool::UnlockRoot();
+    WatchTool::WatchCount(OJStr("core/numJudgeThread"), s_numThread, -1);
 }
 
 TaskPtr JudgeTaskFactory::create(const TaskInputData & input)

@@ -168,6 +168,15 @@ namespace IMUST
             UnlockRoot();
         }
 
+        template<typename T>
+        void WatchCount(const OJString & name, T & value, T delta)
+        {
+            LockRoot();
+            value += delta;
+            Root()->watch(name, value);
+            UnlockRoot();
+        }
+
         void StartWatch(const OJString & name);
         void EndWatch(const OJString & name);
 

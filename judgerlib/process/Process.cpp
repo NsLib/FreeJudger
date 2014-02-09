@@ -11,18 +11,12 @@ namespace IMUST
 
 IProcess::IProcess()
 {
-    WatchTool::LockRoot();
-    ++NumProcess;
-    WatchTool::Root()->watch(OJStr("core/numProcess"), NumProcess);
-    WatchTool::UnlockRoot();
+    WatchTool::WatchCount(OJStr("core/numProcess"), NumProcess, +1);
 }
 
 IProcess::~IProcess()
 {
-    WatchTool::LockRoot();
-    --NumProcess;
-    WatchTool::Root()->watch(OJStr("core/numProcess"), NumProcess);
-    WatchTool::UnlockRoot();
+    WatchTool::WatchCount(OJStr("core/numProcess"), NumProcess, -1);
 }
 
 }   // namespace IMUST
