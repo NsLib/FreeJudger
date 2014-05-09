@@ -105,6 +105,7 @@ bool InitAppConfig()
     READ_APP_CONFIG(readInt32,  "MySql/Port", MySql::Port);
     READ_APP_CONFIG(readString, "MySql/User", MySql::User);
     READ_APP_CONFIG(readString, "MySql/Password", MySql::Password);
+    READ_APP_CONFIG(readString, "MySql/DBName", MySql::DBName);
 
     READ_APP_CONFIG(readBool, "Compiler/HasMsC", Compiler::HasMsC);
     READ_APP_CONFIG(readBool, "Compiler/HasMsCxx", Compiler::HasMsCxx);
