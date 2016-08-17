@@ -1,6 +1,9 @@
-﻿README
+# 注意
+此项目已停止开发，仅供学习参考。OJ搭建技术请参考hustoj官网：hustoj.com。
+windows上应用程序权限控制非常繁琐，没有linux快捷安全，建议在linux上开发/部署OJ系统。
 
-FreeJudger项目简要概述
+# FreeJudger项目简要概述
+用Visual Studio 2010打开`Judger.sln`，将`Daemon`项目设置为启动项。
 
 Daemon:应用程序。
 Test:测试用。
